@@ -1,0 +1,15 @@
+.toolbar-root {
+    display: flex;
+    flex-flow: row wrap;
+    gap: 1rem;
+    border: 1px solid white;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+.toolbar-separator {
+    border-left: 1px solid white;
+}
+.toolbar-root button[data-state='on'] {
+    background-color: white;
+    color: black;
+}

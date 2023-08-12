@@ -1,0 +1,4 @@
+.toolbar-root button[data-state='on'] {
+    background-color: white;
+    color: black;
+}
