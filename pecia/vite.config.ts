@@ -10,7 +10,7 @@ export default defineConfig({
             srcDir: 'src',
             filename: 'sw.ts',
             strategies: 'injectManifest',
-            injectRegister: false,
+            injectRegister: 'inline',
             manifest: false,
             injectManifest: { injectionPoint: null },
             devOptions: { enabled: true },
