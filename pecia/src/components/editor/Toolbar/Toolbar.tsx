@@ -1,8 +1,9 @@
-import { useDispatch } from 'react-redux';
-import { actions } from '../../../state/slices/editor';
+import { toggleMark } from 'prosemirror-commands';
 
 import * as Toolbar from '@radix-ui/react-toolbar';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+
+import schema from '../../../lib/editor/schema';
 
 import {
     FontBoldIcon,
@@ -11,9 +12,21 @@ import {
 } from '@radix-ui/react-icons';
 
 import './Toolbar.css';
+import { EditorView } from 'prosemirror-view';
 
-const EditorToolbar = () => {
-    const dispatch = useDispatch();
+interface toolbarProps {
+    editorView: React.MutableRefObject<EditorView>;
+}
+
+const EditorToolbar = ({ editorView }: toolbarProps) => {
+    const toggle = (markType) => {
+        if (!editorView.current) return;
+        toggleMark(markType)(
+            editorView.current.state,
+            editorView.current.dispatch
+        );
+        editorView.current.focus();
+    };
     return (
         <>
             <Toolbar.Root
@@ -29,7 +42,9 @@ const EditorToolbar = () => {
                         className="toolbar-toggle-item"
                         value="bold"
                         aria-label="bold"
-                        onClick={() => dispatch(actions.toggleBold())}
+                        onClick={() => {
+                            toggle(schema.marks.bold);
+                        }}
                     >
                         <FontBoldIcon />
                     </Toolbar.ToggleItem>
@@ -37,7 +52,7 @@ const EditorToolbar = () => {
                         className="toolbar-toggle-item"
                         value="italic"
                         aria-label="italic"
-                        onClick={() => dispatch(actions.toggleItalic())}
+                        onClick={() => toggle(schema.marks.italic)}
                     >
                         <FontItalicIcon />
                     </Toolbar.ToggleItem>
@@ -45,7 +60,7 @@ const EditorToolbar = () => {
                         className="toolbar-toggle-item"
                         value="strikethrough"
                         aria-label="strikethrough"
-                        onClick={() => dispatch(actions.toggleStrikethrough())}
+                        onClick={() => toggle(schema.marks.strikethrough)}
                     >
                         <StrikethroughIcon />
                     </Toolbar.ToggleItem>

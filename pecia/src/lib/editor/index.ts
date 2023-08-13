@@ -1,3 +1,5 @@
+//Deprecated, this is if you want an editor outside the Redux store
+
 import { Node } from 'prosemirror-model';
 import { EditorState } from 'prosemirror-state';
 import schema from './schema';
