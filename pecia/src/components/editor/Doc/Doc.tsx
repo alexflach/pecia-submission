@@ -1,17 +1,22 @@
-import { useRef, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { Editor } from '../../../lib/editor';
+import { useDispatch } from 'react-redux';
+
+import { actions } from '../../../state/slices/editor';
+
+const { setCurrentDocID, initEditor } = actions;
 
 const Doc = () => {
     const { docID } = useParams();
-    const editorRef = useRef<Editor>();
+    const dispatch = useDispatch();
+
     const docRef = useCallback(
         (node: HTMLElement | null) => {
             if (!docID || !node) return;
-            const editor = new Editor(node, docID);
-            editorRef.current = editor;
+            dispatch(setCurrentDocID(docID));
+            dispatch(initEditor(node));
         },
-        [docID]
+        [docID, dispatch]
     );
     return <div id="pecia-doc" ref={docRef}></div>;
 };
