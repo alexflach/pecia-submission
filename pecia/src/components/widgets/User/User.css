@@ -1,0 +1,6 @@
+div.user-menu {
+    position: absolute;
+    right: 5px;
+    top: 5vh;
+    z-index: auto;
+}

@@ -1,32 +1,40 @@
 import React, { useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../state/store';
 import { actions } from '../../../state/slices/editor';
 import { EditorView } from 'prosemirror-view';
+import useQuery from '../../../hooks/useQuery';
 
-const { setCurrentDocID, initEditor } = actions;
+import './Doc.css';
+
+const { setCurrentDocID, initEditor, retrieveDoc } = actions;
 
 interface docProps {
     editorView: React.MutableRefObject<EditorView>;
 }
 
 const Doc = ({ editorView }: docProps) => {
-    const { docID } = useParams();
+    const query = useQuery();
     const dispatch = useDispatch();
-    const editorState = useSelector(
-        (state: RootState) => state.editor.editorState
+    const { editorState, currentDocID } = useSelector(
+        (state: RootState) => state.editor
     );
     const docRef = useRef<HTMLDivElement>();
+    const docID = query.get('doc');
 
-    useEffect(() => {
-        if (!docID || !docRef.current) return;
+    //if we have navigated to a new document we:
+    //update our current doc id and retrieve the doc if possible from local storage
+    //then we re-initialize the editor state
+    if (docID !== currentDocID) {
         dispatch(setCurrentDocID(docID));
-        if (!editorState) dispatch(initEditor());
-    }, [docID, dispatch, editorState]);
+        dispatch(retrieveDoc());
+        dispatch(initEditor());
+    }
 
+    //render the editor. We can only do this if we have a dom node to render to, and a state to render.
+    //Every time the editor state changes, we shall update the view here.
     useEffect(() => {
-        if (!editorState) return;
+        if (!editorState || !docRef.current) return;
         if (!editorView.current) {
             console.log(editorState);
             const view = new EditorView(docRef.current, {

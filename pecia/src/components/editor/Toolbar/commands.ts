@@ -69,3 +69,8 @@ export const downloadDoc = (editorView: EditorView) => {
     download(objectURL, `doc.html`);
     URL.revokeObjectURL(objectURL);
 };
+
+export const saveDoc = (editorView: EditorView, id: string) => {
+    const doc = editorView.state.doc.toJSON();
+    localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
+};

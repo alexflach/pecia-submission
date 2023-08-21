@@ -1,0 +1,11 @@
+div.doc-card {
+    background-color: white;
+    min-width: 200px;
+    min-height: 300px;
+    padding: 1rem;
+}
+
+div.doc-card:focus,
+div.doc-card:hover {
+    background-color: var(--light-blue);
+}

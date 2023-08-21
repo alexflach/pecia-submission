@@ -6,6 +6,7 @@ import {
     setBlock,
     wrapInBlockquote,
     downloadDoc,
+    saveDoc,
     undoCommand,
     redoCommand,
     wrapInListCommand,
@@ -18,6 +19,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
     ArrowLeftIcon,
     ArrowRightIcon,
+    BookmarkIcon,
     DownloadIcon,
     FontBoldIcon,
     FontItalicIcon,
@@ -34,14 +36,21 @@ interface toolbarProps {
     editorView: React.MutableRefObject<EditorView>;
 }
 
+const ICON_PROPS = {
+    viewBox: '0 0 15 15',
+    width: 25,
+    height: 25,
+};
+
 const EditorToolbar = ({ editorView }: toolbarProps) => {
-    const editorState = useSelector(
-        (state: RootState) => state.editor.editorState
+    const { editorState, currentDocID } = useSelector(
+        (state: RootState) => state.editor
     );
+
     console.log(markInScope(editorState, 'bold'), 'bold');
     console.log(markInScope(editorState, 'italic'), 'italic');
     return (
-        <>
+        <div className="toolbar">
             <Toolbar.Root
                 className="toolbar-root"
                 aria-label="toolbar"
@@ -51,19 +60,42 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     className="toolbar-button"
                     onClick={() => downloadDoc(editorView.current)}
                 >
-                    <DownloadIcon />
+                    <DownloadIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
                 </Toolbar.Button>
+                <Toolbar.Button
+                    className="toolbar-button"
+                    onClick={() => saveDoc(editorView.current, currentDocID)}
+                >
+                    <BookmarkIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
+                </Toolbar.Button>
+
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => undoCommand(editorView.current)}
                 >
-                    <ArrowLeftIcon />
+                    <ArrowLeftIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => redoCommand(editorView.current)}
                 >
-                    <ArrowRightIcon />
+                    <ArrowRightIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
                 </Toolbar.Button>
                 <Toolbar.Separator
                     className="toolbar-separator"
@@ -82,7 +114,11 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                             toggle(editorView.current, 'bold');
                         }}
                     >
-                        <FontBoldIcon />
+                        <FontBoldIcon
+                            viewBox={ICON_PROPS.viewBox}
+                            width={ICON_PROPS.width}
+                            height={ICON_PROPS.width}
+                        />
                     </Toolbar.ToggleItem>
                     <Toolbar.ToggleItem
                         className="toolbar-toggle-item"
@@ -90,7 +126,11 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         aria-label="italic"
                         onClick={() => toggle(editorView.current, 'italic')}
                     >
-                        <FontItalicIcon />
+                        <FontItalicIcon
+                            viewBox={ICON_PROPS.viewBox}
+                            width={ICON_PROPS.width}
+                            height={ICON_PROPS.width}
+                        />
                     </Toolbar.ToggleItem>
                     <Toolbar.ToggleItem
                         className="toolbar-toggle-item"
@@ -98,7 +138,11 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         aria-label="underline"
                         onClick={() => toggle(editorView.current, 'underline')}
                     >
-                        <UnderlineIcon />
+                        <UnderlineIcon
+                            viewBox={ICON_PROPS.viewBox}
+                            width={ICON_PROPS.width}
+                            height={ICON_PROPS.width}
+                        />
                     </Toolbar.ToggleItem>
 
                     <Toolbar.ToggleItem
@@ -109,7 +153,11 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                             toggle(editorView.current, 'strikethrough')
                         }
                     >
-                        <StrikethroughIcon />
+                        <StrikethroughIcon
+                            viewBox={ICON_PROPS.viewBox}
+                            width={ICON_PROPS.width}
+                            height={ICON_PROPS.width}
+                        />
                     </Toolbar.ToggleItem>
                 </Toolbar.ToggleGroup>
                 <Toolbar.Separator
@@ -120,24 +168,38 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     className="toolbar-button"
                     onClick={() => setBlock(editorView.current, 'para')}
                 >
-                    <PilcrowIcon />
+                    <PilcrowIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => wrapInBlockquote(editorView.current)}
                 >
-                    <QuoteIcon />
+                    <QuoteIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => wrapInListCommand(editorView.current)}
                 >
-                    <ListBulletIcon />
+                    <ListBulletIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
                 </Toolbar.Button>
 
                 <DropdownMenu.Root>
                     <Toolbar.Button asChild>
-                        <DropdownMenu.Trigger>Heading</DropdownMenu.Trigger>
+                        <DropdownMenu.Trigger className="h4">
+                            Heading
+                        </DropdownMenu.Trigger>
                     </Toolbar.Button>
                     <DropdownMenu.Content>
                         <DropdownMenu.Item
@@ -164,7 +226,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>
             </Toolbar.Root>
-        </>
+        </div>
     );
 };
 

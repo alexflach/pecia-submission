@@ -25,7 +25,7 @@ const router = createBrowserRouter([
                 element: <HomePage />,
             },
             {
-                path: 'edit/:docID',
+                path: 'edit',
                 element: <EditorPage />,
             },
             {

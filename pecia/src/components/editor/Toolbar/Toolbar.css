@@ -2,9 +2,11 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
-    border: 1px solid white;
     padding: 1rem;
     border-radius: 0.25rem;
+    margin: 0 auto;
+    width: 80%;
+    max-width: 800px;
 }
 .toolbar-separator {
     border-left: 1px solid white;
@@ -12,4 +14,39 @@
 .toolbar-root button[data-state='on'] {
     background-color: white;
     color: black;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.toolbar button {
+    background: transparent;
+    border: none;
+    height: 80%;
+    border-radius: 0.5rem;
+    padding: 2px;
+    margin: 2px;
+}
+.toolbar button svg {
+    fill: var(--dark-grey);
+}
+
+.toolbar button:hover,
+.toolbar button:focus {
+    background-color: var(--light-blue);
+}
+
+div[data-radix-collection-item] {
+    margin-top: 3px;
+    font-size: var(--h5);
+    background-color: white;
+    padding-left: 5px;
+}
+
+div[data-radix-collection-item]:hover,
+div[data-radix-collection-item]:focus {
+    background-color: var(--light-blue);
 }
