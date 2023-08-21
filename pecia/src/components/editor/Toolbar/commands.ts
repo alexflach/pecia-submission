@@ -4,7 +4,10 @@ import { toggleMark, setBlockType, wrapIn } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
 import { undo, redo } from 'prosemirror-history';
 import { marks, nodes } from './utils';
+import { actions } from '../../../state/slices/docs';
 import schema from '../../../lib/editor/schema';
+import { Dispatch } from '@reduxjs/toolkit';
+import { NavigateFunction } from 'react-router-dom';
 
 export const toggle = (editorView: EditorView, markType: string) => {
     if (!editorView) return;
@@ -77,4 +80,20 @@ export const saveDoc = (editorView: EditorView, id: string) => {
     const doc = editorView.state.doc.toJSON();
     localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
     editorView.focus();
+};
+
+export const deleteDoc = (
+    id: string,
+    dispatch: Dispatch,
+    navigate: NavigateFunction
+) => {
+    if (
+        confirm(
+            'Are you sure you want to delete the document? This cannot be undone.'
+        )
+    ) {
+        localStorage.removeItem(`pecia-doc-${id}`);
+        dispatch(actions.deleteDoc(id));
+        navigate('/');
+    }
 };

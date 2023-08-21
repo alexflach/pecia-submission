@@ -1,5 +1,5 @@
 import { EditorView } from 'prosemirror-view';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../state/store';
 import {
     toggle,
@@ -11,8 +11,8 @@ import {
     redoCommand,
     wrapInListCommand,
     setHeadingLevel,
+    deleteDoc,
 } from './commands';
-import { markInScope } from './utils';
 
 import * as Toolbar from '@radix-ui/react-toolbar';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
@@ -28,9 +28,11 @@ import {
     PilcrowIcon,
     QuoteIcon,
     ListBulletIcon,
+    TrashIcon,
 } from '@radix-ui/react-icons';
 
 import './Toolbar.css';
+import { useNavigate } from 'react-router-dom';
 
 interface toolbarProps {
     editorView: React.MutableRefObject<EditorView>;
@@ -43,12 +45,10 @@ const ICON_PROPS = {
 };
 
 const EditorToolbar = ({ editorView }: toolbarProps) => {
-    const { editorState, currentDocID } = useSelector(
-        (state: RootState) => state.editor
-    );
+    const { currentDocID } = useSelector((state: RootState) => state.editor);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    console.log(markInScope(editorState, 'bold'), 'bold');
-    console.log(markInScope(editorState, 'italic'), 'italic');
     return (
         <div className="toolbar">
             <Toolbar.Root
@@ -71,6 +71,16 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     onClick={() => saveDoc(editorView.current, currentDocID)}
                 >
                     <BookmarkIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
+                </Toolbar.Button>
+                <Toolbar.Button
+                    className="toolbar-button"
+                    onClick={() => deleteDoc(currentDocID, dispatch, navigate)}
+                >
+                    <TrashIcon
                         viewBox={ICON_PROPS.viewBox}
                         width={ICON_PROPS.width}
                         height={ICON_PROPS.width}
