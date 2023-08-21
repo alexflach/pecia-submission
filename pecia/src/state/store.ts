@@ -26,4 +26,17 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 
+let previousDocs;
+const persistDocs = () => {
+    const docsSelector = (state: RootState) => state.docs.docs;
+    const docs = docsSelector(store.getState());
+    const docString = JSON.stringify(docs);
+    if (docString !== previousDocs) {
+        previousDocs = docString;
+        localStorage.setItem(`pecia-docs`, docString);
+    }
+};
+
+store.subscribe(persistDocs);
+
 export default store;
