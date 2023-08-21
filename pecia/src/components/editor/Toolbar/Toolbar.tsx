@@ -40,8 +40,8 @@ interface toolbarProps {
 
 const ICON_PROPS = {
     viewBox: '0 0 15 15',
-    width: 25,
-    height: 25,
+    width: 20,
+    height: 20,
 };
 
 const EditorToolbar = ({ editorView }: toolbarProps) => {

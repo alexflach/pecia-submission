@@ -3,6 +3,7 @@ div.doc-card {
     min-width: 200px;
     min-height: 300px;
     padding: 1rem;
+    cursor: pointer;
 }
 
 div.doc-card:focus,

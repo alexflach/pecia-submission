@@ -5,6 +5,7 @@ import { EditorView } from 'prosemirror-view';
 import { history, undo, redo } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
+import idPlugin from '../../../lib/editor/plugins/idPlugin';
 
 type Editor = {
     currentDocID: string | null;
@@ -58,6 +59,7 @@ export const initEditor = (state) => {
             history(),
             keymap({ 'Mod-z': undo, 'Mod-y': redo }),
             keymap(baseKeymap),
+            idPlugin(),
         ],
     });
 };
