@@ -5,3 +5,11 @@ header {
     margin: 1rem;
     background-color: white;
 }
+
+.title-input {
+    outline: solid 1px #c6b6b6d9;
+    border: none;
+    font-size: var(--h5);
+    border-radius: 0.5rem;
+    padding: 5px;
+}

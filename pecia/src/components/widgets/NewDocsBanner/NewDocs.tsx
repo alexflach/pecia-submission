@@ -19,8 +19,8 @@ const NewDocsBanner = () => {
         <>
             <h3>Create a document</h3>
             <div className="new-docs-banner">
-                <DocCard onClick={newDocHandler} />
-                <DocCard onClick={newDocHandler} />
+                <DocCard onClick={newDocHandler} title="from scratch" />
+                <DocCard onClick={newDocHandler} title="from blank" />
             </div>
         </>
     );

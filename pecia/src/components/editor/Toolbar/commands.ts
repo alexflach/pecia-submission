@@ -57,6 +57,7 @@ function download(url: string, fileName: string): void {
 
 //Custom command to download an HTML serialization of the current document.
 export const downloadDoc = (editorView: EditorView) => {
+    if (!editorView) return;
     const fragment = DOMSerializer.fromSchema(schema).serializeFragment(
         editorView.state.doc.content
     );
@@ -68,9 +69,12 @@ export const downloadDoc = (editorView: EditorView) => {
 
     download(objectURL, `doc.html`);
     URL.revokeObjectURL(objectURL);
+    editorView.focus();
 };
 
 export const saveDoc = (editorView: EditorView, id: string) => {
+    if (!editorView) return;
     const doc = editorView.state.doc.toJSON();
     localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
+    editorView.focus();
 };

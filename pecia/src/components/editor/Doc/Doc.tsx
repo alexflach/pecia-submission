@@ -25,11 +25,13 @@ const Doc = ({ editorView }: docProps) => {
     //if we have navigated to a new document we:
     //update our current doc id and retrieve the doc if possible from local storage
     //then we re-initialize the editor state
-    if (docID !== currentDocID) {
-        dispatch(setCurrentDocID(docID));
-        dispatch(retrieveDoc());
-        dispatch(initEditor());
-    }
+    useEffect(() => {
+        if (docID !== currentDocID) {
+            dispatch(setCurrentDocID(docID));
+            dispatch(retrieveDoc());
+            dispatch(initEditor());
+        }
+    }, [docID, currentDocID, dispatch]);
 
     //render the editor. We can only do this if we have a dom node to render to, and a state to render.
     //Every time the editor state changes, we shall update the view here.

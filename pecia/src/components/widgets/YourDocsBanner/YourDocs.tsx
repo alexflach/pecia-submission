@@ -19,6 +19,7 @@ const YourDocs = () => {
                     docs.map((doc) => (
                         <DocCard
                             key={doc.id}
+                            title={doc.title}
                             onClick={() => {
                                 navigate(`/edit?doc=${doc.id}`);
                             }}

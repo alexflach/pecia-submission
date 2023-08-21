@@ -72,3 +72,15 @@ span.underline {
 span.strikethrough {
     text-decoration: line-through;
 }
+
+.ProseMirror h1 {
+    font-size: var(--h2);
+}
+
+.ProseMirror h2 {
+    font-size: var(--h3);
+}
+
+.ProseMirror h3 {
+    font-size: var(--h4);
+}

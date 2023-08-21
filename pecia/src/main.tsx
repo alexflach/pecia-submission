@@ -13,6 +13,7 @@ import DocsPage from './components/pages/DocsPage';
 import UserPage from './components/pages/UserPage';
 import EditorPage from './components/pages/EditorPage';
 import './index.css';
+import NotFoundPage from './components/pages/NotFoundPage/NotFoundPage.tsx';
 
 const router = createBrowserRouter([
     {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
             {
                 path: 'user',
                 element: <UserPage />,
+            },
+            {
+                path: '*',
+                element: <NotFoundPage />,
             },
         ],
     },

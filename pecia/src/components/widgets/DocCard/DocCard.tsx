@@ -1,9 +1,9 @@
 import './DocCard.css';
 
-const DocCard = ({ onClick }) => {
+const DocCard = ({ onClick, title = '' }) => {
     return (
         <div onClick={onClick} className="doc-card">
-            <p>new doc card</p>
+            <p>{title || 'Untitled...'}</p>
         </div>
     );
 };
