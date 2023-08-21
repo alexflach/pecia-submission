@@ -1,3 +1,5 @@
+//adapted from Prosemirror forum:
+//https://discuss.prosemirror.net/t/how-i-can-attach-attribute-with-dynamic-value-when-new-paragraph-is-inserted/751/3
 import { Node } from 'prosemirror-model';
 import { Plugin } from 'prosemirror-state';
 
@@ -18,16 +20,15 @@ const idPlugin = () => {
             const hasID = (node: Node) => node.attrs?.id;
 
             if (transactions.some((tr) => tr.docChanged)) {
+                console.log(tr);
                 newState.doc.descendants((node, pos) => {
                     if (shouldHaveID(node) && !hasID(node)) {
-                        console.log(node);
                         const attrs = node.attrs;
                         tr.setNodeMarkup(pos, undefined, {
                             ...attrs,
                             id: crypto.randomUUID(),
                         });
                         modified = true;
-                        console.log(tr);
                     }
                 });
             }
