@@ -11,6 +11,7 @@ import {
     TreeMoveCRDT as CRDT,
     TreeMoveCRDT,
 } from './crdt.js';
+import { Node } from 'prosemirror-model';
 
 export class Replica {
     tree: TreeNode[] = [];
@@ -217,5 +218,38 @@ export class Replica {
         };
         const newState = CRDT.applyOp(this.state, move);
         this.updateState(newState);
+    }
+    static fromProsemirrorDoc(
+        doc: Node,
+        id: string | undefined,
+        docID: string | undefined
+    ) {
+        const replica = new Replica(null, null, id, docID);
+        doc.descendants((node, pos) => {
+            //if the node is not the root node or text, we'll add to the tree:
+            const nodeType = node.type.name;
+            if (nodeType !== 'doc' && nodeType !== 'text') {
+                const resolvedPos = doc.resolve(pos);
+                const parent = resolvedPos.parent;
+                const before = resolvedPos.nodeBefore;
+
+                const parentID =
+                    parent.type.name === 'doc' ? 'ROOT' : parent.attrs?.id;
+
+                const beforeID = before?.attrs?.id || null;
+
+                replica.createNode(
+                    JSON.stringify(node.content),
+                    node.type.name,
+                    parentID,
+                    beforeID,
+                    null,
+                    node.attrs.id
+                );
+                console.log(JSON.stringify({ node, pos, parentID, beforeID }));
+            }
+        });
+
+        return replica;
     }
 }

@@ -7,6 +7,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import idPlugin from '../../../lib/editor/plugins/idPlugin';
 import stepsPlugin from '../../../lib/editor/plugins/stepsPlugin';
 import { Replica } from '../../../lib/crdt/replica';
+import { initIDs } from './utils';
 
 type Editor = {
     currentDocID: string | null;
@@ -53,9 +54,8 @@ export const initEditor = (state) => {
     } catch (err) {
         console.error(err);
     }
-    if (!state.replica)
-        state.replica = new Replica(null, null, null, state.currentDocID);
-    state.editorState = EditorState.create({
+
+    let editorState = EditorState.create({
         schema: state.schema,
         doc: initDoc,
         plugins: [
@@ -66,4 +66,13 @@ export const initEditor = (state) => {
             stepsPlugin(),
         ],
     });
+
+    editorState = initIDs(editorState);
+    state.replica = Replica.fromProsemirrorDoc(
+        editorState.doc,
+        null,
+        state.currentDocID
+    );
+
+    state.editorState = editorState;
 };
