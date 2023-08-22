@@ -12,7 +12,6 @@ const useProseMirror = (
             editorRef.current = editor;
         }
     }, [node, docID]);
-    console.log(editorRef.current);
     return editorRef;
 };
 

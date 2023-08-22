@@ -6,6 +6,7 @@ import { history, undo, redo } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import idPlugin from '../../../lib/editor/plugins/idPlugin';
+import stepsPlugin from '../../../lib/editor/plugins/stepsPlugin';
 
 type Editor = {
     currentDocID: string | null;
@@ -37,7 +38,6 @@ export const updateEditorState = (
     state,
     action: PayloadAction<Transaction>
 ) => {
-    console.log(action.payload);
     state.editorState = state.editorState.apply(action.payload);
 };
 
@@ -60,6 +60,7 @@ export const initEditor = (state) => {
             keymap({ 'Mod-z': undo, 'Mod-y': redo }),
             keymap(baseKeymap),
             idPlugin(),
+            stepsPlugin(),
         ],
     });
 };

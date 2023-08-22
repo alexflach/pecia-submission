@@ -38,7 +38,6 @@ const Doc = ({ editorView }: docProps) => {
     useEffect(() => {
         if (!editorState || !docRef.current) return;
         if (!editorView.current) {
-            console.log(editorState);
             const view = new EditorView(docRef.current, {
                 state: editorState,
                 dispatchTransaction(transaction) {

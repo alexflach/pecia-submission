@@ -20,14 +20,9 @@ const idPlugin = () => {
             const hasID = (node: Node) => node.attrs?.id;
 
             if (transactions.some((tr) => tr.docChanged)) {
-                console.log(tr);
                 newState.doc.descendants((node, pos) => {
                     if (shouldHaveID(node) && !hasID(node)) {
-                        const attrs = node.attrs;
-                        tr.setNodeMarkup(pos, undefined, {
-                            ...attrs,
-                            id: crypto.randomUUID(),
-                        });
+                        tr.setNodeAttribute(pos, 'id', crypto.randomUUID());
                         modified = true;
                     }
                 });
