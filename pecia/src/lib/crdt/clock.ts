@@ -3,45 +3,33 @@
 // Implementation drawn from https://github.com/theproductiveprogrammer/hybrid-logical-clock/blob/master/hlc.js
 // adapted to be a stateful class rather than a module with a global clock and functional patterns.
 
-import { randomUUID } from 'crypto';
-
 class Clock {
-    #ts: number;
-    #nn: number;
-    #id: string;
+    ts: number;
+    nn: number;
+    id: string;
     constructor(
         id: string = '',
         ts: number | null = null,
         nn: number | null = null
     ) {
-        this.#id = id ? id : randomUUID();
-        this.#ts = ts ? ts : Date.now();
-        this.#nn = nn ? nn : 0;
-    }
-
-    get ts() {
-        return this.#ts;
-    }
-    get nn() {
-        return this.#nn;
-    }
-    get id() {
-        return this.#id;
+        this.id = id ? id : crypto.randomUUID();
+        this.ts = ts ? ts : Date.now();
+        this.nn = nn ? nn : 0;
     }
 
     next() {
         const now = Date.now();
-        if (now > this.#ts) {
-            this.#ts = now;
-            this.#nn = 0;
+        if (now > this.ts) {
+            this.ts = now;
+            this.nn = 0;
         } else {
-            this.#nn++;
+            this.nn++;
         }
         return this.toString();
     }
 
     toString() {
-        return `${this.#ts}:${this.#nn}:${this.#id}`;
+        return `${this.ts}:${this.nn}:${this.id}`;
     }
 
     receive(remote: string): string {
@@ -57,17 +45,17 @@ class Clock {
 
     #updateFromRemote(remote: Clock) {
         const now = Date.now();
-        if (now > this.#ts && now > remote.ts) {
-            this.#ts = now;
-            this.#nn = 0;
-        } else if (this.#ts === remote.ts) {
-            const nn = Math.max(this.#nn, remote.nn) + 1;
-            this.#nn = nn;
-        } else if (remote.ts > this.#ts) {
-            this.#ts = remote.ts;
-            this.#nn = remote.nn + 1;
+        if (now > this.ts && now > remote.ts) {
+            this.ts = now;
+            this.nn = 0;
+        } else if (this.ts === remote.ts) {
+            const nn = Math.max(this.nn, remote.nn) + 1;
+            this.nn = nn;
+        } else if (remote.ts > this.ts) {
+            this.ts = remote.ts;
+            this.nn = remote.nn + 1;
         } else {
-            this.#nn++;
+            this.nn++;
         }
     }
 

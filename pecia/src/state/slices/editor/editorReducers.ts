@@ -1,19 +1,18 @@
 import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
 import { Schema, Node } from 'prosemirror-model';
 import { EditorState, Transaction } from 'prosemirror-state';
-import { EditorView } from 'prosemirror-view';
 import { history, undo, redo } from 'prosemirror-history';
 import { keymap } from 'prosemirror-keymap';
 import { baseKeymap } from 'prosemirror-commands';
 import idPlugin from '../../../lib/editor/plugins/idPlugin';
 import stepsPlugin from '../../../lib/editor/plugins/stepsPlugin';
+import { Replica } from '../../../lib/crdt/replica';
 
 type Editor = {
     currentDocID: string | null;
     schema: Schema;
     editorState: EditorState | null;
-    view: EditorView | null;
-    doc: Node | null;
+    replica: Replica | null;
 };
 
 export const setCurrentDocID: CaseReducer<Editor, PayloadAction<string>> = (
@@ -39,12 +38,14 @@ export const updateEditorState = (
     action: PayloadAction<Transaction>
 ) => {
     state.editorState = state.editorState.apply(action.payload);
+    console.log(JSON.stringify(state.replica));
 };
 
 export const initEditor = (state) => {
     if (!state.schema || !state.currentDocID) return;
 
     let initDoc: Node | undefined;
+
     try {
         initDoc = state.doc
             ? Node.fromJSON(state.schema, JSON.parse(state.doc))
@@ -52,6 +53,8 @@ export const initEditor = (state) => {
     } catch (err) {
         console.error(err);
     }
+    if (!state.replica)
+        state.replica = new Replica(null, null, null, state.currentDocID);
     state.editorState = EditorState.create({
         schema: state.schema,
         doc: initDoc,

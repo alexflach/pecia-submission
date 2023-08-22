@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Schema, Node } from 'prosemirror-model';
+import { Schema } from 'prosemirror-model';
 import { EditorState } from 'prosemirror-state';
 import {
     setCurrentDocID,
@@ -10,19 +10,20 @@ import {
 } from './editorReducers';
 
 import schema from '../../../lib/editor/schema';
+import { Replica } from '../../../lib/crdt/replica';
 
 type Editor = {
     currentDocID: string | null;
     schema: Schema;
     editorState: EditorState | null;
-    doc: Node | null;
+    replica: Replica | null;
 };
 
 const initialState: Editor = {
     currentDocID: null,
     schema,
     editorState: null,
-    doc: null,
+    replica: null,
 };
 const editorSlice = createSlice({
     name: 'editor',
