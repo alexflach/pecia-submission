@@ -8,6 +8,7 @@ import idPlugin from '../../../lib/editor/plugins/idPlugin';
 import stepsPlugin from '../../../lib/editor/plugins/stepsPlugin';
 import { Replica } from '../../../lib/crdt/replica';
 import { initIDs } from './utils';
+import { TreeMoveCRDT } from '../../../lib/crdt/crdt';
 
 export type Editor = {
     currentDocID: string | null;
@@ -115,6 +116,7 @@ export const createVersion = (state) => {
         (version) => version.versionID === state.currentVersionID
     );
     const nodes = generateNodeList(state.editorState.doc);
+    console.log(nodes);
 
     const newVersion = generateVersionFromReplica(previousReplica, nodes);
     const newVersionID = crypto.randomUUID();
@@ -136,6 +138,7 @@ function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
         oldVersion.versionID
     );
     addMissingNodes(newVersion, nodes);
+    checkDeletedNodes(newVersion, nodes);
     structureTree(newVersion, nodes);
     arrangeSiblings(newVersion, nodes);
     updateContent(newVersion, nodes);
@@ -197,6 +200,23 @@ function addMissingNodes(replica: Replica, nodes: PMNode[]) {
             );
             missingNodes.splice(i, 1);
         }
+    }
+}
+function checkDeletedNodes(replica: Replica, nodes: PMNode[]) {
+    //get the nodes in the tree that are children of root (not trash)
+    const liveNodes = replica.tree.filter(
+        (node) =>
+            node.child !== 'ROOT' &&
+            node.child !== 'TRASH' &&
+            TreeMoveCRDT.ancestor(replica.tree, 'ROOT', node.child)
+    );
+    console.log({ liveNodes });
+    const deletedNodes = liveNodes.filter(
+        (node) => !nodes.find((n) => n.child === node.child)
+    );
+    console.log({ deletedNodes });
+    for (const node of deletedNodes) {
+        replica.moveNode(node.child, 'TRASH');
     }
 }
 function structureTree(replica: Replica, nodes: PMNode[]) {
