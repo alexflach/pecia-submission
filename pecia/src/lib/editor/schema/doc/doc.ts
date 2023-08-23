@@ -21,8 +21,23 @@ const schemaSpec: SchemaSpec = {
         doc: {
             content: 'block+',
         },
-        text: {
+        text: {},
+        span: {
             group: 'inline',
+            content: 'text*',
+            inline: true,
+            attrs: { id: { default: null } },
+            toDOM(node) {
+                return ['span', { 'data-id': node.attrs.id }, 0];
+            },
+            parseDOM: [
+                {
+                    tag: 'span',
+                    getAttrs: (node: HTMLElement) => ({
+                        id: node.getAttribute('data-id'),
+                    }),
+                },
+            ],
         },
     },
     marks: {
