@@ -27,11 +27,12 @@ export const ROOT: TreeNode = {
     child: 'ROOT',
     parent: null,
     meta: {
-        type: 'root',
+        type: 'ROOT',
         pos: '',
         content: null,
         previousSibling: null,
         subsequentSibling: null,
+        attrs: Object,
     },
 };
 
@@ -39,7 +40,7 @@ export const TRASH: TreeNode = {
     child: 'TRASH',
     parent: 'ROOT',
     meta: {
-        type: 'trash',
+        type: 'TRASH',
         pos: '',
         content: null,
         previousSibling: null,

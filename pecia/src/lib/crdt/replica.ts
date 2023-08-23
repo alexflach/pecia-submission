@@ -13,6 +13,11 @@ import {
 } from './crdt.js';
 import { Node } from 'prosemirror-model';
 import { hasOnlyTextContent } from '../../state/slices/editor/utils.js';
+interface DocNode {
+    type: string;
+    content: Array<object>;
+    attrs?: object;
+}
 
 export class Replica {
     tree: TreeNode[] = [];
@@ -98,7 +103,7 @@ export class Replica {
         before: string | null,
         after: string | null,
         id: string | null,
-        attrs: object | null
+        attrs: object = {}
     ): string {
         const time = this.generateTimestamp();
         const child = id ? id : crypto.randomUUID();
@@ -204,6 +209,7 @@ export class Replica {
                 pos: newPos,
                 previousSibling: newBefore,
                 subsequentSibling: newAfter,
+                attrs: n.meta.attrs,
             },
         };
         const newState = CRDT.applyOp(this.state, move);
@@ -236,6 +242,7 @@ export class Replica {
         const newState = CRDT.applyOp(this.state, move);
         this.updateState(newState);
     }
+
     static fromProsemirrorDoc(
         doc: Node,
         id: string | undefined,
@@ -274,5 +281,49 @@ export class Replica {
         });
 
         return replica;
+    }
+
+    toProsemirrorDoc() {
+        return Replica.nodeToPMDoc(
+            this.tree.filter(
+                (node) =>
+                    !(
+                        node.child === 'TRASH' ||
+                        CRDT.ancestor(this.tree, 'TRASH', node.child)
+                    )
+            ),
+            this.tree.find((node) => node.child === 'ROOT')
+        );
+    }
+
+    static nodeToPMDoc(tree: TreeNode[], node: TreeNode) {
+        if (node.child === 'TRASH') return;
+        else if (node.meta.content) {
+            const docNode: DocNode = {
+                type: node.meta.type,
+                content: JSON.parse(node.meta.content),
+                attrs: {
+                    ...node.meta.attrs,
+                    id: node.child,
+                },
+            };
+            return docNode;
+        } else {
+            const children = CRDT.sortSiblings(
+                tree.filter((n) => n.parent === node.child)
+            );
+
+            const docNode: DocNode = {
+                type: node.meta.type === 'ROOT' ? 'doc' : node.meta.type,
+                content: children.map((child) =>
+                    Replica.nodeToPMDoc(tree, child)
+                ),
+                attrs: {
+                    ...node.meta.attrs,
+                    id: node.child,
+                },
+            };
+            return docNode;
+        }
     }
 }

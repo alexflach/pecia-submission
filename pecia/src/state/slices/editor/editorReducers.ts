@@ -138,19 +138,18 @@ function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
         oldVersion.docID,
         oldVersion.versionID
     );
-    console.log(nodes);
     addMissingNodes(newVersion, nodes);
     checkDeletedNodes(newVersion, nodes);
     structureTree(newVersion, nodes);
     arrangeSiblings(newVersion, nodes);
     updateContent(newVersion, nodes);
 
+    console.log(newVersion.toProsemirrorDoc());
     return newVersion;
 }
 
 function generateNodeList(doc: Node) {
     const nodes = [];
-    console.log(doc.toJSON());
     doc.descendants((node: Node, pos: number) => {
         const nodeType = node.type.name;
         if (nodeType !== 'doc' && nodeType !== 'text') {
