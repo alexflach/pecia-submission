@@ -181,16 +181,16 @@ function generateNodeList(doc: Node) {
 }
 
 function addMissingNodes(replica: Replica, nodes: PMNode[]) {
-    const oldNodes = replica.tree.map((node) => node.child);
+    const seenNodes = replica.tree.map((node) => node.child);
     const missingNodes = nodes.filter(
-        (node) => !oldNodes.find((n) => n === node.child)
+        (node) => !seenNodes.find((n) => n === node.child)
     );
     while (missingNodes.length) {
         for (let i = missingNodes.length - 1; i >= 0; i--) {
             //check if parent is not in tree
             if (
                 !(missingNodes[i].parent === 'ROOT') &&
-                !oldNodes.find((n) => n === missingNodes[i].parent)
+                !seenNodes.find((n) => n === missingNodes[i].parent)
             )
                 continue;
             replica.createNode(
@@ -202,6 +202,8 @@ function addMissingNodes(replica: Replica, nodes: PMNode[]) {
                 missingNodes[i].child,
                 missingNodes[i].attrs
             );
+            //add the node to list of old nodes and remove from missing one
+            seenNodes.push(missingNodes[i].child);
             missingNodes.splice(i, 1);
         }
     }
