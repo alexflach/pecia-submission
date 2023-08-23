@@ -21,23 +21,8 @@ const schemaSpec: SchemaSpec = {
         doc: {
             content: 'block+',
         },
-        text: {},
-        span: {
+        text: {
             group: 'inline',
-            content: 'text*',
-            inline: true,
-            attrs: { id: { default: null } },
-            toDOM(node) {
-                return ['span', { 'data-id': node.attrs.id }, 0];
-            },
-            parseDOM: [
-                {
-                    tag: 'span',
-                    getAttrs: (node: HTMLElement) => ({
-                        id: node.getAttribute('data-id'),
-                    }),
-                },
-            ],
         },
     },
     marks: {
@@ -47,7 +32,6 @@ const schemaSpec: SchemaSpec = {
         strikethrough: StrikethroughSpec,
     },
 };
-
 const baseSchema = new Schema(schemaSpec);
 
 export default baseSchema;

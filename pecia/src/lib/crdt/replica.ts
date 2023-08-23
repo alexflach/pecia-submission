@@ -12,6 +12,7 @@ import {
     TreeMoveCRDT,
 } from './crdt.js';
 import { Node } from 'prosemirror-model';
+import { hasOnlyTextContent } from '../../state/slices/editor/utils.js';
 
 export class Replica {
     tree: TreeNode[] = [];
@@ -91,7 +92,7 @@ export class Replica {
     }
 
     createNode(
-        content = '',
+        content: string | null = null,
         type: string,
         parent: string,
         before: string | null,
@@ -252,6 +253,7 @@ export class Replica {
                 const afterPos = pos + node.nodeSize;
                 const resolvedAfterPos = doc.resolve(afterPos);
                 const subsequentSibling = resolvedAfterPos.nodeAfter;
+                const leaf = hasOnlyTextContent(node);
 
                 const parentID =
                     parent.type.name === 'doc' ? 'ROOT' : parent.attrs?.id;
@@ -260,7 +262,7 @@ export class Replica {
                 const afterID = subsequentSibling?.attrs?.id || null;
 
                 replica.createNode(
-                    JSON.stringify(node.content),
+                    leaf ? JSON.stringify(node.content) : null,
                     node.type.name,
                     parentID,
                     beforeID,

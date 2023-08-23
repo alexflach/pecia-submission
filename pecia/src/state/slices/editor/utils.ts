@@ -24,3 +24,11 @@ export const initIDs = (editorState: EditorState) => {
 
     return modified ? editorState.apply(tr) : editorState;
 };
+
+export const hasOnlyTextContent = (node: Node) => {
+    let leaf = true;
+    node.descendants((node) => {
+        if (node.type.name !== 'text') leaf = false;
+    });
+    return leaf;
+};

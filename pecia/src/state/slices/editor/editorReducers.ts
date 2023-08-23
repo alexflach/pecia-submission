@@ -7,7 +7,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import idPlugin from '../../../lib/editor/plugins/idPlugin';
 import stepsPlugin from '../../../lib/editor/plugins/stepsPlugin';
 import { Replica } from '../../../lib/crdt/replica';
-import { initIDs } from './utils';
+import { hasOnlyTextContent, initIDs } from './utils';
 import { TreeMoveCRDT } from '../../../lib/crdt/crdt';
 
 export type Editor = {
@@ -102,7 +102,7 @@ export const initEditor = (state) => {
     state.editorState = editorState;
 };
 
-interface PMNode {
+export interface PMNode {
     child: string;
     parent: string;
     previousSibling: string;
@@ -110,6 +110,7 @@ interface PMNode {
     content: Fragment;
     type: string;
     attrs: object;
+    leaf: boolean;
 }
 
 export const createVersion = (state) => {
@@ -159,6 +160,7 @@ function generateNodeList(doc: Node) {
             const afterPos = pos + node.nodeSize;
             const resolvedAfterPos = doc.resolve(afterPos);
             const subsequentSibling = resolvedAfterPos.nodeAfter;
+            const leaf = hasOnlyTextContent(node);
 
             const parentID =
                 parent.type.name === 'doc' ? 'ROOT' : parent.attrs?.id;
@@ -174,6 +176,7 @@ function generateNodeList(doc: Node) {
                 content: node.content,
                 type: nodeType,
                 attrs: node.attrs,
+                leaf,
             });
         }
     });
@@ -194,7 +197,9 @@ function addMissingNodes(replica: Replica, nodes: PMNode[]) {
             )
                 continue;
             replica.createNode(
-                JSON.stringify(missingNodes[i].content),
+                missingNodes[i].leaf
+                    ? JSON.stringify(missingNodes[i].content)
+                    : null,
                 missingNodes[i].type,
                 missingNodes[i].parent,
                 missingNodes[i].previousSibling,
@@ -250,6 +255,7 @@ function arrangeSiblings(replica: Replica, nodes: PMNode[]) {
 }
 function updateContent(replica: Replica, nodes: PMNode[]) {
     const updatedContent = nodes.filter((node) => {
+        if (!node.leaf) return false;
         const matchedNode = replica.tree.find((n) => node.child === n.child);
         return !(matchedNode.meta.content === JSON.stringify(node.content));
     });

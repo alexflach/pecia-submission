@@ -2,7 +2,7 @@ import { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 const paraSpec: NodeSpec = {
     group: 'block',
-    content: 'span*',
+    content: 'inline*',
     attrs: {
         id: { default: null },
     },
