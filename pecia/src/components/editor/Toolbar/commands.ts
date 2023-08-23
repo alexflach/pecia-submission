@@ -4,7 +4,8 @@ import { toggleMark, setBlockType, wrapIn } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
 import { undo, redo } from 'prosemirror-history';
 import { marks, nodes } from './utils';
-import { actions } from '../../../state/slices/docs';
+import { actions as docsActions } from '../../../state/slices/docs';
+import { actions as editorActions } from '../../../state/slices/editor';
 import schema from '../../../lib/editor/schema';
 import { Dispatch } from '@reduxjs/toolkit';
 import { NavigateFunction } from 'react-router-dom';
@@ -78,7 +79,11 @@ export const downloadDoc = (editorView: EditorView) => {
 export const saveDoc = (editorView: EditorView, id: string) => {
     if (!editorView) return;
     const doc = editorView.state.doc.toJSON();
-    localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
+    try {
+        localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
+    } catch (err) {
+        console.error(err);
+    }
     editorView.focus();
 };
 
@@ -93,7 +98,13 @@ export const deleteDoc = (
         )
     ) {
         localStorage.removeItem(`pecia-doc-${id}`);
-        dispatch(actions.deleteDoc(id));
+        dispatch(docsActions.deleteDoc(id));
         navigate('/');
     }
+};
+
+export const shareDoc = () => {};
+
+export const versionDoc = (dispatch: Dispatch) => {
+    dispatch(editorActions.createVersion());
 };

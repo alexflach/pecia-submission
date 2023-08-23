@@ -1,29 +1,24 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Schema } from 'prosemirror-model';
-import { EditorState } from 'prosemirror-state';
 import {
+    Editor,
     setCurrentDocID,
     setSchema,
     initEditor,
     updateEditorState,
     retrieveDoc,
+    retrieveVersions,
+    createVersion,
 } from './editorReducers';
 
 import schema from '../../../lib/editor/schema';
-import { Replica } from '../../../lib/crdt/replica';
-
-type Editor = {
-    currentDocID: string | null;
-    schema: Schema;
-    editorState: EditorState | null;
-    replica: Replica | null;
-};
 
 const initialState: Editor = {
     currentDocID: null,
+    currentVersionID: null,
     schema,
     editorState: null,
-    replica: null,
+    versions: [],
+    doc: null,
 };
 const editorSlice = createSlice({
     name: 'editor',
@@ -34,6 +29,8 @@ const editorSlice = createSlice({
         initEditor,
         updateEditorState,
         retrieveDoc,
+        retrieveVersions,
+        createVersion,
     },
 });
 

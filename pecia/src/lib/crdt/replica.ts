@@ -19,12 +19,15 @@ export class Replica {
     clock: Clock;
     id: string;
     docID: string;
+    versionID: string;
+    createdAt: string;
 
     constructor(
         tree: TreeNode[] | null = null,
         opLog: LogMove[] | null = null,
         id: string | null = null,
-        docID: string | null = null
+        docID: string | null = null,
+        versionID: string | null = null
     ) {
         if (id) {
             this.id = id;
@@ -34,6 +37,8 @@ export class Replica {
             this.clock = new Clock(this.id);
         }
         this.docID = docID || crypto.randomUUID();
+        this.versionID = versionID || crypto.randomUUID();
+        this.createdAt = this.clock.next();
         if (!tree) {
             //constructing from scratch so generate a root node
             //and a trash node
@@ -100,10 +105,15 @@ export class Replica {
         const move: Move = {
             time,
             parent,
-            meta: { type, content, pos },
+            meta: {
+                type,
+                content,
+                pos,
+                previousSibling: before,
+                subsequentSibling: after,
+            },
             child,
         };
-        console.log(move);
         const newState = CRDT.applyOp(this.state, move);
         this.updateState(newState);
         return child;
@@ -162,8 +172,8 @@ export class Replica {
         if (!n) {
             throw new Error('node not found');
         }
-        let beforePos;
-        let afterPos;
+        let beforePos: string;
+        let afterPos: string;
         if (!newBefore) {
             beforePos = LSEQ.startPos(this.id);
         } else {
@@ -189,6 +199,8 @@ export class Replica {
                 content: n.meta.content,
                 type: n.meta.type,
                 pos: newPos,
+                previousSibling: newBefore,
+                subsequentSibling: newAfter,
             },
         };
         const newState = CRDT.applyOp(this.state, move);
@@ -214,6 +226,8 @@ export class Replica {
                 type: node.meta.type,
                 content,
                 pos: node.meta.pos,
+                previousSibling: node.meta.previousSibling,
+                subsequentSibling: node.meta.subsequentSibling,
             },
         };
         const newState = CRDT.applyOp(this.state, move);
@@ -222,31 +236,35 @@ export class Replica {
     static fromProsemirrorDoc(
         doc: Node,
         id: string | undefined,
-        docID: string | undefined
+        docID: string | undefined,
+        versionID: string | undefined
     ) {
-        const replica = new Replica(null, null, id, docID);
+        const replica = new Replica(null, null, id, docID, versionID);
         doc.descendants((node, pos) => {
             //if the node is not the root node or text, we'll add to the tree:
             const nodeType = node.type.name;
             if (nodeType !== 'doc' && nodeType !== 'text') {
                 const resolvedPos = doc.resolve(pos);
                 const parent = resolvedPos.parent;
-                const before = resolvedPos.nodeBefore;
+                const previousSibling = resolvedPos.nodeBefore;
+                const afterPos = pos + node.nodeSize;
+                const resolvedAfterPos = doc.resolve(afterPos);
+                const subsequentSibling = resolvedAfterPos.nodeAfter;
 
                 const parentID =
                     parent.type.name === 'doc' ? 'ROOT' : parent.attrs?.id;
 
-                const beforeID = before?.attrs?.id || null;
+                const beforeID = previousSibling?.attrs?.id || null;
+                const afterID = subsequentSibling?.attrs?.id || null;
 
                 replica.createNode(
                     JSON.stringify(node.content),
                     node.type.name,
                     parentID,
                     beforeID,
-                    null,
+                    afterID,
                     node.attrs.id
                 );
-                console.log(JSON.stringify({ node, pos, parentID, beforeID }));
             }
         });
 

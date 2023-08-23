@@ -7,7 +7,7 @@ import useQuery from '../../../hooks/useQuery';
 
 import './Doc.css';
 
-const { setCurrentDocID, initEditor, retrieveDoc } = actions;
+const { setCurrentDocID, initEditor, retrieveDoc, retrieveVersions } = actions;
 
 interface docProps {
     editorView: React.MutableRefObject<EditorView>;
@@ -29,6 +29,7 @@ const Doc = ({ editorView }: docProps) => {
         if (docID !== currentDocID) {
             dispatch(setCurrentDocID(docID));
             dispatch(retrieveDoc());
+            dispatch(retrieveVersions());
             dispatch(initEditor());
         }
     }, [docID, currentDocID, dispatch]);

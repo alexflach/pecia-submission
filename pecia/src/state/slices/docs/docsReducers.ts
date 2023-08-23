@@ -9,7 +9,6 @@ export const addDoc = {
         state.docs.push(action.payload);
     },
     prepare: (id: string, title: string = '') => {
-        console.log(`preparing to create doc ${id}`);
         return {
             payload: {
                 id,

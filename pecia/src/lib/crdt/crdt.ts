@@ -5,6 +5,8 @@ export interface Metadata {
     type: string;
     content: string | null;
     pos: string;
+    previousSibling: string | null;
+    subsequentSibling: string | null;
 }
 
 export interface Move {
@@ -20,16 +22,28 @@ export interface TreeNode {
     child: string;
 }
 
-export const ROOT = {
+export const ROOT: TreeNode = {
     child: 'ROOT',
     parent: null,
-    meta: { type: 'root', pos: '', content: null },
+    meta: {
+        type: 'root',
+        pos: '',
+        content: null,
+        previousSibling: null,
+        subsequentSibling: null,
+    },
 };
 
-export const TRASH = {
+export const TRASH: TreeNode = {
     child: 'TRASH',
     parent: 'ROOT',
-    meta: { type: 'trash', pos: '', content: null },
+    meta: {
+        type: 'trash',
+        pos: '',
+        content: null,
+        previousSibling: null,
+        subsequentSibling: null,
+    },
 };
 export interface OldState {
     oldParent: string | null;

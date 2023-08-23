@@ -12,6 +12,8 @@ import {
     wrapInListCommand,
     setHeadingLevel,
     deleteDoc,
+    shareDoc,
+    versionDoc,
 } from './commands';
 
 import * as Toolbar from '@radix-ui/react-toolbar';
@@ -29,6 +31,8 @@ import {
     QuoteIcon,
     ListBulletIcon,
     TrashIcon,
+    CheckCircledIcon,
+    Share1Icon,
 } from '@radix-ui/react-icons';
 
 import './Toolbar.css';
@@ -76,6 +80,17 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         height={ICON_PROPS.width}
                     />
                 </Toolbar.Button>
+                <Toolbar.Button
+                    className="toolbar-button"
+                    onClick={() => versionDoc(dispatch)}
+                >
+                    <CheckCircledIcon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
+                </Toolbar.Button>
+
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => deleteDoc(currentDocID, dispatch, navigate)}
@@ -235,6 +250,16 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         </DropdownMenu.Item>
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>
+                <Toolbar.Button
+                    className="toolbar-button"
+                    onClick={() => shareDoc()}
+                >
+                    <Share1Icon
+                        viewBox={ICON_PROPS.viewBox}
+                        width={ICON_PROPS.width}
+                        height={ICON_PROPS.width}
+                    />
+                </Toolbar.Button>
             </Toolbar.Root>
         </div>
     );
