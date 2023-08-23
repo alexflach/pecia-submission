@@ -109,6 +109,7 @@ interface PMNode {
     subsequentSibling: string;
     content: Fragment;
     type: string;
+    attrs: object;
 }
 
 export const createVersion = (state) => {
@@ -116,7 +117,6 @@ export const createVersion = (state) => {
         (version) => version.versionID === state.currentVersionID
     );
     const nodes = generateNodeList(state.editorState.doc);
-    console.log(nodes);
 
     const newVersion = generateVersionFromReplica(previousReplica, nodes);
     const newVersionID = crypto.randomUUID();
@@ -137,6 +137,7 @@ function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
         oldVersion.docID,
         oldVersion.versionID
     );
+    console.log(nodes);
     addMissingNodes(newVersion, nodes);
     checkDeletedNodes(newVersion, nodes);
     structureTree(newVersion, nodes);
@@ -148,6 +149,7 @@ function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
 
 function generateNodeList(doc: Node) {
     const nodes = [];
+    console.log(doc.toJSON());
     doc.descendants((node: Node, pos: number) => {
         const nodeType = node.type.name;
         if (nodeType !== 'doc' && nodeType !== 'text') {
@@ -171,6 +173,7 @@ function generateNodeList(doc: Node) {
                 subsequentSibling: afterID,
                 content: node.content,
                 type: nodeType,
+                attrs: node.attrs,
             });
         }
     });
@@ -196,7 +199,8 @@ function addMissingNodes(replica: Replica, nodes: PMNode[]) {
                 missingNodes[i].parent,
                 missingNodes[i].previousSibling,
                 missingNodes[i].subsequentSibling,
-                missingNodes[i].child
+                missingNodes[i].child,
+                missingNodes[i].attrs
             );
             missingNodes.splice(i, 1);
         }
@@ -210,11 +214,9 @@ function checkDeletedNodes(replica: Replica, nodes: PMNode[]) {
             node.child !== 'TRASH' &&
             TreeMoveCRDT.ancestor(replica.tree, 'ROOT', node.child)
     );
-    console.log({ liveNodes });
     const deletedNodes = liveNodes.filter(
         (node) => !nodes.find((n) => n.child === node.child)
     );
-    console.log({ deletedNodes });
     for (const node of deletedNodes) {
         replica.moveNode(node.child, 'TRASH');
     }

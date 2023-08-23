@@ -30,7 +30,9 @@ export const wrapInBlockquote = (editorView: EditorView) => {
 
 export const wrapInListCommand = (editorView: EditorView) => {
     if (!editorView) return;
-    wrapInList(schema.nodes.bullet_list)(editorView.state, editorView.dispatch);
+    const command = wrapInList(schema.nodes.unorderedList);
+    const result = command(editorView.state, editorView.dispatch);
+    console.log(result);
     editorView.focus();
 };
 export const setHeadingLevel = (editorView: EditorView, level: number) => {

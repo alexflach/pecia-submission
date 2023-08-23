@@ -96,7 +96,8 @@ export class Replica {
         parent: string,
         before: string | null,
         after: string | null,
-        id: string | null
+        id: string | null,
+        attrs: object | null
     ): string {
         const time = this.generateTimestamp();
         const child = id ? id : crypto.randomUUID();
@@ -111,6 +112,7 @@ export class Replica {
                 pos,
                 previousSibling: before,
                 subsequentSibling: after,
+                attrs,
             },
             child,
         };
@@ -263,7 +265,8 @@ export class Replica {
                     parentID,
                     beforeID,
                     afterID,
-                    node.attrs.id
+                    node.attrs.id,
+                    node.attrs
                 );
             }
         });

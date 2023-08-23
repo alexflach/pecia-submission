@@ -9,6 +9,7 @@ const idPlugin = () => {
             const tr = newState.tr;
             let modified = false;
             const nodeTypes = Object.values(newState.schema.nodes);
+            console.log(nodeTypes);
 
             const nodesWithID = nodeTypes
                 .filter((type) => type.spec.attrs?.id)

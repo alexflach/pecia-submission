@@ -2,10 +2,20 @@ import { DOMOutputSpec, NodeSpec } from 'prosemirror-model';
 
 const unorderedListSpec: NodeSpec = {
     group: 'block',
-    content: 'listItem+',
-    toDOM() {
-        return ['ul', 0] as DOMOutputSpec;
+    attrs: {
+        id: { default: null },
     },
-    parseDOM: [{ tag: 'ul' }],
+    content: 'listItem+',
+    toDOM(node) {
+        return ['ul', { 'data-id': node.attrs.id }, 0] as DOMOutputSpec;
+    },
+    parseDOM: [
+        {
+            tag: 'ul',
+            getAttrs: (dom: HTMLElement) => {
+                return { id: dom.getAttribute('data-id') };
+            },
+        },
+    ],
 };
 export default unorderedListSpec;

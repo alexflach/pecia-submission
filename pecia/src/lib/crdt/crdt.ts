@@ -7,6 +7,7 @@ export interface Metadata {
     pos: string;
     previousSibling: string | null;
     subsequentSibling: string | null;
+    attrs?: object;
 }
 
 export interface Move {

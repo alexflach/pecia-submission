@@ -6,13 +6,18 @@ import UnderlineSpec from '../marks/underline';
 import StrikethroughSpec from '../marks/strikethrough';
 import headingSpec from '../nodes/para/heading';
 import blockQuoteSpec from '../nodes/struct/blockquote';
-import { addListNodes } from 'prosemirror-schema-list';
+import orderedListSpec from '../nodes/list/orderedList';
+import unorderedListSpec from '../nodes/list/unorderedList';
+import listItemSpec from '../nodes/list/listItem';
 
 const schemaSpec: SchemaSpec = {
     nodes: {
         para: paraSpec,
         heading: headingSpec,
         blockquote: blockQuoteSpec,
+        orderedList: orderedListSpec,
+        unorderedList: unorderedListSpec,
+        listItem: listItemSpec,
         doc: {
             content: 'block+',
         },
@@ -30,9 +35,4 @@ const schemaSpec: SchemaSpec = {
 
 const baseSchema = new Schema(schemaSpec);
 
-const docSchema = new Schema({
-    nodes: addListNodes(baseSchema.spec.nodes, 'para block*', 'block'),
-    marks: baseSchema.spec.marks,
-});
-
-export default docSchema;
+export default baseSchema;
