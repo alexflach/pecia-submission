@@ -7,11 +7,9 @@ const User = () => {
     const [showMenu, setShowMenu] = useState(false);
     return (
         <div className="user-logo">
-            <PersonIcon
-                onClick={() => setShowMenu(!showMenu)}
-                width="25"
-                height="25"
-            />
+            <button onClick={() => setShowMenu((showMenu) => !showMenu)}>
+                <PersonIcon width="25" height="25" />
+            </button>
             {showMenu && <UserMenu />}
         </div>
     );

@@ -6,13 +6,14 @@ div.user-menu {
     border-radius: 1rem;
 }
 
-div.user-logo {
+div.user-logo button {
     border-radius: 0.2rem;
     padding: 0.5rem;
+    background-color: inherit;
 }
 
-div.user-logo:hover,
-div.user-logo:focus {
+div.user-logo button:hover,
+div.user-logo button:focus {
     background-color: var(--light-blue);
     cursor: pointer;
 }
