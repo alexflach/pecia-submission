@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@300&family=Merriweather:wght@300&display=swap');
+
 :root {
     --base-size: 1rem;
     --scale: 1.25;
@@ -12,10 +14,16 @@
     --dark-grey: #4b4c4d;
     --dark-blue: #55697d;
     --mid-grey: #c5c7c9;
+    --bright-green: #93f598;
+    --bright-yellow: #f0f593;
+    --bright-red: #f26666;
+    --serif: 'Merriweather', serif;
+    --sans-serif: 'Merriweather Sans', sans-serif;
 }
 
 html {
     box-sizing: border-box;
+    font-family: var(--sans-serif);
 }
 
 *,

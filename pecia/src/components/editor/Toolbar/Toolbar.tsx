@@ -50,6 +50,7 @@ const ICON_PROPS = {
 
 const EditorToolbar = ({ editorView }: toolbarProps) => {
     const { currentDocID } = useSelector((state: RootState) => state.editor);
+    const { peerID } = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -252,7 +253,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </DropdownMenu.Root>
                 <Toolbar.Button
                     className="toolbar-button"
-                    onClick={() => shareDoc()}
+                    onClick={() => shareDoc(currentDocID, peerID)}
                 >
                     <Share1Icon
                         viewBox={ICON_PROPS.viewBox}

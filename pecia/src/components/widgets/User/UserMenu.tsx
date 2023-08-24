@@ -14,11 +14,9 @@ const UserMenu = () => {
     const dispatch = useDispatch();
     const handleUNChange = (e) => {
         dispatch(setUsername(e.target.value));
-        localStorage.setItem('pecia-username', e.target.value);
     };
     const handlePCChange = (e) => {
         dispatch(setPasscode(e.target.value));
-        localStorage.setItem('pecia-passcode', e.target.value);
     };
     return (
         <div className="user-menu">

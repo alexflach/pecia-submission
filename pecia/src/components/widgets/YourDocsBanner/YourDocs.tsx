@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import DocCard from '../DocCard';
-import './YourDocs.css';
 import { RootState } from '../../../state/store';
+
+import './YourDocs.css';
 
 const docsSelector = (state: RootState) => state.docs.docs;
 
@@ -13,7 +14,7 @@ const YourDocs = () => {
 
     return (
         <>
-            <h3>Your Documents</h3>{' '}
+            <h3 className="docs-title">Your Documents</h3>{' '}
             <div className="your-docs-banner">
                 {docs &&
                     docs.map((doc) => (

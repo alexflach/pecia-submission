@@ -6,6 +6,9 @@ div.user-menu {
     text-align: center;
     gap: 0.5rem;
     font-size: var(--h4);
+    z-index: 5;
+    background-color: white;
+    outline: var(--light-grey);
 }
 
 div.user-menu input {
@@ -46,7 +49,7 @@ div.user-menu button.switch-root[data-state='checked'] {
     height: 20px;
     background-color: white;
     border-radius: 9999px;
-    box-shadow: 0 2px 2px var(--black-a7);
+    box-shadow: 0 1px 1px black;
     transition: transform 100ms;
     transform: translateX(2px) translateY(-5px);
     will-change: transform;

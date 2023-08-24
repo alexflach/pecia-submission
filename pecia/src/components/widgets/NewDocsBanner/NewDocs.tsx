@@ -17,7 +17,7 @@ const NewDocsBanner = () => {
     };
     return (
         <>
-            <h3>Create a document</h3>
+            <h3 className="docs-title">Create a document</h3>
             <div className="new-docs-banner">
                 <DocCard onClick={newDocHandler} title="from scratch" />
                 <DocCard onClick={newDocHandler} title="from blank" />

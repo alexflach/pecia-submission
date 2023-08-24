@@ -4,3 +4,6 @@ div.your-docs-banner {
     flex-direction: row wrap;
     justify-content: space-evenly;
 }
+h3.docs-title {
+    margin-left: 1rem;
+}

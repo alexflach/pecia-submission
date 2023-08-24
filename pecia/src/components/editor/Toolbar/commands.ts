@@ -106,7 +106,19 @@ export const deleteDoc = (
     }
 };
 
-export const shareDoc = () => {};
+export const shareDoc = (docID: string, peerID: string) => {
+    const docString = `${window.origin}/join/?doc=${docID}&user=${peerID}`;
+    navigator.clipboard.writeText(docString).then(
+        () => {
+            /* clipboard successfully set */
+            console.log(`wrote ${docString} to the clipboard`);
+        },
+        () => {
+            /* clipboard write failed */
+            console.error(`failed to write ${docString} to the clipboard`);
+        }
+    );
+};
 
 export const versionDoc = (dispatch: Dispatch) => {
     dispatch(editorActions.createVersion());

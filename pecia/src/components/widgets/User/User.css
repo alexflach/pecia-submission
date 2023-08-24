@@ -8,8 +8,11 @@ div.user-menu {
 
 div.user-logo button {
     border-radius: 0.2rem;
+    margin-top: 0.5rem;
     padding: 0.5rem;
     background-color: inherit;
+    z-index: 10;
+    position: relative;
 }
 
 div.user-logo button:hover,

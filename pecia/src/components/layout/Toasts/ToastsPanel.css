@@ -1,0 +1,17 @@
+div.toasts-container {
+    display: none;
+}
+
+div.toasts-container[data-state='active'] {
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    height: 50vh;
+    width: 20vw;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 2rem;
+}
