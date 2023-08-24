@@ -19,7 +19,12 @@ const usePeer = (online: boolean, dispatch: Dispatch) => {
                     dispatch(userActions.setPeerID(id));
                 });
                 peerRef.current = peer;
-                dispatch(toastActions.addToast('conected!', 'info'));
+                dispatch(
+                    toastActions.addToast(
+                        'connected! You can now share documents',
+                        'info'
+                    )
+                );
             } catch (error) {
                 console.error(error);
             }

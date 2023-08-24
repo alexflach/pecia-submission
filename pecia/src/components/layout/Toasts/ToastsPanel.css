@@ -9,9 +9,32 @@ div.toasts-container[data-state='active'] {
     bottom: 0;
     display: flex;
     flex-direction: column;
+    flex-wrap: nowrap;
     height: 50vh;
-    width: 20vw;
+    max-height: 30vh;
+    width: 100vw;
     justify-content: flex-end;
     align-items: flex-start;
     gap: 2rem;
+    overflow-y: hidden;
+}
+
+@media (min-width: 800px) {
+    div.toasts-container[data-state='active'] {
+        max-width: 40vw;
+        max-height: 40vh;
+    }
+}
+
+@media (min-width: 1000px) {
+    div.toasts-container[data-state='active'] {
+        max-width: 30vw;
+        max-height: 50vh;
+    }
+}
+
+@media (min-width: 1200px) {
+    div.toasts-container[data-state='active'] {
+        max-width: 25vw;
+    }
 }

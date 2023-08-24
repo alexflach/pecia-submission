@@ -73,7 +73,9 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
-                    onClick={() => saveDoc(editorView.current, currentDocID)}
+                    onClick={() =>
+                        saveDoc(editorView.current, currentDocID, dispatch)
+                    }
                 >
                     <BookmarkIcon
                         viewBox={ICON_PROPS.viewBox}
@@ -253,7 +255,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </DropdownMenu.Root>
                 <Toolbar.Button
                     className="toolbar-button"
-                    onClick={() => shareDoc(currentDocID, peerID)}
+                    onClick={() => shareDoc(currentDocID, peerID, dispatch)}
                 >
                     <Share1Icon
                         viewBox={ICON_PROPS.viewBox}

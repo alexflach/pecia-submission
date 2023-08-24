@@ -14,7 +14,7 @@
     max-width: 800px;
     width: 80%;
     min-height: 80vh;
-    outline: solid 1px #c6b6b6d9;
+    outline: solid 1px var(--mid-grey);
     background-color: white;
 }
 

@@ -6,6 +6,7 @@ import { undo, redo } from 'prosemirror-history';
 import { marks, nodes } from './utils';
 import { actions as docsActions } from '../../../state/slices/docs';
 import { actions as editorActions } from '../../../state/slices/editor';
+import { actions as toastActions } from '../../../state/slices/toast';
 import schema from '../../../lib/editor/schema';
 import { Dispatch } from '@reduxjs/toolkit';
 import { NavigateFunction } from 'react-router-dom';
@@ -79,7 +80,11 @@ export const downloadDoc = (editorView: EditorView) => {
     editorView.focus();
 };
 
-export const saveDoc = (editorView: EditorView, id: string) => {
+export const saveDoc = (
+    editorView: EditorView,
+    id: string,
+    dispatch: Dispatch
+) => {
     if (!editorView) return;
     const doc = editorView.state.doc.toJSON();
     try {
@@ -87,6 +92,7 @@ export const saveDoc = (editorView: EditorView, id: string) => {
     } catch (err) {
         console.error(err);
     }
+    dispatch(toastActions.addToast('document saved!', 'info'));
     editorView.focus();
 };
 
@@ -103,23 +109,46 @@ export const deleteDoc = (
         localStorage.removeItem(`pecia-doc-${id}`);
         dispatch(docsActions.deleteDoc(id));
         navigate('/');
+        dispatch(toastActions.addToast('document deleted!', 'info'));
     }
 };
 
-export const shareDoc = (docID: string, peerID: string) => {
+export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
     const docString = `${window.origin}/join/?doc=${docID}&user=${peerID}`;
+    if (!docID) {
+        dispatch(
+            toastActions.addToast('No Document ID, cannot share link', 'error')
+        );
+        return;
+    }
+    if (!peerID) {
+        dispatch(
+            toastActions.addToast('No connection ID, are you online?', 'error')
+        );
+        return;
+    }
     navigator.clipboard.writeText(docString).then(
         () => {
             /* clipboard successfully set */
             console.log(`wrote ${docString} to the clipboard`);
+            dispatch(
+                toastActions.addToast('copied link to clipboard!', 'info')
+            );
         },
         () => {
             /* clipboard write failed */
             console.error(`failed to write ${docString} to the clipboard`);
+            dispatch(
+                toastActions.addToast(
+                    `cannot copy, here's the link: ${docString}`,
+                    'warning'
+                )
+            );
         }
     );
 };
 
 export const versionDoc = (dispatch: Dispatch) => {
     dispatch(editorActions.createVersion());
+    dispatch(toastActions.addToast('version created!', 'info'));
 };
