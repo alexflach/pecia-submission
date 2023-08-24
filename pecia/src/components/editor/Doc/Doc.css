@@ -26,6 +26,11 @@
     position: relative;
 }
 
+.ProseMirror blockquote {
+    border-left: 3px solid var(--mid-grey);
+    padding-left: 10px;
+}
+
 .ProseMirror-hideselection *::selection {
     background: transparent;
 }
