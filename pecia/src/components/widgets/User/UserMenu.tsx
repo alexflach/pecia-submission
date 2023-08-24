@@ -2,13 +2,15 @@ import { useDispatch } from 'react-redux';
 import { actions } from '../../../state/slices/user';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../state/store';
-const { setUsername, setPasscode } = actions;
+import * as Switch from '@radix-ui/react-switch';
+
+const { setUsername, setPasscode, toggleOnline } = actions;
 
 import './UserMenu.css';
 
 const UserMenu = () => {
     const selector = (state: RootState) => state.user;
-    const { username, passcode } = useSelector(selector);
+    const { username, passcode, online } = useSelector(selector);
     const dispatch = useDispatch();
     const handleUNChange = (e) => {
         dispatch(setUsername(e.target.value));
@@ -33,6 +35,17 @@ const UserMenu = () => {
                 value={passcode}
                 onChange={handlePCChange}
             ></input>
+            <label htmlFor="work-online">Work Online?</label>
+            <Switch.Root
+                className="switch-root"
+                id="work-online"
+                checked={online}
+                onCheckedChange={() => {
+                    dispatch(toggleOnline());
+                }}
+            >
+                <Switch.Thumb className="switch-thumb" />
+            </Switch.Root>
         </div>
     );
 };

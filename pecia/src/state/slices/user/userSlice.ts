@@ -1,13 +1,17 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
-type UserNameState = { username: string; passcode: string };
+type UserState = { username: string; passcode: string; online: boolean };
 
-const setUsername = (state: UserNameState, action: PayloadAction<string>) => {
+const setUsername = (state: UserState, action: PayloadAction<string>) => {
     state.username = action.payload;
 };
 
-const setPasscode = (state: UserNameState, action: PayloadAction<string>) => {
+const setPasscode = (state: UserState, action: PayloadAction<string>) => {
     state.passcode = action.payload;
+};
+
+const toggleOnline = (state: UserState) => {
+    state.online = !state.online;
 };
 
 const retrievedName = localStorage.getItem('pecia-username');
@@ -18,10 +22,12 @@ const usernameSlice = createSlice({
     initialState: {
         username: retrievedName || '',
         passcode: retrievedPasscode || '',
+        online: false,
     },
     reducers: {
         setUsername,
         setPasscode,
+        toggleOnline,
     },
 });
 
