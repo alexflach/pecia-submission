@@ -7,8 +7,11 @@ import * as Switch from '@radix-ui/react-switch';
 const { setUsername, setPasscode, toggleOnline } = actions;
 
 import './UserMenu.css';
+type UserMenuPropTypes = {
+    show: boolean;
+};
 
-const UserMenu = () => {
+const UserMenu = ({ show }: UserMenuPropTypes) => {
     const selector = (state: RootState) => state.user;
     const { username, passcode, online } = useSelector(selector);
     const dispatch = useDispatch();
@@ -19,7 +22,7 @@ const UserMenu = () => {
         dispatch(setPasscode(e.target.value));
     };
     return (
-        <div className="user-menu">
+        <div className={`user-menu ${show ? 'show' : ''}`}>
             <p>Set Your Details</p>
             <label htmlFor="username">Username</label>
             <input

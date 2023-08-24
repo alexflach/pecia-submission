@@ -1,7 +1,10 @@
 import useQuery from '../../../hooks/useQuery';
+import { usePeerContext } from '../../../hooks/usePeer';
 
 import './JoinPage.css';
+
 const JoinPage = () => {
+    const { peer } = usePeerContext();
     const query = useQuery();
     const doc = query.get('doc');
     const user = query.get('user');

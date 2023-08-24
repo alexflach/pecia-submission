@@ -10,7 +10,7 @@ const User = () => {
             <button onClick={() => setShowMenu((showMenu) => !showMenu)}>
                 <PersonIcon width="25" height="25" />
             </button>
-            {showMenu && <UserMenu />}
+            {showMenu && <UserMenu show={showMenu} />}
         </div>
     );
 };

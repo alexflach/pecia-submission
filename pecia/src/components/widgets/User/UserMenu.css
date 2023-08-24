@@ -1,7 +1,22 @@
+@keyframes slideInFromRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
 div.user-menu {
+    height: 80vh;
+    min-height: 80vh;
+    animation-name: slideInFromRight;
+    animation-duration: 0.4s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
     gap: 0.5rem;

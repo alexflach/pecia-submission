@@ -5,7 +5,10 @@ import { reducer as docsReducer } from './slices/docs';
 import { reducer as userReducer } from './slices/user';
 import { reducer as themeReducer } from './slices/theme';
 import { reducer as editorReducer } from './slices/editor';
-import { reducer as toastReducer } from './slices/toast';
+import {
+    reducer as toastReducer,
+    actions as toastActions,
+} from './slices/toast';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -33,6 +36,12 @@ const persist = (key: string, value: string) => {
         localStorage.setItem(key, value);
     } catch (error) {
         console.error(error);
+        store.dispatch(
+            toastActions.addToast(
+                "Can't save to local storage, are you out of room?",
+                'error'
+            )
+        );
     }
 };
 

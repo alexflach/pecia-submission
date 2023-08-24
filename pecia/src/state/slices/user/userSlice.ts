@@ -1,10 +1,13 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
+type NetworkState = 'open' | 'disconnected' | 'closed';
+
 type UserState = {
     username: string;
     passcode: string;
     online: boolean;
     peerID: string;
+    networkState: NetworkState;
 };
 
 const setUsername = (state: UserState, action: PayloadAction<string>) => {
@@ -19,6 +22,13 @@ const setPeerID = (state: UserState, action: PayloadAction<string>) => {
     state.peerID = action.payload;
 };
 
+const setNetworkState = (
+    state: UserState,
+    action: PayloadAction<NetworkState>
+) => {
+    state.networkState = action.payload;
+};
+
 const toggleOnline = (state: UserState) => {
     state.online = !state.online;
 };
@@ -30,6 +40,7 @@ const initialState: UserState = {
     passcode: retrievedPasscode || '',
     online: false,
     peerID: '',
+    networkState: 'closed',
 };
 
 const usernameSlice = createSlice({
@@ -39,6 +50,7 @@ const usernameSlice = createSlice({
         setUsername,
         setPasscode,
         setPeerID,
+        setNetworkState,
         toggleOnline,
     },
 });
