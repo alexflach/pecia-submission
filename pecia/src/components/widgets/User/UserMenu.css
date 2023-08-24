@@ -1,0 +1,18 @@
+div.user-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    font-size: var(--h4);
+}
+
+div.user-menu input {
+    padding: 1rem;
+    font-size: var(--h5);
+}
+
+div.user-menu label {
+    margin-top: 1rem;
+}

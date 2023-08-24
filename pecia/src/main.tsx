@@ -12,8 +12,10 @@ import ErrorPage from './components/pages/ErrorPage';
 import DocsPage from './components/pages/DocsPage';
 import UserPage from './components/pages/UserPage';
 import EditorPage from './components/pages/EditorPage';
-import './index.css';
 import NotFoundPage from './components/pages/NotFoundPage/NotFoundPage.tsx';
+import JoinPage from './components/pages/JoinPage/JoinPage.tsx';
+
+import './index.css';
 
 const router = createBrowserRouter([
     {
@@ -36,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: 'user',
                 element: <UserPage />,
+            },
+            {
+                path: 'join',
+                element: <JoinPage />,
             },
             {
                 path: '*',

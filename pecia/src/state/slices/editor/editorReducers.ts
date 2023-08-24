@@ -124,6 +124,7 @@ export const createVersion = (state) => {
 
     newVersion.versionID = newVersionID;
 
+    state.doc = JSON.stringify(newVersion.toProsemirrorDoc());
     state.versions.push(newVersion);
     state.currentVersionID = newVersionID;
 };
@@ -144,7 +145,6 @@ function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
     arrangeSiblings(newVersion, nodes);
     updateContent(newVersion, nodes);
 
-    console.log(newVersion.toProsemirrorDoc());
     return newVersion;
 }
 

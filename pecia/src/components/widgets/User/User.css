@@ -3,4 +3,16 @@ div.user-menu {
     right: 5px;
     top: 5vh;
     z-index: auto;
+    border-radius: 1rem;
+}
+
+div.user-logo {
+    border-radius: 0.2rem;
+    padding: 0.5rem;
+}
+
+div.user-logo:hover,
+div.user-logo:focus {
+    background-color: var(--light-blue);
+    cursor: pointer;
 }
