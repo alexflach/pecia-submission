@@ -1,13 +1,29 @@
 import useQuery from '../../../hooks/useQuery';
-// import { usePeerContext } from '../../../hooks/usePeer';
+import { useDispatch, useSelector } from 'react-redux';
+import { usePeerContext } from '../../../hooks/usePeer';
 
 import './JoinPage.css';
+import { RootState } from '../../../state/store';
+import { actions } from '../../../state/slices/peer';
+
+const { connect } = actions;
+
+const selector = (state: RootState) => state.user;
 
 const JoinPage = () => {
-    // const { peer } = usePeerContext();
+    const { peer, connections } = usePeerContext();
+    const { username, passcode } = useSelector(selector);
+    const dispatch = useDispatch();
     const query = useQuery();
     const doc = query.get('doc');
     const user = query.get('user');
+    console.log(peer, connections);
+
+    if (peer.current && username && passcode && doc && user) {
+        dispatch(
+            connect(peer.current, user, username, passcode, doc, dispatch)
+        );
+    }
     return (
         <main>
             {!doc && (

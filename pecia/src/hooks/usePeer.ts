@@ -1,13 +1,15 @@
 import { Dispatch } from '@reduxjs/toolkit';
-import Peer from 'peerjs';
+import Peer, { DataConnection } from 'peerjs';
 import { useEffect, useRef } from 'react';
 import { useOutletContext } from 'react-router-dom';
 
 import { actions as userActions } from '../state/slices/user';
 import { actions as toastActions } from '../state/slices/toast';
+import { bootstrapPeer } from '../state/slices/peer/utils';
 
 const usePeer = (online: boolean, dispatch: Dispatch) => {
     const peerRef = useRef<Peer>();
+    const connectionsRef = useRef<DataConnection[]>([]);
 
     useEffect(() => {
         if (!online) {
@@ -18,58 +20,10 @@ const usePeer = (online: boolean, dispatch: Dispatch) => {
             dispatch(userActions.setPeerID(''));
             dispatch(userActions.setNetworkState('closed'));
         } else {
+            if (peerRef.current && !peerRef.current.disconnected) return;
             try {
                 const peer = new Peer();
-                console.log(peer);
-                peer.on('open', (id) => {
-                    dispatch(userActions.setPeerID(id));
-                    dispatch(userActions.setNetworkState('open'));
-                    dispatch(
-                        toastActions.addToast(
-                            'connected! You can now share documents',
-                            'info'
-                        )
-                    );
-                });
-                peer.on('connection', (dataConnection) => {
-                    dispatch(
-                        toastActions.addToast(
-                            `connection established with ${dataConnection.peer}`,
-                            'info'
-                        )
-                    );
-                });
-                peer.on('disconnected', () => {
-                    if (peer.destroyed) return;
-                    dispatch(userActions.setNetworkState('disconnected'));
-                    // dispatch(
-                    //     toastActions.addToast(
-                    //         'disconnected from the peer network, trying to reconnect, you may have to reset your connection',
-                    //         'warning'
-                    //     )
-                    // );
-                    peer.reconnect();
-                });
-                peer.on('error', (err) => {
-                    dispatch(
-                        toastActions.addToast(
-                            //@ts-expect-error Peer errors contain a type;
-                            `error in the peer network: ${err.type}
-                            
-                            ${err.message}`,
-                            'error'
-                        )
-                    );
-                });
-                peer.on('close', () => {
-                    dispatch(userActions.setNetworkState('closed'));
-                    dispatch(
-                        toastActions.addToast(
-                            `connection to peer network closed`,
-                            'warning'
-                        )
-                    );
-                });
+                bootstrapPeer(peer, dispatch, connectionsRef);
                 peerRef.current = peer;
             } catch (error) {
                 console.error(error);
@@ -87,10 +41,14 @@ const usePeer = (online: boolean, dispatch: Dispatch) => {
             }
         };
     }, [online, dispatch]);
-    return peerRef;
+    return {
+        peer: peerRef,
+        connections: connectionsRef,
+    };
 };
 type ContextType = {
     peer: React.MutableRefObject<Peer>;
+    connections: React.MutableRefObject<DataConnection[]>;
 };
 
 export const usePeerContext = () => {

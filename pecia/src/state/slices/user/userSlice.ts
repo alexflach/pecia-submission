@@ -38,7 +38,7 @@ const retrievedPasscode = localStorage.getItem('pecia-passcode');
 const initialState: UserState = {
     username: retrievedName || '',
     passcode: retrievedPasscode || '',
-    online: false,
+    online: true,
     peerID: '',
     networkState: 'closed',
 };

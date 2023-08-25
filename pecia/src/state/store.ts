@@ -10,8 +10,10 @@ import {
     actions as toastActions,
 } from './slices/toast';
 import { reducer as peerReducer } from './slices/peer';
+import rootSaga from './sagas/peerSagas';
 
 const sagaMiddleware = createSagaMiddleware();
+const middleware = [sagaMiddleware];
 
 const store = configureStore({
     reducer: {
@@ -24,12 +26,12 @@ const store = configureStore({
     },
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({ serializableCheck: false }).concat(
-            sagaMiddleware
+            middleware
         );
     },
 });
 
-//sagaMiddleware.run(TODO: Add middleware here);
+sagaMiddleware.run(rootSaga);
 
 export type RootState = ReturnType<typeof store.getState>;
 

@@ -6,10 +6,19 @@ import {
     updateConnectionPasscode,
     updateConnectionStatus,
     updateConnectionUsername,
+    connect,
+    connectionRequested,
+    connectionErrorReported,
+    peerErrorReported,
+    dataReceived,
 } from './peerReducers';
 
 const initialState: PeerState = {
     connections: [],
+    requestedConnections: [],
+    peerErrors: [],
+    connectionErrors: [],
+    messages: [],
 };
 const peerSlice = createSlice({
     name: 'peer',
@@ -20,6 +29,11 @@ const peerSlice = createSlice({
         updateConnectionPasscode,
         updateConnectionStatus,
         updateConnectionUsername,
+        connect,
+        connectionRequested,
+        connectionErrorReported,
+        peerErrorReported,
+        dataReceived,
     },
 });
 

@@ -1,4 +1,5 @@
-import { PayloadAction } from '@reduxjs/toolkit';
+import { Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import Peer from 'peerjs';
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'closed';
 
@@ -10,8 +11,26 @@ export type Connection = {
     documents: string[];
 };
 
+export type PeerError = {
+    type: string;
+    message: string;
+};
+
+export type PeerMessageTypes = 'doc' | 'syn' | 'ack';
+
+export type DataPacket = {
+    type: PeerMessageTypes;
+    message: string;
+    time: number;
+    sender: string;
+};
+
 export type PeerState = {
     connections: Connection[];
+    requestedConnections: Connection[];
+    peerErrors: PeerError[];
+    connectionErrors: PeerError[];
+    messages: DataPacket[];
 };
 
 export const addConnection = {
@@ -85,5 +104,90 @@ export const updateConnectionPasscode = {
     },
     prepare: (id: string, passcode: string) => {
         return { payload: { id, passcode } };
+    },
+};
+
+export const connectionRequested = {
+    reducer(
+        state: PeerState,
+        action: PayloadAction<{
+            id: string;
+            passcode: string;
+            username: string;
+            docID: string;
+        }>
+    ) {
+        state.requestedConnections.push({
+            id: action.payload.id,
+            username: action.payload.username,
+            passcode: action.payload.passcode,
+            documents: [action.payload.docID],
+            status: 'connected',
+        });
+    },
+    prepare: (id: string, passcode: string, username: string, docID) => {
+        return {
+            payload: {
+                id,
+                passcode,
+                username,
+                docID,
+            },
+        };
+    },
+};
+
+export const dataReceived = (
+    state: PeerState,
+    action: PayloadAction<DataPacket>
+) => {
+    state.messages.push(action.payload);
+};
+
+export const connectionErrorReported = (
+    state: PeerState,
+    action: PayloadAction<PeerError>
+) => {
+    state.connectionErrors.push(action.payload);
+};
+
+export const peerErrorReported = (
+    state: PeerState,
+    action: PayloadAction<PeerError>
+) => {
+    state.peerErrors.push(action.payload);
+};
+export const connect = {
+    reducer: (
+        state: PeerState,
+        action: PayloadAction<{
+            peer: Peer;
+            id: string;
+            username: string;
+            passcode: string;
+            doc: string;
+            dispatch: Dispatch;
+        }>
+    ) => {
+        console.log(state, action);
+    },
+    prepare: (
+        peer: Peer,
+        id: string,
+        username: string,
+        passcode: string,
+        doc: string,
+        dispatch: Dispatch
+    ) => {
+        return {
+            payload: {
+                peer,
+                id,
+                username,
+                passcode,
+                doc,
+                dispatch,
+            },
+        };
     },
 };
