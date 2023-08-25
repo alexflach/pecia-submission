@@ -9,6 +9,7 @@ import {
     reducer as toastReducer,
     actions as toastActions,
 } from './slices/toast';
+import { reducer as peerReducer } from './slices/peer';
 
 const sagaMiddleware = createSagaMiddleware();
 
@@ -19,6 +20,7 @@ const store = configureStore({
         theme: themeReducer,
         editor: editorReducer,
         toast: toastReducer,
+        peer: peerReducer,
     },
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({ serializableCheck: false }).concat(
