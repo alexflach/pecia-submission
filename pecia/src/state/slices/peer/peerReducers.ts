@@ -1,5 +1,5 @@
 import { Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import Peer from 'peerjs';
+import Peer, { DataConnection } from 'peerjs';
 
 type ConnectionStatus = 'connected' | 'disconnected' | 'closed';
 
@@ -167,6 +167,7 @@ export const connect = {
             passcode: string;
             doc: string;
             dispatch: Dispatch;
+            connections: DataConnection[];
         }>
     ) => {
         console.log(state, action);
@@ -177,7 +178,8 @@ export const connect = {
         username: string,
         passcode: string,
         doc: string,
-        dispatch: Dispatch
+        dispatch: Dispatch,
+        connections: DataConnection[]
     ) => {
         return {
             payload: {
@@ -187,6 +189,7 @@ export const connect = {
                 passcode,
                 doc,
                 dispatch,
+                connections,
             },
         };
     },

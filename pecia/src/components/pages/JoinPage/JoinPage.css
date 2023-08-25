@@ -3,3 +3,22 @@ main {
     margin-top: 1rem;
     font-size: var(--h5);
 }
+
+.errors-wrapper,
+.info-wrapper {
+    margin: 0 auto;
+    text-align: center;
+    font-size: var(--h4);
+}
+
+.info-wrapper button {
+    background-color: white;
+    padding: 1rem;
+    font-size: var(--h4);
+}
+
+.info-wrapper button:hover,
+.info-wrapper button:focus {
+    outline: solid 2px var(--dark-grey);
+    cursor: pointer;
+}

@@ -4,6 +4,7 @@ import { bootstrapConnection } from '../slices/peer/utils';
 function* connectToPeer(action) {
     const { peer, id, username, passcode, doc, connections, dispatch } =
         action.payload;
+    console.log(action.payload);
     try {
         console.log('trying to connect...');
         const connection = yield apply(peer, peer.connect, [

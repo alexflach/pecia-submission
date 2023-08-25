@@ -17,6 +17,6 @@ div.user-logo button {
 
 div.user-logo button:hover,
 div.user-logo button:focus {
-    background-color: var(--light-blue);
+    outline: solid 2px var(--dark-grey);
     cursor: pointer;
 }

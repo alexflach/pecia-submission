@@ -20,6 +20,7 @@ import * as Toolbar from '@radix-ui/react-toolbar';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
     ArrowLeftIcon,
+    ArchiveIcon,
     ArrowRightIcon,
     BookmarkIcon,
     DownloadIcon,
@@ -31,7 +32,6 @@ import {
     QuoteIcon,
     ListBulletIcon,
     TrashIcon,
-    CheckCircledIcon,
     Share1Icon,
 } from '@radix-ui/react-icons';
 
@@ -87,7 +87,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     className="toolbar-button"
                     onClick={() => versionDoc(dispatch)}
                 >
-                    <CheckCircledIcon
+                    <ArchiveIcon
                         viewBox={ICON_PROPS.viewBox}
                         width={ICON_PROPS.width}
                         height={ICON_PROPS.width}

@@ -13,6 +13,11 @@ const usePeer = (online: boolean, dispatch: Dispatch) => {
 
     useEffect(() => {
         if (!online) {
+            if (connectionsRef.current) {
+                connectionsRef.current.forEach((connection) => {
+                    connection.close();
+                });
+            }
             if (peerRef.current) {
                 peerRef.current.destroy();
                 peerRef.current = null;
