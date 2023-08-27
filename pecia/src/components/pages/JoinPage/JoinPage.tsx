@@ -63,13 +63,24 @@ const JoinPage = () => {
                             offline?
                         </p>
                     )}
+                    {!username && (
+                        <p>
+                            You need to set a username before you can connect!
+                        </p>
+                    )}
+                    {!passcode && (
+                        <p>
+                            You need to set a passcode before you can connect!
+                        </p>
+                    )}
                 </div>
             )}
             {!errors && (
                 <div className="info-wrapper">
                     <p>Attempting to connect to {user}</p>
-                    <p>You will be identified as username {username}</p>
-                    <p>With the passcode {passcode}</p>
+                    <p>You will be identified by your username: {username}</p>
+                    <p>With the pass phrase: {passcode}</p>
+                    <p>Tell your colleague your username and pass phrase</p>
 
                     <button onClick={join}>Join</button>
                 </div>

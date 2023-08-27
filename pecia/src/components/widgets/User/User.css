@@ -6,17 +6,26 @@ div.user-menu {
     border-radius: 1rem;
 }
 
-div.user-logo button {
+div.user-panel button {
     border-radius: 0.2rem;
     margin-top: 0.5rem;
     padding: 0.5rem;
     background-color: inherit;
     z-index: 10;
     position: relative;
+    border: none;
 }
 
-div.user-logo button:hover,
-div.user-logo button:focus {
+div.user-panel button:hover,
+div.user-panel button:focus {
     outline: solid 2px var(--dark-grey);
     cursor: pointer;
+}
+
+div.user-panel {
+    display: flex;
+    flex-flow: row no-wrap;
+    justify-items: space-evenly;
+    align-items: center;
+    gap: 1rem;
 }

@@ -9,6 +9,7 @@ type Toast = {
 
 type ToastState = {
     toasts: Toast[];
+    showToasts: boolean;
 };
 
 const addToast = {
@@ -30,8 +31,13 @@ const removeToast = (state: ToastState, action: PayloadAction<string>) => {
     state.toasts = state.toasts.filter((toast) => toast.id !== action.payload);
 };
 
+const toggleToasts = (state: ToastState) => {
+    state.showToasts = !state.showToasts;
+};
+
 const initialState: ToastState = {
     toasts: [],
+    showToasts: false,
 };
 
 const toastSlice = createSlice({
@@ -40,6 +46,7 @@ const toastSlice = createSlice({
     reducers: {
         addToast,
         removeToast,
+        toggleToasts,
     },
 });
 

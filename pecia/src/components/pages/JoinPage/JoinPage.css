@@ -10,6 +10,9 @@ main {
     text-align: center;
     font-size: var(--h4);
 }
+.info-wrapper * {
+    margin-top: 2rem;
+}
 
 .info-wrapper button {
     background-color: white;
