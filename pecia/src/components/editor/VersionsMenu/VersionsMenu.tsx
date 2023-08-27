@@ -1,8 +1,26 @@
+import { useSelector } from 'react-redux/es/hooks/useSelector';
+
 import * as Tabs from '@radix-ui/react-tabs';
 
 import './VersionsMenu.css';
+import { RootState } from '../../../state/store';
+import VersionCard from './VersionCard';
+
+const versionsSelector = (state: RootState) => state.editor.versions;
+const userIDSelector = (state: RootState) => state.user.peciaID;
+
+const timestamp = (createdAtNumber: number) =>
+    new Date(createdAtNumber).toLocaleString();
 
 const VersionsMenu = () => {
+    const versions = useSelector(versionsSelector);
+    const userID = useSelector(userIDSelector);
+
+    const myVersions = versions.filter((version) => version.owner === userID);
+    const colleagueVersions = versions.filter(
+        (version) => version.owner !== userID
+    );
+
     return (
         <div className="versions-wrapper">
             <h5 className="versions-header">Versions</h5>
@@ -19,18 +37,30 @@ const VersionsMenu = () => {
                     </Tabs.Trigger>
                 </Tabs.List>
                 <Tabs.Content className="tabs-content" value="tab1">
-                    <ul>
-                        <li>version 1</li>
-
-                        <li>version 2</li>
-                    </ul>
+                    {myVersions &&
+                        myVersions.map((version) => (
+                            <VersionCard
+                                key={version.id}
+                                label={version.label}
+                                id={version.id}
+                                description={version.description}
+                                title={version.title}
+                                created={timestamp(version.localCreationTime)}
+                            />
+                        ))}
                 </Tabs.Content>
                 <Tabs.Content className="tabs-content" value="tab2">
-                    <ul>
-                        <li>version 1</li>
-
-                        <li>version 2</li>
-                    </ul>
+                    {colleagueVersions &&
+                        colleagueVersions.map((version) => (
+                            <VersionCard
+                                key={version.id}
+                                label={version.label}
+                                id={version.id}
+                                description={version.description}
+                                title={version.title}
+                                created={timestamp(version.localCreationTime)}
+                            />
+                        ))}
                 </Tabs.Content>
             </Tabs.Root>
         </div>

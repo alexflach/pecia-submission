@@ -20,6 +20,17 @@
     --dark-red: #c62a2f;
     --serif: 'Merriweather', serif;
     --sans-serif: 'Merriweather Sans', sans-serif;
+    --green-1: #fbfefc;
+    --green-2: #f2fcf5;
+    --green-3: #e9f9ee;
+    --green-4: #ddf3e4;
+    --green-5: #ccebd7;
+    --pale-green: #b4dfc4;
+    --green-7: #92ceac;
+    --green-8: #5bb98c;
+    --mid-green: #30a46c;
+    --green-10: #299764;
+    --dark-green: #18794e;
 }
 
 html {

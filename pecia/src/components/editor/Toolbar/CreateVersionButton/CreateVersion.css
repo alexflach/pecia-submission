@@ -34,6 +34,18 @@
     font-size: 15px;
     line-height: 1.5;
 }
+.input-container {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+.alert-dialog-input {
+    border: none;
+    border-bottom: solid 1px var(--mid-grey);
+    padding: 1rem;
+    font-family: var(--sans-serif);
+}
 
 .button {
     display: inline-flex;
@@ -53,8 +65,22 @@
 }
 .button.red:hover,
 .button.red:focus {
-    background-color: var(--pale-red);
-    outline: solid 1px var(--bright-red);
+    background-color: var(--pale-green);
+    outline: solid 1px var(--bright-green);
+}
+
+.button.green {
+    background-color: white;
+    color: var(--mid-green);
+}
+.button.green:hover,
+.button.green:focus {
+    background-color: var(--green-1);
+    outline: solid 1px var(--dark-green);
+}
+.button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 @keyframes overlayShow {

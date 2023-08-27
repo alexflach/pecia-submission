@@ -44,6 +44,7 @@ export const retrieveVersions = (state) => {
         `pecia-versions-${state.currentDocID}`
     );
     const versions = JSON.parse(retrievedVersions);
+    console.log({ versions, retrievedVersions });
     state.versions = versions || [];
     //pick the latest version
     state.currentVersionID = versions?.length
@@ -58,48 +59,65 @@ export const updateEditorState = (
     state.editorState = state.editorState.apply(action.payload);
 };
 
-export const initEditor = (state) => {
-    if (!state.schema || !state.currentDocID) return;
+interface initEditorPayload {
+    owner: string;
+    title: string;
+}
 
-    let initDoc: Node | undefined;
+export const initEditor = {
+    reducer: (state, action: PayloadAction<initEditorPayload>) => {
+        if (!state.schema || !state.currentDocID) return;
 
-    try {
-        initDoc = state.doc
-            ? Node.fromJSON(state.schema, JSON.parse(state.doc))
-            : undefined;
-    } catch (err) {
-        console.error(err);
-    }
+        let initDoc: Node | undefined;
 
-    let editorState = EditorState.create({
-        schema: state.schema,
-        doc: initDoc,
-        plugins: [
-            history(),
-            keymap({ 'Mod-z': undo, 'Mod-y': redo }),
-            keymap(baseKeymap),
-            idPlugin(),
-            stepsPlugin(),
-        ],
-    });
+        try {
+            initDoc = state.doc
+                ? Node.fromJSON(state.schema, JSON.parse(state.doc))
+                : undefined;
+        } catch (err) {
+            console.error(err);
+        }
 
-    editorState = initIDs(editorState);
-    //if we don't have any version history we stage an 'initial commit'
-    if (!state.versions?.length) {
-        const currentVersion = crypto.randomUUID();
-        state.versions = [
-            Replica.fromProsemirrorDoc(
+        let editorState = EditorState.create({
+            schema: state.schema,
+            doc: initDoc,
+            plugins: [
+                history(),
+                keymap({ 'Mod-z': undo, 'Mod-y': redo }),
+                keymap(baseKeymap),
+                idPlugin(),
+                stepsPlugin(),
+            ],
+        });
+
+        editorState = initIDs(editorState);
+        //if we don't have any version history we stage an 'initial commit'
+        if (!state.versions?.length) {
+            const currentVersionID = crypto.randomUUID();
+            const initVersion = Replica.fromProsemirrorDoc(
                 editorState.doc,
                 null,
                 state.currentDocID,
-                currentVersion
-            ),
-        ];
+                currentVersionID
+            );
+            initVersion.title = 'Initial Version';
+            initVersion.description = 'An initial version created by Pecia';
+            initVersion.owner = action.payload.owner;
+            state.versions = [initVersion];
 
-        state.currentVersionID = currentVersion;
-    }
+            state.currentVersionID = currentVersionID;
+        }
 
-    state.editorState = editorState;
+        state.editorState = editorState;
+    },
+    prepare: (owner: string, title: string) => {
+        return {
+            payload: {
+                owner,
+                title,
+            },
+        };
+    },
 };
 
 export interface PMNode {
@@ -113,25 +131,52 @@ export interface PMNode {
     leaf: boolean;
 }
 
-export const createVersion = (state) => {
-    const previousReplica = state.versions.find(
-        (version) => version.versionID === state.currentVersionID
-    );
-    const nodes = generateNodeList(state.editorState.doc);
+type VersionPayload = {
+    title: string;
+    description: string;
+};
+export const createVersion = {
+    reducer: (state, action: PayloadAction<VersionPayload>) => {
+        const previousReplica = state.versions.find(
+            (version) => version.versionID === state.currentVersionID
+        );
+        const nodes = generateNodeList(state.editorState.doc);
 
-    const newVersion = generateVersionFromReplica(previousReplica, nodes);
-    const newVersionID = crypto.randomUUID();
+        let newVersion;
+        if (previousReplica) {
+            newVersion = generateVersionFromReplica(previousReplica, nodes);
+        } else {
+            newVersion = Replica.fromProsemirrorDoc(
+                state.editorState.doc,
+                state.currentDocID,
+                state.currentDocID,
+                null
+            );
+        }
+        const newVersionID = crypto.randomUUID();
 
-    newVersion.versionID = newVersionID;
+        newVersion.versionID = newVersionID;
+        newVersion.title = action.payload.title;
+        newVersion.description = action.payload.description;
 
-    state.doc = JSON.stringify(newVersion.toProsemirrorDoc());
-    state.versions.push(newVersion);
-    state.currentVersionID = newVersionID;
+        state.doc = JSON.stringify(newVersion.toProsemirrorDoc());
+        state.versions.push(newVersion);
+        state.currentVersionID = newVersionID;
+    },
+    prepare: (title: string, description: string) => {
+        return {
+            payload: {
+                title,
+                description,
+            },
+        };
+    },
 };
 
 function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
     //start with the old version, we'll apply operations on this based on the differences.
     // const generated = structuredClone(oldVersion);
+    console.log(oldVersion);
     const newVersion = new Replica(
         oldVersion.tree,
         oldVersion.opLog,

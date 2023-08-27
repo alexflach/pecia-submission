@@ -7,6 +7,7 @@ type UserState = {
     passcode: string;
     online: boolean;
     peerID: string;
+    peciaID: string;
     networkState: NetworkState;
 };
 
@@ -35,12 +36,24 @@ const toggleOnline = (state: UserState) => {
 
 const retrievedName = localStorage.getItem('pecia-username');
 const retrievedPasscode = localStorage.getItem('pecia-passcode');
+let retrievedPeciaID = localStorage.getItem('pecia-user-id');
+
+if (!retrievedPeciaID) {
+    retrievedPeciaID = crypto.randomUUID();
+    try {
+        localStorage.setItem('pecia-user-id', retrievedPeciaID);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const initialState: UserState = {
     username: retrievedName || '',
     passcode: retrievedPasscode || '',
     online: true,
     peerID: '',
     networkState: 'closed',
+    peciaID: retrievedPeciaID,
 };
 
 const usernameSlice = createSlice({

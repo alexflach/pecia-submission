@@ -27,13 +27,22 @@ export class Replica {
     docID: string;
     versionID: string;
     createdAt: string;
+    title: string = '';
+    description: string = '';
+    label: string = '';
+    localCreationTime: number;
+    owner: string;
 
     constructor(
         tree: TreeNode[] | null = null,
         opLog: LogMove[] | null = null,
         id: string | null = null,
         docID: string | null = null,
-        versionID: string | null = null
+        versionID: string | null = null,
+        title: string | null = null,
+        description: string | null = null,
+        label: string | null = null,
+        owner: string | null = null
     ) {
         if (id) {
             this.id = id;
@@ -45,6 +54,7 @@ export class Replica {
         this.docID = docID || crypto.randomUUID();
         this.versionID = versionID || crypto.randomUUID();
         this.createdAt = this.clock.next();
+        this.localCreationTime = Date.now();
         if (!tree) {
             //constructing from scratch so generate a root node
             //and a trash node
@@ -54,6 +64,10 @@ export class Replica {
             this.tree = tree;
             if (opLog) this.opLog = opLog;
         }
+        if (title) this.title = title;
+        if (description) this.description = description;
+        if (label) this.label = label;
+        if (owner) this.owner = owner;
     }
 
     get state(): ReplicaState {

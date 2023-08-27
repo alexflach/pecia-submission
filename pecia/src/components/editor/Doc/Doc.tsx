@@ -1,13 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../state/store';
-import { actions } from '../../../state/slices/editor';
+import { actions as editorActions } from '../../../state/slices/editor';
 import { EditorView } from 'prosemirror-view';
 import useQuery from '../../../hooks/useQuery';
 
 import './Doc.css';
 
-const { setCurrentDocID, initEditor, retrieveDoc, retrieveVersions } = actions;
+const {
+    setCurrentDocID,
+    initEditor,
+    retrieveDoc,
+    retrieveVersions,
+    updateEditorState,
+} = editorActions;
 
 interface docProps {
     editorView: React.MutableRefObject<EditorView>;
@@ -19,6 +25,12 @@ const Doc = ({ editorView }: docProps) => {
     const { editorState, currentDocID } = useSelector(
         (state: RootState) => state.editor
     );
+
+    const userID = useSelector((state: RootState) => state.user.peciaID);
+    const title = useSelector((state: RootState) => state.docs.docs).filter(
+        (doc) => doc.id === currentDocID
+    );
+
     const docRef = useRef<HTMLDivElement>();
     const docID = query.get('doc');
 
@@ -30,9 +42,9 @@ const Doc = ({ editorView }: docProps) => {
             dispatch(setCurrentDocID(docID));
             dispatch(retrieveDoc());
             dispatch(retrieveVersions());
-            dispatch(initEditor());
+            dispatch(initEditor(userID, title));
         }
-    }, [docID, currentDocID, dispatch]);
+    }, [docID, currentDocID, dispatch, title, userID]);
 
     //render the editor. We can only do this if we have a dom node to render to, and a state to render.
     //Every time the editor state changes, we shall update the view here.
@@ -42,7 +54,7 @@ const Doc = ({ editorView }: docProps) => {
             const view = new EditorView(docRef.current, {
                 state: editorState,
                 dispatchTransaction(transaction) {
-                    dispatch(actions.updateEditorState(transaction));
+                    dispatch(updateEditorState(transaction));
                 },
             });
             editorView.current = view;

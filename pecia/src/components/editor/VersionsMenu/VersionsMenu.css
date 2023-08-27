@@ -30,6 +30,16 @@
 div.versions-wrapper {
     order: 3;
 }
+
+.tabs-content {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 2rem;
+    padding-top: 1rem;
+    margin-top: 1rem;
+}
 @media (min-width: 800px) {
     div.versions-wrapper {
         grid-column-start: 3;

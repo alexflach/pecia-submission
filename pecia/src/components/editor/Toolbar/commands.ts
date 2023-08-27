@@ -10,6 +10,7 @@ import { actions as toastActions } from '../../../state/slices/toast';
 import schema from '../../../lib/editor/schema';
 import { Dispatch } from '@reduxjs/toolkit';
 import { NavigateFunction } from 'react-router-dom';
+import { Replica } from '../../../lib/crdt/replica';
 
 export const toggle = (editorView: EditorView, markType: string) => {
     if (!editorView) return;
@@ -83,14 +84,22 @@ export const downloadDoc = (editorView: EditorView) => {
 export const saveDoc = (
     editorView: EditorView,
     id: string,
-    dispatch: Dispatch
+    dispatch: Dispatch,
+    versions: Replica[]
 ) => {
     if (!editorView) return;
     const doc = editorView.state.doc.toJSON();
     try {
         localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
+        localStorage.setItem(`pecia-versions-${id}`, JSON.stringify(versions));
     } catch (err) {
         console.error(err);
+        dispatch(
+            toastActions.addToast(
+                'failed to save, are you out of storage?',
+                'error'
+            )
+        );
     }
     dispatch(toastActions.addToast('document saved!', 'info'));
     dispatch(toastActions.showToasts());
@@ -148,8 +157,12 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
     );
 };
 
-export const versionDoc = (dispatch: Dispatch) => {
-    dispatch(editorActions.createVersion());
+export const versionDoc = (
+    title: string,
+    description: string,
+    dispatch: Dispatch
+) => {
+    dispatch(editorActions.createVersion(title, description));
     dispatch(toastActions.addToast('version created!', 'info'));
     dispatch(toastActions.showToasts());
 };

@@ -20,7 +20,6 @@ import * as Toolbar from '@radix-ui/react-toolbar';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
     ArrowLeftIcon,
-    ArchiveIcon,
     ArrowRightIcon,
     BookmarkIcon,
     DownloadIcon,
@@ -31,13 +30,16 @@ import {
     PilcrowIcon,
     QuoteIcon,
     ListBulletIcon,
-    TrashIcon,
     Share1Icon,
 } from '@radix-ui/react-icons';
+
+import { faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import './Toolbar.css';
 import { useNavigate } from 'react-router-dom';
 import DeleteButton from './DeleteButton';
+import CreateVersionButton from './CreateVersionButton';
 
 interface toolbarProps {
     editorView: React.MutableRefObject<EditorView>;
@@ -57,6 +59,9 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
     const deleteHandler = () => {
         deleteDoc(currentDocID, dispatch, navigate);
     };
+    const versionHandler = (title: string, description: string) => {
+        versionDoc(title, description, dispatch);
+    };
 
     return (
         <div className="toolbar">
@@ -65,6 +70,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 aria-label="toolbar"
                 orientation="horizontal"
             >
+                <CreateVersionButton createVersion={versionHandler} />
                 <DeleteButton handler={deleteHandler} ICON_PROPS={ICON_PROPS} />
                 <Toolbar.Button
                     className="toolbar-button"
@@ -82,34 +88,8 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         saveDoc(editorView.current, currentDocID, dispatch)
                     }
                 >
-                    <BookmarkIcon
-                        viewBox={ICON_PROPS.viewBox}
-                        width={ICON_PROPS.width}
-                        height={ICON_PROPS.width}
-                    />
+                    <FontAwesomeIcon icon={faFloppyDisk} size="xl" />
                 </Toolbar.Button>
-                <Toolbar.Button
-                    className="toolbar-button"
-                    onClick={() => versionDoc(dispatch)}
-                >
-                    <ArchiveIcon
-                        viewBox={ICON_PROPS.viewBox}
-                        width={ICON_PROPS.width}
-                        height={ICON_PROPS.width}
-                    />
-                </Toolbar.Button>
-
-                <Toolbar.Button
-                    className="toolbar-button"
-                    onClick={() => deleteDoc(currentDocID, dispatch, navigate)}
-                >
-                    <TrashIcon
-                        viewBox={ICON_PROPS.viewBox}
-                        width={ICON_PROPS.width}
-                        height={ICON_PROPS.width}
-                    />
-                </Toolbar.Button>
-
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => undoCommand(editorView.current)}
