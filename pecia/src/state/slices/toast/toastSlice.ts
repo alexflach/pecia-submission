@@ -53,8 +53,22 @@ const removeToast = (state: ToastState, action: PayloadAction<string>) => {
     }
 };
 
+const clearToasts = (state: ToastState) => {
+    state.toasts = [];
+    state.showWarning = false;
+    state.showError = false;
+    state.showToasts = false;
+};
 const toggleToasts = (state: ToastState) => {
     state.showToasts = !state.showToasts;
+};
+
+const showToasts = (state: ToastState) => {
+    state.showToasts = true;
+};
+
+const hideToasts = (state: ToastState) => {
+    state.showToasts = false;
 };
 
 const showWarning = (state: ToastState) => {
@@ -81,6 +95,9 @@ const toastSlice = createSlice({
         toggleToasts,
         showError,
         showWarning,
+        showToasts,
+        hideToasts,
+        clearToasts,
     },
 });
 

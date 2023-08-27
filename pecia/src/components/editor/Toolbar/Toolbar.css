@@ -6,7 +6,7 @@
     border-radius: 0.25rem;
     margin: 0 auto;
     width: 80%;
-    max-width: 800px;
+    max-width: 900px;
 }
 .toolbar-separator {
     border-left: 1px solid white;
@@ -27,7 +27,7 @@
     border: none;
     /* height: 80%; */
     border-radius: 0.5rem;
-    padding: 2px;
+    padding: 5px;
     margin: 2px;
 }
 .toolbar button svg {
@@ -36,7 +36,8 @@
 
 .toolbar button:hover,
 .toolbar button:focus {
-    background-color: var(--light-blue);
+    outline: solid 2px var(--dark-grey);
+    cursor: pointer;
 }
 
 div[data-radix-collection-item] {

@@ -1,17 +1,20 @@
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../state/store';
 import Toast from '../../widgets/Toast';
+import { actions } from '../../../state/slices/toast';
 
 import './ToastsPanel.css';
 
-const selector = (state: RootState) => state.toast.toasts;
+const selector = (state: RootState) => state.toast;
 const ToastsPanel = () => {
-    const toasts = useSelector(selector);
+    const { toasts, showToasts } = useSelector(selector);
+    const dispatch = useDispatch();
+    console.log(showToasts);
 
     return (
         <div
             className="toasts-container"
-            data-state={toasts && toasts.length ? 'active' : 'inactive'}
+            data-state={showToasts ? 'active' : 'inactive'}
         >
             {toasts &&
                 toasts.map((toast) => (
@@ -19,6 +22,12 @@ const ToastsPanel = () => {
                         {toast.message}
                     </Toast>
                 ))}
+            <div className="toasts-header">
+                <h5>Notifications</h5>
+                <button onClick={() => dispatch(actions.clearToasts())}>
+                    Clear
+                </button>
+            </div>
         </div>
     );
 };

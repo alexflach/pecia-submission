@@ -7,10 +7,10 @@ import { EditorView } from 'prosemirror-view';
 const EditorPage = () => {
     const editorView = useRef<EditorView | undefined>();
     return (
-        <>
+        <div className="editor-page">
             <Toolbar editorView={editorView} />
             <Doc editorView={editorView} />
-        </>
+        </div>
     );
 };
 

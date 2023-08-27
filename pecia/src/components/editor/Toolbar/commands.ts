@@ -93,6 +93,7 @@ export const saveDoc = (
         console.error(err);
     }
     dispatch(toastActions.addToast('document saved!', 'info'));
+    dispatch(toastActions.showToasts());
     editorView.focus();
 };
 
@@ -110,6 +111,7 @@ export const deleteDoc = (
         dispatch(docsActions.deleteDoc(id));
         navigate('/');
         dispatch(toastActions.addToast('document deleted!', 'info'));
+        dispatch(toastActions.showToasts());
     }
 };
 
@@ -119,12 +121,14 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
         dispatch(
             toastActions.addToast('No Document ID, cannot share link', 'error')
         );
+        dispatch(toastActions.showToasts());
         return;
     }
     if (!peerID) {
         dispatch(
             toastActions.addToast('No connection ID, are you online?', 'error')
         );
+        dispatch(toastActions.showToasts());
         return;
     }
     navigator.clipboard.writeText(docString).then(
@@ -134,6 +138,7 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
             dispatch(
                 toastActions.addToast('copied link to clipboard!', 'info')
             );
+            dispatch(toastActions.showToasts());
         },
         () => {
             /* clipboard write failed */
@@ -144,6 +149,7 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
                     'warning'
                 )
             );
+            dispatch(toastActions.showToasts());
         }
     );
 };
@@ -151,4 +157,5 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
 export const versionDoc = (dispatch: Dispatch) => {
     dispatch(editorActions.createVersion());
     dispatch(toastActions.addToast('version created!', 'info'));
+    dispatch(toastActions.showToasts());
 };

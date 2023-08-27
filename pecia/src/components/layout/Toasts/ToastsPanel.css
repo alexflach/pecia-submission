@@ -1,12 +1,47 @@
-div.toasts-container {
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+div.toasts-container,
+div.toasts-header {
     display: none;
+}
+div.toasts-container[data-state='active'] div.toasts-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem;
+    align-items: flex-end;
+}
+div.toasts-header h5 {
+    margin-bottom: 0;
+}
+div.toasts-header button {
+    border-radius: 0.2rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: inherit;
+    z-index: 10;
+    position: relative;
+    border: none;
+}
+
+div.toasts-header button:focus,
+div.toasts-header button:hover {
+    cursor: pointer;
+    outline: solid 1px var(--dark-grey);
 }
 
 div.toasts-container[data-state='active'] {
     display: block;
     position: absolute;
     left: 0;
-    bottom: 0;
+    bottom: 10px;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -17,6 +52,10 @@ div.toasts-container[data-state='active'] {
     align-items: flex-start;
     gap: 2rem;
     overflow-y: hidden;
+    animation-name: slideInFromLeft;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
 }
 
 @media (min-width: 800px) {
