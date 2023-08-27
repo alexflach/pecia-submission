@@ -102,17 +102,11 @@ export const deleteDoc = (
     dispatch: Dispatch,
     navigate: NavigateFunction
 ) => {
-    if (
-        confirm(
-            'Are you sure you want to delete the document? This cannot be undone.'
-        )
-    ) {
-        localStorage.removeItem(`pecia-doc-${id}`);
-        dispatch(docsActions.deleteDoc(id));
-        navigate('/');
-        dispatch(toastActions.addToast('document deleted!', 'info'));
-        dispatch(toastActions.showToasts());
-    }
+    localStorage.removeItem(`pecia-doc-${id}`);
+    dispatch(docsActions.deleteDoc(id));
+    navigate('/');
+    dispatch(toastActions.addToast('document deleted!', 'info'));
+    dispatch(toastActions.showToasts());
 };
 
 export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {

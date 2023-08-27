@@ -13,7 +13,7 @@
 }
 .tabs-trigger {
     background-color: inherit;
-    border: none;
+    border: solid 1px transparent;
     border-bottom: solid 1px var(--mid-grey);
     padding: 0.5rem;
 }
@@ -23,7 +23,7 @@
 }
 .tabs-trigger:hover,
 .tabs-trigger:focus {
-    border-bottom: solid 1px var(--light-blue);
+    border: solid 1px var(--dark-grey);
     cursor: pointer;
 }
 

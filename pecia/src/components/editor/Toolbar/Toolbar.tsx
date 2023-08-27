@@ -37,6 +37,7 @@ import {
 
 import './Toolbar.css';
 import { useNavigate } from 'react-router-dom';
+import DeleteButton from './DeleteButton';
 
 interface toolbarProps {
     editorView: React.MutableRefObject<EditorView>;
@@ -53,6 +54,9 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
     const { peerID } = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const deleteHandler = () => {
+        deleteDoc(currentDocID, dispatch, navigate);
+    };
 
     return (
         <div className="toolbar">
@@ -61,6 +65,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 aria-label="toolbar"
                 orientation="horizontal"
             >
+                <DeleteButton handler={deleteHandler} ICON_PROPS={ICON_PROPS} />
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() => downloadDoc(editorView.current)}
