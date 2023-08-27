@@ -21,7 +21,6 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import {
     ArrowLeftIcon,
     ArrowRightIcon,
-    BookmarkIcon,
     DownloadIcon,
     FontBoldIcon,
     FontItalicIcon,
@@ -52,15 +51,22 @@ const ICON_PROPS = {
 };
 
 const EditorToolbar = ({ editorView }: toolbarProps) => {
-    const { currentDocID } = useSelector((state: RootState) => state.editor);
-    const { peerID } = useSelector((state: RootState) => state.user);
+    const { currentDocID, versions } = useSelector(
+        (state: RootState) => state.editor
+    );
+    const docTitleArray = useSelector((state: RootState) => state.docs.docs)
+        .filter((doc) => doc.id === currentDocID)
+        .map((doc) => doc.title);
+    const docTitle = docTitleArray.length ? docTitleArray[0] : 'Untitled';
+    console.log({ docTitle });
+    const { peerID, peciaID } = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const deleteHandler = () => {
         deleteDoc(currentDocID, dispatch, navigate);
     };
-    const versionHandler = (title: string, description: string) => {
-        versionDoc(title, description, dispatch);
+    const versionHandler = (label: string, description: string) => {
+        versionDoc(docTitle, description, label, peciaID, dispatch);
     };
 
     return (
@@ -85,7 +91,12 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 <Toolbar.Button
                     className="toolbar-button"
                     onClick={() =>
-                        saveDoc(editorView.current, currentDocID, dispatch)
+                        saveDoc(
+                            editorView.current,
+                            currentDocID,
+                            dispatch,
+                            versions
+                        )
                     }
                 >
                     <FontAwesomeIcon icon={faFloppyDisk} size="xl" />

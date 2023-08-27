@@ -10,7 +10,6 @@ export const bootstrapConnection = (
     dispatch: Dispatch
 ) => {
     connection.on('data', (data: DataPacket) => {
-        console.log(data);
         dispatch(peerActions.dataReceived(data));
     });
     connection.on('error', (error) => {

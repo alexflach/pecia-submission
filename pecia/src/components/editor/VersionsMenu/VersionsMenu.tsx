@@ -42,9 +42,8 @@ const VersionsMenu = () => {
                             <VersionCard
                                 key={version.id}
                                 label={version.label}
-                                id={version.id}
+                                versionID={version.id}
                                 description={version.description}
-                                title={version.title}
                                 created={timestamp(version.localCreationTime)}
                             />
                         ))}
@@ -55,9 +54,8 @@ const VersionsMenu = () => {
                             <VersionCard
                                 key={version.id}
                                 label={version.label}
-                                id={version.id}
+                                versionID={version.id}
                                 description={version.description}
-                                title={version.title}
                                 created={timestamp(version.localCreationTime)}
                             />
                         ))}

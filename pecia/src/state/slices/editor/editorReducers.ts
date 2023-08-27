@@ -40,12 +40,11 @@ export const retrieveDoc: CaseReducer<Editor, PayloadAction<null>> = (
 };
 
 export const retrieveVersions = (state) => {
-    const retrievedVersions = localStorage.getItem(
+    const storedVersions = localStorage.getItem(
         `pecia-versions-${state.currentDocID}`
     );
-    const versions = JSON.parse(retrievedVersions);
-    console.log({ versions, retrievedVersions });
-    state.versions = versions || [];
+    const versions = storedVersions ? JSON.parse(storedVersions) : [];
+    state.versions = versions;
     //pick the latest version
     state.currentVersionID = versions?.length
         ? versions[versions.length - 1]
@@ -100,7 +99,8 @@ export const initEditor = {
                 state.currentDocID,
                 currentVersionID
             );
-            initVersion.title = 'Initial Version';
+            initVersion.title = action.payload.title;
+            initVersion.label = 'Initial Version';
             initVersion.description = 'An initial version created by Pecia';
             initVersion.owner = action.payload.owner;
             state.versions = [initVersion];
@@ -132,6 +132,8 @@ export interface PMNode {
 }
 
 type VersionPayload = {
+    label: string;
+    owner: string;
     title: string;
     description: string;
 };
@@ -155,18 +157,27 @@ export const createVersion = {
         }
         const newVersionID = crypto.randomUUID();
 
+        newVersion.owner = action.payload.owner;
+        newVersion.label = action.payload.label;
         newVersion.versionID = newVersionID;
         newVersion.title = action.payload.title;
         newVersion.description = action.payload.description;
+        state.versions.push(newVersion);
 
         state.doc = JSON.stringify(newVersion.toProsemirrorDoc());
-        state.versions.push(newVersion);
         state.currentVersionID = newVersionID;
     },
-    prepare: (title: string, description: string) => {
+    prepare: (
+        owner: string,
+        title: string,
+        label: string,
+        description: string
+    ) => {
         return {
             payload: {
+                owner,
                 title,
+                label,
                 description,
             },
         };
@@ -175,14 +186,11 @@ export const createVersion = {
 
 function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
     //start with the old version, we'll apply operations on this based on the differences.
-    // const generated = structuredClone(oldVersion);
-    console.log(oldVersion);
     const newVersion = new Replica(
         oldVersion.tree,
         oldVersion.opLog,
         oldVersion.id,
-        oldVersion.docID,
-        oldVersion.versionID
+        oldVersion.docID
     );
     addMissingNodes(newVersion, nodes);
     checkDeletedNodes(newVersion, nodes);

@@ -7,7 +7,6 @@ const idPlugin = () => {
     return new Plugin({
         appendTransaction: (transactions, oldState, newState) => {
             const tr = newState.tr;
-            console.log(oldState.doc.toJSON());
             let modified = false;
             const nodeTypes = Object.values(newState.schema.nodes);
 

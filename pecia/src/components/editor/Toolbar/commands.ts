@@ -3,7 +3,7 @@ import { DOMSerializer } from 'prosemirror-model';
 import { toggleMark, setBlockType, wrapIn } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
 import { undo, redo } from 'prosemirror-history';
-import { marks, nodes } from './utils';
+import { marks, nodes, persist } from './utils';
 import { actions as docsActions } from '../../../state/slices/docs';
 import { actions as editorActions } from '../../../state/slices/editor';
 import { actions as toastActions } from '../../../state/slices/toast';
@@ -89,19 +89,20 @@ export const saveDoc = (
 ) => {
     if (!editorView) return;
     const doc = editorView.state.doc.toJSON();
-    try {
-        localStorage.setItem(`pecia-doc-${id}`, JSON.stringify(doc));
-        localStorage.setItem(`pecia-versions-${id}`, JSON.stringify(versions));
-    } catch (err) {
-        console.error(err);
-        dispatch(
-            toastActions.addToast(
-                'failed to save, are you out of storage?',
-                'error'
-            )
+    if (doc)
+        persist(
+            `pecia-doc-${id}`,
+            JSON.stringify(doc),
+            dispatch,
+            'document saved!'
         );
-    }
-    dispatch(toastActions.addToast('document saved!', 'info'));
+    if (versions)
+        persist(
+            `pecia-versions-${id}`,
+            JSON.stringify(versions),
+            dispatch,
+            'versions saved!'
+        );
     dispatch(toastActions.showToasts());
     editorView.focus();
 };
@@ -137,7 +138,6 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
     navigator.clipboard.writeText(docString).then(
         () => {
             /* clipboard successfully set */
-            console.log(`wrote ${docString} to the clipboard`);
             dispatch(
                 toastActions.addToast('copied link to clipboard!', 'info')
             );
@@ -160,9 +160,10 @@ export const shareDoc = (docID: string, peerID: string, dispatch: Dispatch) => {
 export const versionDoc = (
     title: string,
     description: string,
+    label: string,
+    owner: string,
     dispatch: Dispatch
 ) => {
-    dispatch(editorActions.createVersion(title, description));
-    dispatch(toastActions.addToast('version created!', 'info'));
-    dispatch(toastActions.showToasts());
+    dispatch(editorActions.createVersion(owner, title, label, description));
+    dispatch(toastActions.addToast(`version ${label} created!`, 'info'));
 };

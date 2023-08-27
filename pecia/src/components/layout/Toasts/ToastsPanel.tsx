@@ -9,7 +9,6 @@ const selector = (state: RootState) => state.toast;
 const ToastsPanel = () => {
     const { toasts, showToasts } = useSelector(selector);
     const dispatch = useDispatch();
-    console.log(showToasts);
 
     return (
         <div
