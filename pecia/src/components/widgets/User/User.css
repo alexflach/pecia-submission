@@ -29,3 +29,13 @@ div.user-panel {
     align-items: center;
     gap: 1rem;
 }
+
+div.info-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+button#info-button {
+    width: 60px;
+}
