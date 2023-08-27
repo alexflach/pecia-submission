@@ -37,6 +37,8 @@ div.info-dot {
     z-index: 5;
 }
 
-button#info-button {
+button#info-button,
+button#colleagues-button {
     width: 60px;
+    height: 40px;
 }

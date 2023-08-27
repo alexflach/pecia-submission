@@ -9,6 +9,8 @@ import {
     ValueIcon,
     InfoCircledIcon,
 } from '@radix-ui/react-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
 
 import UserMenu from './UserMenu';
 import './User.css';
@@ -37,6 +39,46 @@ const User = () => {
 
     return (
         <div className="user-panel">
+            <div className="info-logo">
+                <button
+                    id="colleagues-button"
+                    onClick={() => {
+                        dispatch(actions.toggleToasts());
+                    }}
+                >
+                    <FontAwesomeIcon
+                        icon={faUserGroup}
+                        size="xl"
+                    ></FontAwesomeIcon>
+
+                    {infoStatus && (
+                        <div className="info-dot">
+                            {infoStatus === 'error' && (
+                                <ExclamationTriangleIcon
+                                    color="red"
+                                    width="15"
+                                    height="15"
+                                />
+                            )}
+                            {infoStatus === 'warning' && (
+                                <ExclamationTriangleIcon
+                                    color="orange"
+                                    width="15"
+                                    height="15"
+                                />
+                            )}
+                            {infoStatus === 'info' && (
+                                <InfoCircledIcon
+                                    color="grey"
+                                    width="15"
+                                    height="15"
+                                />
+                            )}
+                        </div>
+                    )}
+                </button>
+            </div>
+
             <div className="info-logo">
                 <button
                     id="info-button"

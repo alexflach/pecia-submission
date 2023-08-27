@@ -89,3 +89,15 @@ span.strikethrough {
 .ProseMirror h3 {
     font-size: var(--h4);
 }
+div #pecia-doc {
+    order: 2;
+}
+@media (min-width: 800px) {
+    div#pecia-doc {
+        grid-column-start: 2;
+        grid-column-end: 3;
+        grid-row-start: 2;
+        grid-row-end: 3;
+        order: 3;
+    }
+}

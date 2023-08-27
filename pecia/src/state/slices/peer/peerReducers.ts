@@ -16,7 +16,7 @@ export type PeerError = {
     message: string;
 };
 
-export type PeerMessageTypes = 'doc' | 'syn' | 'ack';
+export type PeerMessageTypes = 'doc' | 'syn' | 'ack' | 'chat';
 
 export type DataPacket = {
     type: PeerMessageTypes;
