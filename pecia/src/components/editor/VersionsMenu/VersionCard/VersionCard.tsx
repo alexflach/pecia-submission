@@ -34,9 +34,8 @@ const VersionCard = ({
     active,
 }: VersionCardProps) => {
     const dispatch = useDispatch();
-    const { versions, currentDocID, currentVersionID } = useSelector(
-        (state: RootState) => state.editor
-    );
+    const { versions, currentDocID, currentVersionID, currentVersionLabel } =
+        useSelector((state: RootState) => state.editor);
     const [open, setOpen] = useState(false);
     const handleDelete = (id: string) => {
         dispatch(actions.deleteVersion(id));
@@ -58,9 +57,24 @@ const VersionCard = ({
     const restoreVersion = (id: string) => {
         dispatch(actions.restoreVersionPrep(id));
     };
+
+    const mergeVersions = (
+        version1ID: string,
+        version2ID: string,
+        label: string,
+        description: string
+    ) => {
+        dispatch(
+            actions.mergeVersions(version1ID, version2ID, label, description)
+        );
+    };
     const shareVersion = () => {};
     return (
-        <div className="card-container" data-active={active}>
+        <div
+            className="card-container"
+            data-active={active}
+            data-version-id={versionID}
+        >
             <Collapsible.Root
                 className="collapsible-root"
                 open={open}
@@ -99,9 +113,11 @@ const VersionCard = ({
                         />
                         {!active && (
                             <MergeVersionButton
-                                handler={() => {}}
+                                handler={mergeVersions}
                                 version1Label={label}
-                                version2Label="foo"
+                                version1ID={versionID}
+                                version2Label={currentVersionLabel}
+                                version2ID={currentVersionID}
                             />
                         )}
                     </div>

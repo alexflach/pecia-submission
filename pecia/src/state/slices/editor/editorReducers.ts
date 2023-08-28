@@ -25,7 +25,9 @@ export type Editor = {
     versions: Replica[] | null;
     doc: string;
     currentVersionID: string | null;
+    currentVersionLabel: string | null;
     title: string;
+    owner: string;
 };
 
 export const setCurrentDocID: CaseReducer<Editor, PayloadAction<string>> = (
@@ -33,6 +35,13 @@ export const setCurrentDocID: CaseReducer<Editor, PayloadAction<string>> = (
     action: PayloadAction<string>
 ) => {
     state.currentDocID = action.payload;
+};
+
+export const setOwner: CaseReducer<Editor, PayloadAction<string>> = (
+    state,
+    action: PayloadAction<string>
+) => {
+    state.owner = action.payload;
 };
 
 export const setTitle: CaseReducer<Editor, PayloadAction<string>> = (
@@ -80,9 +89,63 @@ export const retrieveDoc: CaseReducer<Editor, PayloadAction<null>> = (
         const title = parsed.title;
         state.doc = JSON.stringify(body);
         state.title = title;
+    } else {
+        state.doc = null;
+        state.title = '';
     }
 };
 
+type mergePayload = {
+    version1ID: string;
+    version2ID: string;
+    label: string;
+    description: string;
+};
+export const mergeVersions = {
+    reducer: (state, action: PayloadAction<mergePayload>) => {
+        console.log(action.payload);
+        const { version1ID, version2ID, label, description } = action.payload;
+        const version1 = state.versions.find(
+            (version) => (version.versionID = version1ID)
+        );
+        const version2 = state.versions.find(
+            (version) => (version.versionID = version2ID)
+        );
+        if (!version1 || !version2) return;
+        const newReplicaState = TreeMoveCRDT.merge(
+            { tree: version1.tree, opLog: version2.opLog },
+            { tree: version2.tree, opLog: version2.opLog }
+        );
+        const newVersionID = crypto.randomUUID();
+        const newReplica = new Replica(
+            newReplicaState.tree,
+            newReplicaState.opLog,
+            newVersionID,
+            state.currentDocID,
+            newVersionID,
+            state.title,
+            description,
+            label,
+            state.owner
+        );
+        state.versions.push(newReplica);
+    },
+    prepare: (
+        version1ID: string,
+        version2ID: string,
+        label: string,
+        description: string
+    ) => {
+        return {
+            payload: {
+                version1ID,
+                version2ID,
+                label,
+                description,
+            },
+        };
+    },
+};
 export const retrieveVersions = (state) => {
     const storedVersions = localStorage.getItem(
         `pecia-versions-${state.currentDocID}`
@@ -104,9 +167,12 @@ export const retrieveVersions = (state) => {
     );
     state.versions = versionReplicas;
     //pick the latest version
-    state.currentVersionID = versions?.length
-        ? versions[versions.length - 1].versionID
+    const currentVersion = versions?.length
+        ? versions[versions.length - 1]
         : null;
+
+    state.currentVersionID = currentVersion?.versionID || null;
+    state.currentVersionLabel = currentVersion?.label || null;
 };
 
 export const updateEditorState = (
@@ -158,6 +224,7 @@ export const initEditor = {
             state.versions = [initVersion];
 
             state.currentVersionID = currentVersionID;
+            state.currentVersionLabel = initVersion.label;
         }
 
         state.editorState = editorState;
@@ -191,33 +258,40 @@ type VersionPayload = {
 };
 export const createVersion = {
     reducer: (state, action: PayloadAction<VersionPayload>) => {
+        const newVersionID = crypto.randomUUID();
         const previousReplica = state.versions.find(
             (version) => version.versionID === state.currentVersionID
         );
+
         const nodes = generateNodeList(state.editorState.doc);
 
+        console.log({ previousReplica, nodes });
         let newVersion;
         if (previousReplica) {
+            console.log('generating from replica');
             newVersion = generateVersionFromReplica(previousReplica, nodes);
         } else {
+            console.log('generating from editor state');
             newVersion = Replica.fromProsemirrorDoc(
                 state.editorState.doc,
-                state.currentDocID,
-                state.currentDocID,
-                null
+                newVersionID,
+                state.currentDOCID,
+                newVersionID
             );
         }
-        const newVersionID = crypto.randomUUID();
+        console.log({ newVersionPre: newVersion });
 
         newVersion.owner = action.payload.owner;
         newVersion.label = action.payload.label;
         newVersion.versionID = newVersionID;
         newVersion.title = action.payload.title;
         newVersion.description = action.payload.description;
+        console.log({ newVersionPost: newVersion });
         state.versions.push(newVersion);
 
         state.doc = JSON.stringify(newVersion.toProsemirrorDoc());
         state.currentVersionID = newVersionID;
+        state.currentVersionLabel = newVersion.label;
     },
     prepare: (
         owner: string,
@@ -243,6 +317,7 @@ export const restoreVersionByID = (state, action: PayloadAction<string>) => {
     );
     if (!versionToRestore) return;
     state.currentVersionID = action.payload;
+    state.currentVersionLabel = versionToRestore.label;
 
     state.doc = JSON.stringify(versionToRestore.toProsemirrorDoc());
     state.title = versionToRestore.title;

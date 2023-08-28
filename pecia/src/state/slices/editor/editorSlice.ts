@@ -12,18 +12,22 @@ import {
     restoreVersionByID,
     restoreVersionPrep,
     deleteVersion,
+    mergeVersions,
 } from './editorReducers';
 
 import schema from '../../../lib/editor/schema';
 
+const owner = localStorage.getItem('pecia-user-id');
 const initialState: Editor = {
     currentDocID: null,
     currentVersionID: null,
+    currentVersionLabel: null,
     schema,
     editorState: null,
     versions: [],
     doc: null,
     title: '',
+    owner: owner || '',
 };
 const editorSlice = createSlice({
     name: 'editor',
@@ -40,6 +44,7 @@ const editorSlice = createSlice({
         restoreVersionPrep,
         setTitle,
         deleteVersion,
+        mergeVersions,
     },
 });
 

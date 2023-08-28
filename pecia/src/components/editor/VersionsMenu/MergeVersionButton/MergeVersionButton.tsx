@@ -5,8 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './MergeVersionButton.css';
 import { useState } from 'react';
 
-const MergeVersionButton = ({ handler, version1Label, version2Label }) => {
-    const [title, setTitle] = useState('');
+const MergeVersionButton = ({
+    handler,
+    version1Label,
+    version1ID,
+    version2Label,
+    version2ID,
+}) => {
+    const [label, setLabel] = useState('');
     const [description, setDescription] = useState('');
 
     return (
@@ -43,9 +49,9 @@ const MergeVersionButton = ({ handler, version1Label, version2Label }) => {
                         Version Label:{' '}
                     </label>
                     <input
-                        value={title}
+                        value={label}
                         name="title"
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={(e) => setLabel(e.target.value)}
                         className="alert-dialog-input"
                     />
                 </div>
@@ -74,12 +80,17 @@ const MergeVersionButton = ({ handler, version1Label, version2Label }) => {
                     <AlertDialog.Action asChild>
                         <button
                             onClick={() => {
-                                handler(title, description);
-                                setTitle('');
+                                handler(
+                                    version1ID,
+                                    version2ID,
+                                    label,
+                                    description
+                                );
+                                setLabel('');
                                 setDescription('');
                             }}
                             className="button green"
-                            disabled={!title || !description}
+                            disabled={!label || !description}
                         >
                             Merge Versions
                         </button>

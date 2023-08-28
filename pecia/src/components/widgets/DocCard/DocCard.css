@@ -8,5 +8,5 @@ div.doc-card {
 
 div.doc-card:focus,
 div.doc-card:hover {
-    background-color: var(--light-blue);
+    outline: solid 2px var(--dark-grey);
 }

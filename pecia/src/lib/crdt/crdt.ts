@@ -1,5 +1,10 @@
 import Clock from './clock.js';
 import { LSEQ } from './lseq.js';
+import {
+    updateLogIm,
+    updateTreeIm,
+    getParentAndMetadataIm,
+} from './producers.js';
 
 export interface Metadata {
     type: string;
@@ -70,13 +75,19 @@ export class TreeMoveCRDT {
         return tree.find((n) => n.child === child);
     }
 
-    static getParent(
+    static getParentAndMetadata(
         tree: TreeNode[],
         child: string
     ): [string | null, Metadata] | null {
-        const node = TreeMoveCRDT.findNode(tree, child);
-        if (node) return [node.parent, node.meta];
-        else return null;
+        const imResults = getParentAndMetadataIm(tree, child);
+        if (!imResults) return null;
+        else return [imResults.parent, imResults.meta];
+        // const node = TreeMoveCRDT.findNode(tree, child);
+        // if (node) {
+        //     const newAttrs = node.meta.attrs ? { ...node.meta.attrs } : null;
+        //     const newMeta: Metadata = { ...node.meta, attrs: newAttrs };
+        //     return [node.parent, newMeta];
+        // } else return null;
     }
 
     //given a tree, and two node IDs, determines if n1 is an ancestor of n2 in the tree.
@@ -91,13 +102,18 @@ export class TreeMoveCRDT {
     }
 
     static updateLog(state: ReplicaState, move: Move): LogMove[] {
-        const parent = TreeMoveCRDT.getParent(state.tree, move.child);
+        const parentAndMetadata = TreeMoveCRDT.getParentAndMetadata(
+            state.tree,
+            move.child
+        );
         let oldState: OldState | null = null;
         if (parent) {
-            const [oldParent, oldMetadata] = parent;
+            const [oldParent, oldMetadata] = parentAndMetadata;
             oldState = { oldParent, oldMetadata };
         }
-        const newLog = [...state.opLog];
+        const newLog = state.opLog.map((op) => {
+            return { ...op };
+        });
         newLog.push({
             oldState,
             time: move.time,
@@ -132,8 +148,10 @@ export class TreeMoveCRDT {
     static doOp(state: ReplicaState, move: Move): ReplicaState {
         //we always update the log, even if the move is invalid.
         //it may become valid if an earlier move is then added during a merge.
-        const newLog = TreeMoveCRDT.updateLog(state, move);
-        const newTree = TreeMoveCRDT.updateTree(state, move);
+        const newLog = updateLogIm(state, move).state.opLog;
+        const newTree = updateTreeIm(state, move).state.tree;
+        // const newLog = TreeMoveCRDT.updateLog(state, move);
+        // const newTree = TreeMoveCRDT.updateTree(state, move);
         return { opLog: newLog, tree: newTree };
     }
 
@@ -196,7 +214,10 @@ export class TreeMoveCRDT {
         }
     }
     static applyOps(state: ReplicaState, opLog: LogMove[]): ReplicaState {
-        let newState = structuredClone(state);
+        let newState: ReplicaState = {
+            tree: [...state.tree],
+            opLog: [...state.opLog],
+        };
         for (const op of opLog) {
             const move: Move = {
                 time: op.time,
