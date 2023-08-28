@@ -85,14 +85,16 @@ export const saveDoc = (
     editorView: EditorView,
     id: string,
     dispatch: Dispatch,
-    versions: Replica[]
+    versions: Replica[],
+    title: string
 ) => {
     if (!editorView) return;
     const doc = editorView.state.doc.toJSON();
+    const storage = { doc, title };
     if (doc)
         persist(
             `pecia-doc-${id}`,
-            JSON.stringify(doc),
+            JSON.stringify(storage),
             dispatch,
             'document saved!'
         );

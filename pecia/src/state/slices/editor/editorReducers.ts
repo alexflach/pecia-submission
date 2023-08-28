@@ -10,6 +10,14 @@ import { Replica } from '../../../lib/crdt/replica';
 import { hasOnlyTextContent, initIDs } from './utils';
 import { TreeMoveCRDT } from '../../../lib/crdt/crdt';
 
+const PM_PLUGINS = [
+    history(),
+    keymap({ 'Mod-z': undo, 'Mod-y': redo }),
+    keymap(baseKeymap),
+    idPlugin(),
+    stepsPlugin(),
+];
+
 export type Editor = {
     currentDocID: string | null;
     schema: Schema;
@@ -17,6 +25,7 @@ export type Editor = {
     versions: Replica[] | null;
     doc: string;
     currentVersionID: string | null;
+    title: string;
 };
 
 export const setCurrentDocID: CaseReducer<Editor, PayloadAction<string>> = (
@@ -24,6 +33,35 @@ export const setCurrentDocID: CaseReducer<Editor, PayloadAction<string>> = (
     action: PayloadAction<string>
 ) => {
     state.currentDocID = action.payload;
+};
+
+export const setTitle: CaseReducer<Editor, PayloadAction<string>> = (
+    state,
+    action: PayloadAction<string>
+) => {
+    state.title = action.payload;
+};
+
+export const deleteVersion: CaseReducer<Editor, PayloadAction<string>> = (
+    state,
+    action
+) => {
+    //can't have 0 versions;
+    if (!state.versions || state.versions.length < 2) {
+        console.log('bailing for lack of version length');
+        return;
+    }
+    //can't delete currently active version
+    if (state.currentVersionID === action.payload) {
+        console.log('bailing because trying to delete current version');
+        return;
+    }
+    const newVersions = state.versions.filter(
+        (version) => version.versionID !== action.payload
+    );
+    console.log(newVersions);
+
+    state.versions = newVersions;
 };
 
 export const setSchema = (state, action: PayloadAction<Schema>) => {
@@ -36,7 +74,13 @@ export const retrieveDoc: CaseReducer<Editor, PayloadAction<null>> = (
     const retrievedDoc = localStorage.getItem(
         `pecia-doc-${state.currentDocID}`
     );
-    state.doc = retrievedDoc;
+    if (retrievedDoc) {
+        const parsed = JSON.parse(retrievedDoc);
+        const body = parsed.doc;
+        const title = parsed.title;
+        state.doc = JSON.stringify(body);
+        state.title = title;
+    }
 };
 
 export const retrieveVersions = (state) => {
@@ -44,10 +88,24 @@ export const retrieveVersions = (state) => {
         `pecia-versions-${state.currentDocID}`
     );
     const versions = storedVersions ? JSON.parse(storedVersions) : [];
-    state.versions = versions;
+    const versionReplicas = versions.map(
+        (version) =>
+            new Replica(
+                version.tree,
+                version.opLog,
+                version.id,
+                version.docID,
+                version.versionID,
+                version.title,
+                version.description,
+                version.label,
+                version.owner
+            )
+    );
+    state.versions = versionReplicas;
     //pick the latest version
     state.currentVersionID = versions?.length
-        ? versions[versions.length - 1]
+        ? versions[versions.length - 1].versionID
         : null;
 };
 
@@ -80,13 +138,7 @@ export const initEditor = {
         let editorState = EditorState.create({
             schema: state.schema,
             doc: initDoc,
-            plugins: [
-                history(),
-                keymap({ 'Mod-z': undo, 'Mod-y': redo }),
-                keymap(baseKeymap),
-                idPlugin(),
-                stepsPlugin(),
-            ],
+            plugins: PM_PLUGINS,
         });
 
         editorState = initIDs(editorState);
@@ -182,6 +234,22 @@ export const createVersion = {
             },
         };
     },
+};
+
+export const restoreVersionByID = (state, action: PayloadAction<string>) => {
+    //steps to reboot editor
+    const versionToRestore = state.versions.find(
+        (version) => version.versionID === action.payload
+    );
+    if (!versionToRestore) return;
+    state.currentVersionID = action.payload;
+
+    state.doc = JSON.stringify(versionToRestore.toProsemirrorDoc());
+    state.title = versionToRestore.title;
+};
+
+export const restoreVersionPrep = (state, action: PayloadAction<string>) => {
+    console.log(action.payload);
 };
 
 function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {

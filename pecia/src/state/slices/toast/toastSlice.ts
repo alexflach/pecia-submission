@@ -5,6 +5,7 @@ type Toast = {
     id: string;
     message: string;
     type: ToastType;
+    timestamp: number;
 };
 
 type ToastState = {
@@ -34,6 +35,7 @@ const addToast = {
                 message,
                 type,
                 id: crypto.randomUUID(),
+                timestamp: Date.now(),
             },
         };
     },

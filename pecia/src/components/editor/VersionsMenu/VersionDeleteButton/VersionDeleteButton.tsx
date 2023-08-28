@@ -1,7 +1,7 @@
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import { TrashIcon } from '@radix-ui/react-icons';
 
-const VersionDeleteButton = ({ handler, ICON_PROPS }) => {
+const VersionDeleteButton = ({ handler, versionID, ICON_PROPS }) => {
     return (
         <AlertDialog.Root>
             <AlertDialog.Trigger className="alert-trigger">
@@ -32,7 +32,10 @@ const VersionDeleteButton = ({ handler, ICON_PROPS }) => {
                         <button className="button">Cancel</button>
                     </AlertDialog.Cancel>
                     <AlertDialog.Action asChild>
-                        <button onClick={handler} className="button red">
+                        <button
+                            onClick={() => handler(versionID)}
+                            className="button red"
+                        >
                             Yes, delete version
                         </button>
                     </AlertDialog.Action>

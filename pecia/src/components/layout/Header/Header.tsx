@@ -3,7 +3,8 @@ import User from '../../widgets/User';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../state/store';
-import { actions } from '../../../state/slices/docs';
+import { actions as editorActions } from '../../../state/slices/editor';
+import { actions as docsActions } from '../../../state/slices/docs';
 
 import './Header.css';
 
@@ -11,13 +12,13 @@ const Header = () => {
     const { pathname } = useLocation();
     const dispatch = useDispatch();
 
-    const docs = useSelector((state: RootState) => state.docs.docs);
-    const docID = useSelector((state: RootState) => state.editor.currentDocID);
-    const doc = docs.find((doc) => doc.id === docID);
-    const title = doc ? doc.title : '';
+    const { title, currentDocID } = useSelector(
+        (state: RootState) => state.editor
+    );
 
     const handleChange = (e) => {
-        dispatch(actions.setTitle(docID, e.target.value));
+        dispatch(editorActions.setTitle(e.target.value));
+        dispatch(docsActions.setTitle(currentDocID, title));
     };
 
     return (
@@ -29,7 +30,7 @@ const Header = () => {
                 <input
                     className="title-input"
                     type="text"
-                    value={title}
+                    value={title ? title : ''}
                     placeholder="enter title..."
                     maxLength={30}
                     onChange={handleChange}

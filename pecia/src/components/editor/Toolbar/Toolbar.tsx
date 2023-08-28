@@ -13,7 +13,6 @@ import {
     setHeadingLevel,
     deleteDoc,
     shareDoc,
-    versionDoc,
 } from './commands';
 
 import * as Toolbar from '@radix-ui/react-toolbar';
@@ -38,7 +37,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Toolbar.css';
 import { useNavigate } from 'react-router-dom';
 import DeleteButton from './DeleteButton';
-import CreateVersionButton from './CreateVersionButton';
 
 interface toolbarProps {
     editorView: React.MutableRefObject<EditorView>;
@@ -51,24 +49,15 @@ const ICON_PROPS = {
 };
 
 const EditorToolbar = ({ editorView }: toolbarProps) => {
-    const { currentDocID, versions } = useSelector(
+    const { currentDocID, versions, title } = useSelector(
         (state: RootState) => state.editor
     );
-    const docTitleArray = useSelector((state: RootState) => state.docs.docs)
-        .filter((doc) => doc.id === currentDocID)
-        .map((doc) => doc.title);
-    const docTitle = docTitleArray.length ? docTitleArray[0] : 'Untitled';
-    console.log({ docTitle });
-    const { peerID, peciaID } = useSelector((state: RootState) => state.user);
+    const { peerID } = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const deleteHandler = () => {
         deleteDoc(currentDocID, dispatch, navigate);
     };
-    const versionHandler = (label: string, description: string) => {
-        versionDoc(docTitle, description, label, peciaID, dispatch);
-    };
-
     return (
         <div className="toolbar">
             <Toolbar.Root
@@ -76,7 +65,6 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 aria-label="toolbar"
                 orientation="horizontal"
             >
-                <CreateVersionButton createVersion={versionHandler} />
                 <DeleteButton handler={deleteHandler} ICON_PROPS={ICON_PROPS} />
                 <Toolbar.Button
                     className="toolbar-button"
@@ -95,7 +83,8 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                             editorView.current,
                             currentDocID,
                             dispatch,
-                            versions
+                            versions,
+                            title
                         )
                     }
                 >

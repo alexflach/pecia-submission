@@ -17,7 +17,12 @@ const ToastsPanel = () => {
         >
             {toasts &&
                 toasts.map((toast) => (
-                    <Toast key={toast.id} type={toast.type} toastID={toast.id}>
+                    <Toast
+                        key={toast.id}
+                        type={toast.type}
+                        timestamp={toast.timestamp}
+                        toastID={toast.id}
+                    >
                         {toast.message}
                     </Toast>
                 ))}

@@ -42,3 +42,7 @@
     background-color: inherit;
     margin-left: 5%;
 }
+
+p.toast-time {
+    margin-bottom: 0;
+}

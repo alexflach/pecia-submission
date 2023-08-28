@@ -1,4 +1,4 @@
-import { takeEvery, apply, call } from 'redux-saga/effects';
+import { takeEvery, apply, call, put } from 'redux-saga/effects';
 import { bootstrapConnection } from '../slices/peer/utils';
 
 function* connectToPeer(action) {
@@ -18,6 +18,11 @@ function* connectToPeer(action) {
     }
 }
 
+function* restoreVersion(action) {
+    yield put({ type: 'editor/restoreVersionByID', payload: action.payload });
+    yield put({ type: 'editor/initEditor', payload: { owner: '', title: '' } });
+}
 export default function* rootSaga() {
     yield takeEvery('peer/connect', connectToPeer);
+    yield takeEvery('editor/restoreVersionPrep', restoreVersion);
 }
