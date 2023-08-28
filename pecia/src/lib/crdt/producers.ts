@@ -6,6 +6,7 @@ import {
     ReplicaState,
     Move,
     OldState,
+    LogMove,
 } from './crdt';
 
 type GetChildAndMetadataState = {
@@ -78,6 +79,25 @@ export const updateTreeIm = (state: ReplicaState, move: Move) => {
                 meta: move.meta,
                 child: move.child,
             });
+        }
+    });
+};
+
+type UndoState = {
+    tree: TreeNode[];
+    op: LogMove;
+};
+
+export const undoOpIm = (tree: TreeNode[], op: LogMove) => {
+    return produce({ tree, op } as UndoState, (draftState) => {
+        draftState.tree = draftState.tree.filter((n) => n.child !== op.child);
+        if (op.oldState) {
+            const newNode: TreeNode = {
+                parent: op.oldState.oldParent,
+                meta: op.oldState.oldMetadata,
+                child: op.child,
+            };
+            draftState.tree.push(newNode);
         }
     });
 };

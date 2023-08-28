@@ -4,6 +4,7 @@ import {
     updateLogIm,
     updateTreeIm,
     getParentAndMetadataIm,
+    undoOpIm,
 } from './producers.js';
 
 export interface Metadata {
@@ -155,19 +156,20 @@ export class TreeMoveCRDT {
         return { opLog: newLog, tree: newTree };
     }
 
-    static undoOp(tree: readonly TreeNode[], op: LogMove): TreeNode[] {
-        // the base case is there was no old state, in which case this was an insertion and we just remove the node
-        const newTree = tree.filter((n) => n.child !== op.child);
-        // otherwise it was a metadata change or move, in which case we revert to the old state
-        if (op.oldState) {
-            const newNode: TreeNode = {
-                parent: op.oldState.oldParent,
-                meta: op.oldState.oldMetadata,
-                child: op.child,
-            };
-            newTree.push(newNode);
-        }
-        return newTree;
+    static undoOp(tree: TreeNode[], op: LogMove): TreeNode[] {
+        const newState = undoOpIm(tree, op);
+        // // the base case is there was no old state, in which case this was an insertion and we just remove the node
+        // const newTree = tree.filter((n) => n.child !== op.child);
+        // // otherwise it was a metadata change or move, in which case we revert to the old state
+        // if (op.oldState) {
+        //     const newNode: TreeNode = {
+        //         parent: op.oldState.oldParent,
+        //         meta: op.oldState.oldMetadata,
+        //         child: op.child,
+        //     };
+        //     newTree.push(newNode);
+        // }
+        return newState.tree;
     }
 
     static redoOp(state: ReplicaState, op: LogMove): ReplicaState {
