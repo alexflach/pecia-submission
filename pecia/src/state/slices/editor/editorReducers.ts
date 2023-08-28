@@ -106,14 +106,14 @@ export const mergeVersions = {
         console.log(action.payload);
         const { version1ID, version2ID, label, description } = action.payload;
         const version1 = state.versions.find(
-            (version) => (version.versionID = version1ID)
+            (version) => version.versionID === version1ID
         );
         const version2 = state.versions.find(
-            (version) => (version.versionID = version2ID)
+            (version) => version.versionID === version2ID
         );
         if (!version1 || !version2) return;
         const newReplicaState = TreeMoveCRDT.merge(
-            { tree: version1.tree, opLog: version2.opLog },
+            { tree: version1.tree, opLog: version1.opLog },
             { tree: version2.tree, opLog: version2.opLog }
         );
         const newVersionID = crypto.randomUUID();

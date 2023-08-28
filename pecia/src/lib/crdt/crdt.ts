@@ -5,6 +5,7 @@ import {
     updateTreeIm,
     getParentAndMetadataIm,
     undoOpIm,
+    applyOpsIm,
 } from './producers.js';
 
 export interface Metadata {
@@ -216,20 +217,22 @@ export class TreeMoveCRDT {
         }
     }
     static applyOps(state: ReplicaState, opLog: LogMove[]): ReplicaState {
-        let newState: ReplicaState = {
-            tree: [...state.tree],
-            opLog: [...state.opLog],
-        };
-        for (const op of opLog) {
-            const move: Move = {
-                time: op.time,
-                child: op.child,
-                parent: op.parent,
-                meta: op.meta,
-            };
-            newState = TreeMoveCRDT.applyOp(newState, move);
-        }
-        return newState;
+        const immerNewState = applyOpsIm(state, opLog).replicaState;
+        return immerNewState;
+        // let newState: ReplicaState = {
+        //     tree: [...state.tree],
+        //     opLog: [...state.opLog],
+        // };
+        // for (const op of opLog) {
+        //     const move: Move = {
+        //         time: op.time,
+        //         child: op.child,
+        //         parent: op.parent,
+        //         meta: op.meta,
+        //     };
+        //     newState = TreeMoveCRDT.applyOp(newState, move);
+        // }
+        // return newState;
     }
 
     static merge(state1: ReplicaState, state2: ReplicaState): ReplicaState {

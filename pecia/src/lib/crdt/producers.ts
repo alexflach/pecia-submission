@@ -8,6 +8,7 @@ import {
     OldState,
     LogMove,
 } from './crdt';
+import Clock from './clock';
 
 type GetChildAndMetadataState = {
     tree?: TreeNode[];
@@ -98,6 +99,69 @@ export const undoOpIm = (tree: TreeNode[], op: LogMove) => {
                 child: op.child,
             };
             draftState.tree.push(newNode);
+        }
+    });
+};
+
+type ApplyState = {
+    replicaState: ReplicaState;
+    move: Move;
+};
+
+export const applyOpIm = (replicaState: ReplicaState, move: Move) => {
+    return produce({ replicaState, move } as ApplyState, (draftState) => {
+        // If this is the first operation or the move timestamp is more recent than the oldest log entry, we can just
+        // do the op as normal
+        const opLength = draftState.replicaState.opLog.length;
+        const logTime = draftState.replicaState.opLog[opLength - 1]?.time;
+        if (
+            opLength < 1 ||
+            Clock.maxFromStrings(logTime, move.time) === move.time
+        ) {
+            draftState.replicaState = TreeMoveCRDT.doOp(
+                draftState.replicaState,
+                move
+            );
+        } else {
+            const lastOp =
+                draftState.replicaState.opLog.length > 0
+                    ? draftState.replicaState.opLog.pop()
+                    : null;
+            if (!lastOp) {
+                throw new Error('something went wrong with the op log');
+            } else {
+                const newTree = undoOpIm(
+                    draftState.replicaState.tree,
+                    lastOp
+                ).tree;
+                draftState.replicaState = TreeMoveCRDT.redoOp(
+                    applyOpIm(
+                        {
+                            opLog: draftState.replicaState.opLog,
+                            tree: newTree,
+                        } as ReplicaState,
+                        move
+                    ).replicaState,
+                    lastOp
+                );
+            }
+        }
+    });
+};
+
+export const applyOpsIm = (replicaState: ReplicaState, opLog: LogMove[]) => {
+    return produce({ replicaState, opLog }, (draftState) => {
+        for (const op of draftState.opLog) {
+            const move: Move = {
+                time: op.time,
+                child: op.child,
+                parent: op.parent,
+                meta: op.meta,
+            };
+            draftState.replicaState = TreeMoveCRDT.applyOp(
+                draftState.replicaState,
+                move
+            );
         }
     });
 };
