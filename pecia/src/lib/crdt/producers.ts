@@ -47,6 +47,7 @@ export const updateLogIm = (state: ReplicaState, move: Move) => {
             parent: move.parent,
             meta: move.meta,
             child: move.child,
+            id: move.id,
         });
     });
 };
@@ -157,11 +158,18 @@ export const applyOpsIm = (replicaState: ReplicaState, opLog: LogMove[]) => {
                 child: op.child,
                 parent: op.parent,
                 meta: op.meta,
+                id: op.id,
             };
-            draftState.replicaState = TreeMoveCRDT.applyOp(
-                draftState.replicaState,
-                move
-            );
+            if (
+                !draftState.replicaState.opLog.find(
+                    (operation) => operation.id === op.id
+                )
+            ) {
+                draftState.replicaState = applyOpIm(
+                    draftState.replicaState,
+                    move
+                ).replicaState;
+            }
         }
     });
 };

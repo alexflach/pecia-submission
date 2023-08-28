@@ -135,6 +135,7 @@ export class Replica {
                 attrs,
             },
             child,
+            id: crypto.randomUUID(),
         };
         const newState = CRDT.applyOp(this.state, move);
         this.updateState(newState);
@@ -152,7 +153,13 @@ export class Replica {
         }
 
         const time = this.generateTimestamp();
-        const move: Move = { time, parent: 'TRASH', child, meta: node.meta };
+        const move: Move = {
+            time,
+            parent: 'TRASH',
+            child,
+            meta: node.meta,
+            id: crypto.randomUUID(),
+        };
         const newState = CRDT.applyOp(this.state, move);
         this.updateState(newState);
     }
@@ -177,6 +184,7 @@ export class Replica {
         const newAttrs = { ...childNode.meta?.attrs };
         const newMeta = { ...childNode.meta, attrs: newAttrs };
         const move: Move = {
+            id: crypto.randomUUID(),
             time,
             parent: newParent,
             child,
@@ -216,6 +224,7 @@ export class Replica {
 
         const time = this.generateTimestamp();
         const move: Move = {
+            id: crypto.randomUUID(),
             time,
             parent: n.parent,
             child: node,
@@ -244,6 +253,7 @@ export class Replica {
 
         const time = this.generateTimestamp();
         const move: Move = {
+            id: crypto.randomUUID(),
             time,
             parent: node.parent,
             child,

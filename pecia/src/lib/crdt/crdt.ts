@@ -22,6 +22,7 @@ export interface Move {
     parent: string | null;
     meta: Metadata;
     child: string;
+    id: string;
 }
 
 export interface TreeNode {
@@ -65,6 +66,7 @@ export interface LogMove {
     parent: string | null;
     meta: Metadata;
     child: string;
+    id: string;
 }
 
 export interface ReplicaState {
@@ -122,6 +124,7 @@ export class TreeMoveCRDT {
             parent: move.parent,
             meta: move.meta,
             child: move.child,
+            id: move.id,
         });
         return newLog;
     }
@@ -179,6 +182,7 @@ export class TreeMoveCRDT {
             meta: op.meta,
             parent: op.parent,
             child: op.child,
+            id: op.id,
         });
         return newState;
     }
