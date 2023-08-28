@@ -452,9 +452,19 @@ function updateContent(replica: Replica, nodes: PMNode[]) {
     const updatedContent = nodes.filter((node) => {
         if (!node.leaf) return false;
         const matchedNode = replica.tree.find((n) => node.child === n.child);
-        return !(matchedNode.meta.content === JSON.stringify(node.content));
+        if (
+            matchedNode.meta.content === JSON.stringify(node.content) &&
+            JSON.stringify(matchedNode.meta.attrs) ===
+                JSON.stringify(node.attrs)
+        ) {
+            return false;
+        } else return true;
     });
     for (const node of updatedContent) {
-        replica.updateNodeContent(node.child, JSON.stringify(node.content));
+        replica.updateNodeContent(
+            node.child,
+            JSON.stringify(node.content),
+            node.attrs
+        );
     }
 }

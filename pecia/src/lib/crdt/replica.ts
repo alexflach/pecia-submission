@@ -174,11 +174,13 @@ export class Replica {
             );
         }
         const time = this.generateTimestamp();
+        const newAttrs = { ...childNode.meta?.attrs };
+        const newMeta = { ...childNode.meta, attrs: newAttrs };
         const move: Move = {
             time,
             parent: newParent,
             child,
-            meta: childNode.meta,
+            meta: newMeta,
         };
 
         const newState = CRDT.applyOp(this.state, move);
@@ -230,7 +232,7 @@ export class Replica {
         this.updateState(newState);
     }
 
-    updateNodeContent(child: string, content: string) {
+    updateNodeContent(child: string, content: string, attrs: object) {
         //cannot edit root or trash
         if (child === 'ROOT' || child === 'TRASH') return;
         const node = CRDT.findNode(this.tree, child);
@@ -251,6 +253,7 @@ export class Replica {
                 pos: node.meta.pos,
                 previousSibling: node.meta.previousSibling,
                 subsequentSibling: node.meta.subsequentSibling,
+                attrs: attrs,
             },
         };
         const newState = CRDT.applyOp(this.state, move);
