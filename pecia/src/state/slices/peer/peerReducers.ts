@@ -1,5 +1,6 @@
 import { Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import Peer, { DataConnection } from 'peerjs';
+import {Doc} from "../docs/docsReducers.ts";
 
 type ConnectionStatus = 'CONNECTED' | 'PENDING' | 'DISCONNECTED';
 
@@ -87,6 +88,27 @@ export const updateColleague = {
             }
         }
     }
+}
+
+export const updateColleagueDocs = {
+    reducer: (state: PeerState, action) => {
+        state.colleagues = state.colleagues.map(colleague=> (
+            colleague.peciaID === action.payload.colleagueID ? {...colleague, docs: action.payload.docs} : colleague
+        ))
+
+    },
+    prepare: (colleagueID: string, docs: Doc[]) => {
+        return {
+            payload: {
+                colleagueID,
+                docs
+            }
+        }
+    }
+}
+
+export const deleteColleague = (state: PeerState, action: PayloadAction<string>) => {
+    state.colleagues = state.colleagues.filter(colleague=>colleague.peciaID !== action.payload)
 }
 
 export const addConnection = {

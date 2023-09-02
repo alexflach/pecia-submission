@@ -10,13 +10,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { Colleague} from "../../../state/slices/peer/peerReducers.ts";
 import EditColleagueButton from "../EditColleagueButton/EditColleagueButton.tsx";
+import DeleteColleagueButton from "../DeleteColleagueButton";
+import EditSharedDocsButton from "../EditSharedDocsButton";
+
 import './ColleagueCard.css';
+import {Doc} from "../../../state/slices/docs/docsReducers.ts";
+
 
 const ColleagueCard = ({ colleague}: {colleague: Colleague}) => {
    const dispatch = useDispatch();
    const [open, setOpen] = useState(false);
    const updateColleagueHandler = (username, passcode, newPeciaID) => {
        dispatch(actions.updateColleague(username, passcode, colleague.peciaID, newPeciaID))
+   }
+   const deleteColleagueHandler = () => {
+       dispatch(actions.deleteColleague(colleague.peciaID))
+   }
+
+   const updateDocsHandler = (docs: Doc[]) => {
+       dispatch(actions.updateColleagueDocs(colleague.peciaID, docs))
    }
    return (
         <div
@@ -40,9 +52,14 @@ const ColleagueCard = ({ colleague}: {colleague: Colleague}) => {
                     </div>
                 </Collapsible.Trigger>
                 <Collapsible.Content>
-                    <span className="passcode">{colleague.passcode}</span>
+                    <p className="passcode">Passcode: {colleague.passcode}</p>
+                    {!!colleague.docs.length && <p>Shared docs:</p>}
+                    {!!colleague.docs.length && colleague.docs.map(doc=> (<p>{doc}</p>))}
                     <div className="card-actions">
                         <EditColleagueButton handler={updateColleagueHandler} colleague={colleague} />
+                        <EditSharedDocsButton handler={updateDocsHandler} colleague={colleague}/>
+                        <DeleteColleagueButton handler={deleteColleagueHandler} />
+
 
                     </div>
                 </Collapsible.Content>

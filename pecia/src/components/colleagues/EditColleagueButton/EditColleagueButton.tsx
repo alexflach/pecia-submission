@@ -12,7 +12,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger>
+            <AlertDialog.Trigger className="alert-trigger">
                 <FontAwesomeIcon icon={faPenToSquare} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />

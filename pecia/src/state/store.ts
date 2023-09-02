@@ -74,7 +74,20 @@ const persistUser = () => {
     }
 };
 
+let oldColleagues;
+
+const persistColleagues= () => {
+    const colleaguesSelector = (state: RootState) => state.peer.colleagues;
+    const colleagues = colleaguesSelector(store.getState());
+    const colleaguesString = JSON.stringify(colleagues);
+    if(colleaguesString !== oldColleagues) {
+        oldColleagues = colleaguesString;
+        persist(`pecia-colleagues`, colleaguesString)
+    }
+}
+
 store.subscribe(persistDocs);
 store.subscribe(persistUser);
+store.subscribe(persistColleagues);
 
 export default store;

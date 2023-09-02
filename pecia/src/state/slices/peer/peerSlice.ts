@@ -13,7 +13,21 @@ import {
     dataReceived,
     addColleague,
     updateColleague,
+    deleteColleague,
+    updateColleagueDocs
 } from './peerReducers';
+
+let initialColleagues = [];
+
+try {
+    const retrievedColleagues = localStorage.getItem('pecia-colleagues')
+    if (retrievedColleagues) {
+        const parsedColleagues = JSON.parse(retrievedColleagues);
+        initialColleagues = parsedColleagues.map(colleague => ({...colleague, connectionStatus: 'DISCONNECTED', peerID: ''}))
+    }
+} catch (error) {
+    console.error(error);
+}
 
 const initialState: PeerState = {
     connections: [],
@@ -21,7 +35,7 @@ const initialState: PeerState = {
     peerErrors: [],
     connectionErrors: [],
     messages: [],
-    colleagues: [],
+    colleagues: initialColleagues,
 };
 const peerSlice = createSlice({
     name: 'peer',
@@ -30,6 +44,8 @@ const peerSlice = createSlice({
         addConnection,
         addColleague,
         updateColleague,
+        updateColleagueDocs,
+        deleteColleague,
         removeConnection,
         updateConnectionPasscode,
         updateConnectionStatus,
