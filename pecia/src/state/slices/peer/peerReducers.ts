@@ -1,7 +1,18 @@
 import { Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import Peer, { DataConnection } from 'peerjs';
 
-type ConnectionStatus = 'connected' | 'disconnected' | 'closed';
+type ConnectionStatus = 'CONNECTED' | 'PENDING' | 'DISCONNECTED';
+
+type ColleagueStatus = 'INVITED' | 'PENDING' | 'CONNECTED' | 'REJECTED'
+export interface Colleague {
+    peciaID: string,
+    username: string,
+    passcode: string,
+    peerID: string,
+    docs: string[],
+    status: ColleagueStatus,
+    connectionStatus: ConnectionStatus
+}
 
 export type Connection = {
     id: string;
@@ -26,12 +37,57 @@ export type DataPacket = {
 };
 
 export type PeerState = {
+    colleagues: Colleague[];
     connections: Connection[];
     requestedConnections: Connection[];
     peerErrors: PeerError[];
     connectionErrors: PeerError[];
     messages: DataPacket[];
 };
+
+
+export const addColleague = {
+    reducer: (state: PeerState, action: PayloadAction<Colleague>) => {
+        state.colleagues.push(action.payload);
+    },
+    prepare: (username: string, passcode: string, peciaID) => {
+        const payload: Colleague = {
+            username,
+            passcode,
+            peciaID,
+            peerID: '',
+            docs: [],
+            status: 'PENDING',
+            connectionStatus: 'DISCONNECTED'
+
+        }
+        return {
+            payload
+        }
+    }
+}
+
+export const updateColleague = {
+    reducer: (state: PeerState, action) => {
+        state.colleagues = state.colleagues.map(colleague=> {
+            if(colleague.peciaID === action.payload.oldPeciaID) {
+                return {
+                    ...colleague,
+                    username: action.payload.username,
+                    passcode: action.payload.passcode,
+                    peciaID: action.payload.newPeciaID
+                }
+            } else return colleague;
+        })
+    },
+    prepare: (username: string, passcode: string, oldPeciaID: string, newPeciaID: string) => {
+        return {
+            payload: {
+                username, passcode, oldPeciaID, newPeciaID
+            }
+        }
+    }
+}
 
 export const addConnection = {
     reducer: (state: PeerState, action: PayloadAction<Connection>) => {
@@ -122,7 +178,7 @@ export const connectionRequested = {
             username: action.payload.username,
             passcode: action.payload.passcode,
             documents: [action.payload.docID],
-            status: 'connected',
+            status: 'CONNECTED',
         });
     },
     prepare: (id: string, passcode: string, username: string, docID) => {

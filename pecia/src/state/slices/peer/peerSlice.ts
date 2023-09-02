@@ -11,6 +11,8 @@ import {
     connectionErrorReported,
     peerErrorReported,
     dataReceived,
+    addColleague,
+    updateColleague,
 } from './peerReducers';
 
 const initialState: PeerState = {
@@ -19,12 +21,15 @@ const initialState: PeerState = {
     peerErrors: [],
     connectionErrors: [],
     messages: [],
+    colleagues: [],
 };
 const peerSlice = createSlice({
     name: 'peer',
     initialState,
     reducers: {
         addConnection,
+        addColleague,
+        updateColleague,
         removeConnection,
         updateConnectionPasscode,
         updateConnectionStatus,
