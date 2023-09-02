@@ -12,6 +12,7 @@ import { Colleague} from "../../../state/slices/peer/peerReducers.ts";
 import EditColleagueButton from "../EditColleagueButton/EditColleagueButton.tsx";
 import DeleteColleagueButton from "../DeleteColleagueButton";
 import EditSharedDocsButton from "../EditSharedDocsButton";
+import ConnectButton from "../ConnectButton";
 
 import './ColleagueCard.css';
 import {Doc} from "../../../state/slices/docs/docsReducers.ts";
@@ -29,6 +30,10 @@ const ColleagueCard = ({ colleague}: {colleague: Colleague}) => {
 
    const updateDocsHandler = (docs: Doc[]) => {
        dispatch(actions.updateColleagueDocs(colleague.peciaID, docs))
+   }
+
+   const connectToPeer = (peerID: string) => {
+       dispatch(actions.connectionRequested(peerID, colleague.passcode, colleague.username, colleague.peciaID));
    }
    return (
         <div
@@ -56,11 +61,11 @@ const ColleagueCard = ({ colleague}: {colleague: Colleague}) => {
                     {!!colleague.docs.length && <p>Shared docs:</p>}
                     {!!colleague.docs.length && colleague.docs.map(doc=> (<p>{doc}</p>))}
                     <div className="card-actions">
+
+                        <DeleteColleagueButton handler={deleteColleagueHandler} />
                         <EditColleagueButton handler={updateColleagueHandler} colleague={colleague} />
                         <EditSharedDocsButton handler={updateDocsHandler} colleague={colleague}/>
-                        <DeleteColleagueButton handler={deleteColleagueHandler} />
-
-
+                        <ConnectButton handler={connectToPeer} />
                     </div>
                 </Collapsible.Content>
             </Collapsible.Root>

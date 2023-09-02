@@ -57,6 +57,10 @@ div.versions-wrapper {
     padding-top: 1rem;
     margin-top: 1rem;
 }
+.tabs-content[hidden] {
+    padding-top: 0;
+    margin-top: 0;
+}
 @media (min-width: 800px) {
     div.colleagues-wrapper {
         grid-column-start: 1;
