@@ -7,7 +7,7 @@ declare const self: ServiceWorkerGlobalScope;
 // If we change our application we can simply amend this string and the
 // application will update the cache to the latest version of the app.
 // UI can be added around this, but not needed for the prototype.
-const CACHE = 'pecia-v1';
+const CACHE = 'pecia-v2';
 
 //add the base scripts
 self.addEventListener('install', (e) => {
