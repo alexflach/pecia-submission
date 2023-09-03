@@ -79,9 +79,6 @@ const ColleagueCard = ({ colleague }: { colleague: Colleague }) => {
                 </Collapsible.Trigger>
                 <Collapsible.Content>
                     <p className="passcode">Passcode: {colleague.passcode}</p>
-                    {!!colleague.docs.length && <p>Shared docs:</p>}
-                    {!!colleague.docs.length &&
-                        colleague.docs.map((doc) => <p key={doc}>{doc}</p>)}
                     <div className="card-actions">
                         <DeleteColleagueButton
                             handler={deleteColleagueHandler}
@@ -94,7 +91,9 @@ const ColleagueCard = ({ colleague }: { colleague: Colleague }) => {
                             handler={updateDocsHandler}
                             colleague={colleague}
                         />
-                        <ConnectButton handler={connectToPeer} />
+                        {colleague.connectionStatus === "DISCONNECTED" && (
+                            <ConnectButton handler={connectToPeer} />
+                        )}
                     </div>
                 </Collapsible.Content>
             </Collapsible.Root>

@@ -17,9 +17,10 @@ export interface ConnectionMetadata {
 export const bootstrapConnection = (
     connection: DataConnection,
     dispatch: Dispatch,
+    colleagueID: string,
 ) => {
     connection.on("data", (data: DataPacket) => {
-        dispatch(peerActions.dataReceived(data));
+        dispatch(peerActions.dataReceived(colleagueID, data));
     });
     connection.on("error", (error) => {
         dispatch(
@@ -37,7 +38,6 @@ export const bootstrapConnection = (
     connection.on("open", () => {
         dispatch(peerActions.connectionOpen(connection.peer));
     });
-    connection.on("iceStateChanged", () => console.log("iceStateChanged ?"));
 };
 
 export const bootstrapPeer = (
@@ -58,7 +58,11 @@ export const bootstrapPeer = (
     // Someone is trying to connection
     peer.on("connection", (dataConnection: DataConnection) => {
         connectionsRef.current.push(dataConnection);
-        bootstrapConnection(dataConnection, dispatch);
+        bootstrapConnection(
+            dataConnection,
+            dispatch,
+            dataConnection.metadata.fromPeciaID,
+        );
         dispatch(
             peerActions.connectionRequested(
                 peer,

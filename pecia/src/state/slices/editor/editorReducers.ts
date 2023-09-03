@@ -1,18 +1,18 @@
-import { CaseReducer, PayloadAction } from '@reduxjs/toolkit';
-import { Schema, Node, Fragment } from 'prosemirror-model';
-import { EditorState, Transaction } from 'prosemirror-state';
-import { history, undo, redo } from 'prosemirror-history';
-import { keymap } from 'prosemirror-keymap';
-import { baseKeymap } from 'prosemirror-commands';
-import idPlugin from '../../../lib/editor/plugins/idPlugin';
-import stepsPlugin from '../../../lib/editor/plugins/stepsPlugin';
-import { Replica } from '../../../lib/crdt/replica';
-import { hasOnlyTextContent, initIDs } from './utils';
-import { TreeMoveCRDT } from '../../../lib/crdt/crdt';
+import { CaseReducer, PayloadAction } from "@reduxjs/toolkit";
+import { Schema, Node, Fragment } from "prosemirror-model";
+import { EditorState, Transaction } from "prosemirror-state";
+import { history, undo, redo } from "prosemirror-history";
+import { keymap } from "prosemirror-keymap";
+import { baseKeymap } from "prosemirror-commands";
+import idPlugin from "../../../lib/editor/plugins/idPlugin";
+import stepsPlugin from "../../../lib/editor/plugins/stepsPlugin";
+import { Replica } from "../../../lib/crdt/replica";
+import { initIDs, generateNodeList, generateVersionFromReplica } from "./utils";
+import { TreeMoveCRDT } from "../../../lib/crdt/crdt";
 
 const PM_PLUGINS = [
     history(),
-    keymap({ 'Mod-z': undo, 'Mod-y': redo }),
+    keymap({ "Mod-z": undo, "Mod-y": redo }),
     keymap(baseKeymap),
     idPlugin(),
     stepsPlugin(),
@@ -32,41 +32,41 @@ export type Editor = {
 
 export const setCurrentDocID: CaseReducer<Editor, PayloadAction<string>> = (
     state,
-    action: PayloadAction<string>
+    action: PayloadAction<string>,
 ) => {
     state.currentDocID = action.payload;
 };
 
 export const setOwner: CaseReducer<Editor, PayloadAction<string>> = (
     state,
-    action: PayloadAction<string>
+    action: PayloadAction<string>,
 ) => {
     state.owner = action.payload;
 };
 
 export const setTitle: CaseReducer<Editor, PayloadAction<string>> = (
     state,
-    action: PayloadAction<string>
+    action: PayloadAction<string>,
 ) => {
     state.title = action.payload;
 };
 
 export const deleteVersion: CaseReducer<Editor, PayloadAction<string>> = (
     state,
-    action
+    action,
 ) => {
     //can't have 0 versions;
     if (!state.versions || state.versions.length < 2) {
-        console.log('bailing for lack of version length');
+        console.log("bailing for lack of version length");
         return;
     }
     //can't delete currently active version
     if (state.currentVersionID === action.payload) {
-        console.log('bailing because trying to delete current version');
+        console.log("bailing because trying to delete current version");
         return;
     }
     const newVersions = state.versions.filter(
-        (version) => version.versionID !== action.payload
+        (version) => version.versionID !== action.payload,
     );
     console.log(newVersions);
 
@@ -78,10 +78,10 @@ export const setSchema = (state, action: PayloadAction<Schema>) => {
 };
 
 export const retrieveDoc: CaseReducer<Editor, PayloadAction<null>> = (
-    state
+    state,
 ) => {
     const retrievedDoc = localStorage.getItem(
-        `pecia-doc-${state.currentDocID}`
+        `pecia-doc-${state.currentDocID}`,
     );
     if (retrievedDoc) {
         const parsed = JSON.parse(retrievedDoc);
@@ -91,7 +91,7 @@ export const retrieveDoc: CaseReducer<Editor, PayloadAction<null>> = (
         state.title = title;
     } else {
         state.doc = null;
-        state.title = '';
+        state.title = "";
     }
 };
 
@@ -106,15 +106,15 @@ export const mergeVersions = {
         console.log(action.payload);
         const { version1ID, version2ID, label, description } = action.payload;
         const version1 = state.versions.find(
-            (version) => version.versionID === version1ID
+            (version) => version.versionID === version1ID,
         );
         const version2 = state.versions.find(
-            (version) => version.versionID === version2ID
+            (version) => version.versionID === version2ID,
         );
         if (!version1 || !version2) return;
         const newReplicaState = TreeMoveCRDT.merge(
             { tree: version1.tree, opLog: version1.opLog },
-            { tree: version2.tree, opLog: version2.opLog }
+            { tree: version2.tree, opLog: version2.opLog },
         );
         const newVersionID = crypto.randomUUID();
         const newReplica = new Replica(
@@ -126,7 +126,7 @@ export const mergeVersions = {
             state.title,
             description,
             label,
-            state.owner
+            state.owner,
         );
         state.versions.push(newReplica);
     },
@@ -134,7 +134,7 @@ export const mergeVersions = {
         version1ID: string,
         version2ID: string,
         label: string,
-        description: string
+        description: string,
     ) => {
         return {
             payload: {
@@ -148,7 +148,7 @@ export const mergeVersions = {
 };
 export const retrieveVersions = (state) => {
     const storedVersions = localStorage.getItem(
-        `pecia-versions-${state.currentDocID}`
+        `pecia-versions-${state.currentDocID}`,
     );
     const versions = storedVersions ? JSON.parse(storedVersions) : [];
     const versionReplicas = versions.map(
@@ -162,8 +162,8 @@ export const retrieveVersions = (state) => {
                 version.title,
                 version.description,
                 version.label,
-                version.owner
-            )
+                version.owner,
+            ),
     );
     state.versions = versionReplicas;
     //pick the latest version
@@ -177,7 +177,7 @@ export const retrieveVersions = (state) => {
 
 export const updateEditorState = (
     state,
-    action: PayloadAction<Transaction>
+    action: PayloadAction<Transaction>,
 ) => {
     state.editorState = state.editorState.apply(action.payload);
 };
@@ -215,11 +215,11 @@ export const initEditor = {
                 editorState.doc,
                 null,
                 state.currentDocID,
-                currentVersionID
+                currentVersionID,
             );
             initVersion.title = action.payload.title;
-            initVersion.label = 'Initial Version';
-            initVersion.description = 'An initial version created by Pecia';
+            initVersion.label = "Initial Version";
+            initVersion.description = "An initial version created by Pecia";
             initVersion.owner = action.payload.owner;
             state.versions = [initVersion];
 
@@ -260,7 +260,7 @@ export const createVersion = {
     reducer: (state, action: PayloadAction<VersionPayload>) => {
         const newVersionID = crypto.randomUUID();
         const previousReplica = state.versions.find(
-            (version) => version.versionID === state.currentVersionID
+            (version) => version.versionID === state.currentVersionID,
         );
 
         const nodes = generateNodeList(state.editorState.doc);
@@ -268,15 +268,15 @@ export const createVersion = {
         console.log({ previousReplica, nodes });
         let newVersion;
         if (previousReplica) {
-            console.log('generating from replica');
+            console.log("generating from replica");
             newVersion = generateVersionFromReplica(previousReplica, nodes);
         } else {
-            console.log('generating from editor state');
+            console.log("generating from editor state");
             newVersion = Replica.fromProsemirrorDoc(
                 state.editorState.doc,
                 newVersionID,
                 state.currentDOCID,
-                newVersionID
+                newVersionID,
             );
         }
         console.log({ newVersionPre: newVersion });
@@ -297,7 +297,7 @@ export const createVersion = {
         owner: string,
         title: string,
         label: string,
-        description: string
+        description: string,
     ) => {
         return {
             payload: {
@@ -313,7 +313,7 @@ export const createVersion = {
 export const restoreVersionByID = (state, action: PayloadAction<string>) => {
     //steps to reboot editor
     const versionToRestore = state.versions.find(
-        (version) => version.versionID === action.payload
+        (version) => version.versionID === action.payload,
     );
     if (!versionToRestore) return;
     state.currentVersionID = action.payload;
@@ -327,144 +327,6 @@ export const restoreVersionPrep = (state, action: PayloadAction<string>) => {
     console.log(action.payload);
 };
 
-function generateVersionFromReplica(oldVersion: Replica, nodes: PMNode[]) {
-    //start with the old version, we'll apply operations on this based on the differences.
-    const newVersion = new Replica(
-        oldVersion.tree,
-        oldVersion.opLog,
-        oldVersion.id,
-        oldVersion.docID
-    );
-    addMissingNodes(newVersion, nodes);
-    checkDeletedNodes(newVersion, nodes);
-    structureTree(newVersion, nodes);
-    arrangeSiblings(newVersion, nodes);
-    updateContent(newVersion, nodes);
-
-    return newVersion;
-}
-
-function generateNodeList(doc: Node) {
-    const nodes = [];
-    doc.descendants((node: Node, pos: number) => {
-        const nodeType = node.type.name;
-        if (nodeType !== 'doc' && nodeType !== 'text') {
-            const resolvedPos = doc.resolve(pos);
-            const parent = resolvedPos.parent;
-            const previousSibling = resolvedPos.nodeBefore;
-            const afterPos = pos + node.nodeSize;
-            const resolvedAfterPos = doc.resolve(afterPos);
-            const subsequentSibling = resolvedAfterPos.nodeAfter;
-            const leaf = hasOnlyTextContent(node);
-
-            const parentID =
-                parent.type.name === 'doc' ? 'ROOT' : parent.attrs?.id;
-
-            const beforeID = previousSibling?.attrs?.id || null;
-            const afterID = subsequentSibling?.attrs?.id || null;
-
-            nodes.push({
-                child: node.attrs.id,
-                parent: parentID,
-                previousSibling: beforeID,
-                subsequentSibling: afterID,
-                content: node.content,
-                type: nodeType,
-                attrs: node.attrs,
-                leaf,
-            });
-        }
-    });
-    return nodes;
-}
-
-function addMissingNodes(replica: Replica, nodes: PMNode[]) {
-    const seenNodes = replica.tree.map((node) => node.child);
-    const missingNodes = nodes.filter(
-        (node) => !seenNodes.find((n) => n === node.child)
-    );
-    while (missingNodes.length) {
-        for (let i = missingNodes.length - 1; i >= 0; i--) {
-            //check if parent is not in tree
-            if (
-                !(missingNodes[i].parent === 'ROOT') &&
-                !seenNodes.find((n) => n === missingNodes[i].parent)
-            )
-                continue;
-            replica.createNode(
-                missingNodes[i].leaf
-                    ? JSON.stringify(missingNodes[i].content)
-                    : null,
-                missingNodes[i].type,
-                missingNodes[i].parent,
-                missingNodes[i].previousSibling,
-                missingNodes[i].subsequentSibling,
-                missingNodes[i].child,
-                missingNodes[i].attrs
-            );
-            //add the node to list of old nodes and remove from missing one
-            seenNodes.push(missingNodes[i].child);
-            missingNodes.splice(i, 1);
-        }
-    }
-}
-function checkDeletedNodes(replica: Replica, nodes: PMNode[]) {
-    //get the nodes in the tree that are children of root (not trash)
-    const liveNodes = replica.tree.filter(
-        (node) =>
-            node.child !== 'ROOT' &&
-            node.child !== 'TRASH' &&
-            TreeMoveCRDT.ancestor(replica.tree, 'ROOT', node.child)
-    );
-    const deletedNodes = liveNodes.filter(
-        (node) => !nodes.find((n) => n.child === node.child)
-    );
-    for (const node of deletedNodes) {
-        replica.moveNode(node.child, 'TRASH');
-    }
-}
-function structureTree(replica: Replica, nodes: PMNode[]) {
-    const movedNodes = nodes.filter((node) => {
-        const matchedNode = replica.tree.find((n) => node.child === n.child);
-        return node.parent !== matchedNode.parent;
-    });
-    for (const node of movedNodes) {
-        replica.moveNode(node.child, node.parent);
-    }
-}
-function arrangeSiblings(replica: Replica, nodes: PMNode[]) {
-    const movedSiblings = nodes.filter((node) => {
-        const matchedNode = replica.tree.find((n) => node.child === n.child);
-        return !(
-            matchedNode.meta.previousSibling === node.previousSibling &&
-            matchedNode.meta.subsequentSibling === node.subsequentSibling
-        );
-    });
-    for (const node of movedSiblings) {
-        replica.moveSibling(
-            node.child,
-            node.previousSibling,
-            node.subsequentSibling
-        );
-    }
-}
-function updateContent(replica: Replica, nodes: PMNode[]) {
-    const updatedContent = nodes.filter((node) => {
-        if (!node.leaf) return false;
-        const matchedNode = replica.tree.find((n) => node.child === n.child);
-        if (
-            matchedNode.meta.content === JSON.stringify(node.content) &&
-            JSON.stringify(matchedNode.meta.attrs) ===
-                JSON.stringify(node.attrs)
-        ) {
-            return false;
-        } else return true;
-    });
-    for (const node of updatedContent) {
-        replica.updateNodeContent(
-            node.child,
-            JSON.stringify(node.content),
-            node.attrs
-        );
-    }
-}
+export const addRemoteVersion = (state, action: PayloadAction<Replica>) => {
+    state.versions.push(action.payload);
+};

@@ -1,16 +1,16 @@
-import { configureStore } from '@reduxjs/toolkit';
-import createSagaMiddleware from 'redux-saga';
+import { configureStore } from "@reduxjs/toolkit";
+import createSagaMiddleware from "redux-saga";
 
-import { reducer as docsReducer } from './slices/docs';
-import { reducer as userReducer } from './slices/user';
-import { reducer as themeReducer } from './slices/theme';
-import { reducer as editorReducer } from './slices/editor';
+import { reducer as docsReducer } from "./slices/docs";
+import { reducer as userReducer } from "./slices/user";
+import { reducer as themeReducer } from "./slices/theme";
+import { reducer as editorReducer } from "./slices/editor";
 import {
     reducer as toastReducer,
     actions as toastActions,
-} from './slices/toast';
-import { reducer as peerReducer } from './slices/peer';
-import rootSaga from './sagas';
+} from "./slices/toast";
+import { reducer as peerReducer } from "./slices/peer";
+import rootSaga from "./sagas";
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
@@ -26,7 +26,7 @@ const store = configureStore({
     },
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({ serializableCheck: false }).concat(
-            middleware
+            middleware,
         );
     },
 });
@@ -43,8 +43,8 @@ const persist = (key: string, value: string) => {
         store.dispatch(
             toastActions.addToast(
                 "Can't save to local storage, are you out of room?",
-                'error'
-            )
+                "error",
+            ),
         );
     }
 };
@@ -56,7 +56,7 @@ const persistDocs = () => {
     const docString = JSON.stringify(docs);
     if (docString !== previousDocs) {
         previousDocs = docString;
-        persist('pecia-docs', docString);
+        persist("pecia-docs", docString);
     }
 };
 
@@ -66,25 +66,25 @@ const persistUser = () => {
     const { username, passcode } = userSelector(store.getState());
     if (username !== oldUN) {
         oldUN = username;
-        persist('pecia-username', username);
+        persist("pecia-username", username);
     }
     if (passcode !== oldPC) {
         oldPC = passcode;
-        persist('pecia-passcode', passcode);
+        persist("pecia-passcode", passcode);
     }
 };
 
 let oldColleagues;
 
-const persistColleagues= () => {
+const persistColleagues = () => {
     const colleaguesSelector = (state: RootState) => state.peer.colleagues;
     const colleagues = colleaguesSelector(store.getState());
     const colleaguesString = JSON.stringify(colleagues);
-    if(colleaguesString !== oldColleagues) {
+    if (colleaguesString !== oldColleagues) {
         oldColleagues = colleaguesString;
-        persist(`pecia-colleagues`, colleaguesString)
+        persist(`pecia-colleagues`, colleaguesString);
     }
-}
+};
 
 store.subscribe(persistDocs);
 store.subscribe(persistUser);

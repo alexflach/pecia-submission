@@ -1,6 +1,7 @@
 import { Dispatch, PayloadAction } from "@reduxjs/toolkit";
 import Peer, { DataConnection } from "peerjs";
 import { Doc } from "../docs/docsReducers.ts";
+import { Replica } from "../../../lib/crdt/replica.ts";
 
 type ConnectionStatus = "CONNECTED" | "PENDING" | "DISCONNECTED";
 
@@ -29,7 +30,7 @@ export interface PeerError {
     message: string;
 }
 
-export type DataPacketTypes = "doc" | "syn" | "ack" | "chat";
+export type DataPacketTypes = "APPROVED" | "REJECTED" | "VERSION";
 
 export interface DataPacket {
     type: DataPacketTypes;
@@ -39,8 +40,16 @@ export interface DataPacket {
 }
 
 type MessageType = "INFO" | "WARNING" | "ERROR";
-type MessageActionType = "APPROVE_NEW" | "APPROVE_CHANGE" | "NONE";
-type MessageRejectionType = "REJECT_NEW" | "REJECT_CHANGE" | "NONE";
+type MessageActionType =
+    | "APPROVE_NEW"
+    | "APPROVE_CHANGE"
+    | "APPROVE_DOC"
+    | "NONE";
+type MessageRejectionType =
+    | "REJECT_NEW"
+    | "REJECT_CHANGE"
+    | "REJECT_DOC"
+    | "NONE";
 
 export interface UserMessage {
     type: MessageType;
@@ -58,6 +67,7 @@ export interface PeerState {
     colleagueRequests: Colleague[];
     connections: Connection[];
     requestedConnections: Connection[];
+    requestedDocs: Replica[];
     peerErrors: PeerError[];
     connectionErrors: PeerError[];
     messages: UserMessage[];
@@ -235,6 +245,44 @@ export const newColleagueRequest = {
     },
 };
 
+interface DocumentRequestPayload {
+    document: Replica;
+    sender: string;
+}
+export const newDocumentRequest = {
+    reducer: (
+        state: PeerState,
+        action: PayloadAction<DocumentRequestPayload>,
+    ) => {
+        const sender: Colleague = state.colleagues.find(
+            (colleague) => colleague.peciaID === action.payload.sender,
+        );
+        const document = action.payload.document;
+        if (!sender) return;
+        state.requestedDocs.push(document);
+        const message: UserMessage = {
+            id: crypto.randomUUID(),
+            timestamp: Date.now(),
+            peciaID: sender.peciaID,
+            summary: `New Document from ${sender.username}`,
+            message: `A new document called ${document.title}`,
+            action: "APPROVE_DOC",
+            rejection: "REJECT_DOC",
+            type: "INFO",
+        };
+
+        state.messages.push(message);
+    },
+    prepare: (sender: string, version: Replica) => {
+        return {
+            payload: {
+                sender,
+                version,
+            },
+        };
+    },
+};
+
 export interface ColleagueChangedPayload {
     peciaID: string;
     username: string;
@@ -288,11 +336,23 @@ export const colleagueDetailsChanged = {
     },
 };
 
-export const dataReceived = (
-    state: PeerState,
-    action: PayloadAction<DataPacket>,
-) => {
-    state.packets.push(action.payload);
+export interface DataReceivedPayload {
+    packet: DataPacket;
+    sender: string;
+}
+
+export const dataReceived = {
+    reducer: (state: PeerState, action: PayloadAction<DataReceivedPayload>) => {
+        state.packets.push(action.payload.packet);
+    },
+    prepare: (sender: string, packet: DataPacket) => {
+        return {
+            payload: {
+                sender,
+                packet,
+            },
+        };
+    },
 };
 
 export const connectionOpen = (

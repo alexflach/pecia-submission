@@ -22,6 +22,7 @@ import {
     removeMessage,
     resolveMessage,
     clearMessages,
+    newDocumentRequest,
 } from "./peerReducers";
 
 let initialColleagues = [];
@@ -52,6 +53,7 @@ const initialState: PeerState = {
     packets: [],
     colleagues: initialColleagues,
     colleagueRequests: [],
+    requestedDocs: [],
 };
 const peerSlice = createSlice({
     name: "peer",
@@ -78,6 +80,7 @@ const peerSlice = createSlice({
         removeMessage,
         resolveMessage,
         clearMessages,
+        newDocumentRequest,
     },
 });
 

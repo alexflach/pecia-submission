@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 import {
     Editor,
     setCurrentDocID,
@@ -13,11 +13,12 @@ import {
     restoreVersionPrep,
     deleteVersion,
     mergeVersions,
-} from './editorReducers';
+    addRemoteVersion,
+} from "./editorReducers";
 
-import schema from '../../../lib/editor/schema';
+import schema from "../../../lib/editor/schema";
 
-const owner = localStorage.getItem('pecia-user-id');
+const owner = localStorage.getItem("pecia-user-id");
 const initialState: Editor = {
     currentDocID: null,
     currentVersionID: null,
@@ -26,11 +27,11 @@ const initialState: Editor = {
     editorState: null,
     versions: [],
     doc: null,
-    title: '',
-    owner: owner || '',
+    title: "",
+    owner: owner || "",
 };
 const editorSlice = createSlice({
-    name: 'editor',
+    name: "editor",
     initialState,
     reducers: {
         setCurrentDocID,
@@ -45,6 +46,7 @@ const editorSlice = createSlice({
         setTitle,
         deleteVersion,
         mergeVersions,
+        addRemoteVersion,
     },
 });
 

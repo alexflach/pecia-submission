@@ -3,10 +3,14 @@ import {
     ConnectToPeerPayload,
     ConnectionRequestedPayload,
     Colleague,
+    DataReceivedPayload,
 } from "../slices/peer/peerReducers.ts";
 import { bootstrapConnection, ConnectionMetadata } from "../slices/peer/utils";
 import { RootState } from "../store.ts";
 import { actions } from "../slices/peer";
+import { actions as editorActions } from "../slices/editor";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { Replica } from "../../lib/crdt/replica.ts";
 
 function* connectToPeer(action: {
     type: string;
@@ -39,7 +43,7 @@ function* connectToPeer(action: {
                 metadata,
             },
         ]);
-        yield call(bootstrapConnection, connection, dispatch);
+        yield call(bootstrapConnection, connection, dispatch, toPeciaID);
         yield apply(connections, connections.push, [connection]);
     } catch (error) {
         console.error(error);
@@ -104,6 +108,129 @@ function* connectionRequested(action: {
     }
 }
 
+function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
+    const { packet, sender } = action.payload;
+    const state: RootState = yield select();
+    const docs = state.docs.docs;
+    let version: Replica, docID: string, matchedDoc;
+    let knownVersionIDs: string[];
+    let retrievedVersionsString, newVersionsString: string;
+    let retrievedVersions, newVersions: Replica[];
+    let alreadyKnown;
+    let foundColleague;
+    switch (packet.type) {
+        case "APPROVED":
+            yield apply(actions, actions.addMessage, [
+                packet.message,
+                "colleague request approved!",
+                "INFO",
+                "NONE",
+                "NONE",
+                packet.sender,
+            ]);
+            break;
+        case "REJECTED":
+            yield apply(actions, actions.addMessage, [
+                packet.message,
+                "colleague request rejected!",
+                "WARNING",
+                "NONE",
+                "NONE",
+                packet.sender,
+            ]);
+            break;
+        case "VERSION":
+            //if the sender is not an approved colleague, we ignore.
+            foundColleague = yield apply(
+                state.peer.colleagues,
+                state.peer.colleagues.find,
+                [(c) => c.peciaID === sender && c.status === "CONFIRMED"],
+            );
+            if (!foundColleague) return;
+
+            //check if we know the document.
+            version = yield apply(JSON, JSON.parse, [packet.message]);
+            docID = version.docID;
+            matchedDoc = yield apply(docs, docs.find, [
+                (doc) => doc.id === docID,
+            ]);
+            //if we don't know the doc handle a new doc flow
+            if (!matchedDoc) {
+                const newDocAction = apply(
+                    actions,
+                    actions.newDocumentRequest,
+                    [sender, version],
+                );
+                yield put(newDocAction);
+            }
+            //if we do know it check if we have the version already if we do ignore
+            else {
+                //check if the doc is the currently active doc, if so memory is master
+                if (docID === state.editor.currentDocID) {
+                    knownVersionIDs = yield apply(
+                        state.editor.versions,
+                        state.editor.versions.map,
+                        [(version) => version.versionID],
+                    );
+                } else {
+                    //local storage is master
+                    retrievedVersionsString = yield apply(
+                        localStorage,
+                        localStorage.getItem,
+                        [`pecia-versions-${docID}`],
+                    );
+                    if (retrievedVersionsString) {
+                        retrievedVersions = yield apply(JSON, JSON.parse, [
+                            retrievedVersionsString,
+                        ]);
+                    }
+                    if (retrievedVersions) {
+                        knownVersionIDs = yield apply(
+                            retrievedVersions,
+                            retrievedVersions.map,
+                            [(v) => v.versionID],
+                        );
+                    }
+                }
+                alreadyKnown = yield apply(
+                    knownVersionIDs,
+                    knownVersionIDs.find,
+                    [(v) => v === version.versionID],
+                );
+                if (alreadyKnown) return;
+                else {
+                    //if we are currently editing the doc the editor state needs to be updated with the new version.
+                    if (docID === state.editor.currentDocID) {
+                        //editor add remote version
+                        const addRemote = yield apply(
+                            editorActions,
+                            editorActions.addRemoteVersion,
+                            [version],
+                        );
+                        yield put(addRemote);
+                    } else {
+                        //otherwise we are going to add the version to those in local storage for retrieval
+                        newVersions = yield apply(
+                            retrievedVersions,
+                            retrievedVersions.push,
+                            [version],
+                        );
+                        newVersionsString = yield apply(JSON, JSON.stringify, [
+                            newVersions,
+                        ]);
+                        yield apply(localStorage, localStorage.setItem, [
+                            `pecia-versions=${docID}`,
+                            newVersionsString,
+                        ]);
+                    }
+                }
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 function* restoreVersion(action) {
     yield put({ type: "editor/restoreVersionByID", payload: action.payload });
     yield put({ type: "editor/initEditor", payload: { owner: "", title: "" } });
@@ -112,4 +239,5 @@ export default function* rootSaga() {
     yield takeEvery("peer/connect", connectToPeer);
     yield takeEvery("editor/restoreVersionPrep", restoreVersion);
     yield takeEvery("peer/connectionRequested", connectionRequested);
+    yield takeEvery("peer/dataReceived", manageDataReceipt);
 }
