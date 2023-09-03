@@ -20,6 +20,7 @@ import {
     hideMessages,
     addMessage,
     removeMessage,
+    resolveMessage,
     clearMessages,
 } from "./peerReducers";
 
@@ -75,6 +76,7 @@ const peerSlice = createSlice({
         showMessages,
         addMessage,
         removeMessage,
+        resolveMessage,
         clearMessages,
     },
 });

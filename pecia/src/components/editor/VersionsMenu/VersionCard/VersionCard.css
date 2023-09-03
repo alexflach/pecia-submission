@@ -96,17 +96,6 @@
     font-family: var(--sans-serif);
 }
 
-.button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    padding: 0 1rem;
-    font-size: 15px;
-    line-height: 1;
-    font-weight: 500;
-    height: 35px;
-}
 
 .button.red {
     background-color: white;

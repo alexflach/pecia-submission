@@ -17,9 +17,7 @@ const MessagesPanel = () => {
         >
             {messages &&
                 messages.map((message) => (
-                    <ColleagueMessage key={message.id} message={message}>
-                        {message.message}
-                    </ColleagueMessage>
+                    <ColleagueMessage key={message.id} message={message} />
                 ))}
             <div className="messages-header">
                 <h5>Colleague Notifications</h5>

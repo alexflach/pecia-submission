@@ -1,0 +1,14 @@
+.message-handlers {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.colleague-message {
+    margin-left: 1rem;
+}
+
+.alert-dialog-content {
+    margin-left: 0.5rem;
+}

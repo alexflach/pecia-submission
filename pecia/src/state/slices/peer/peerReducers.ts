@@ -4,7 +4,7 @@ import { Doc } from "../docs/docsReducers.ts";
 
 type ConnectionStatus = "CONNECTED" | "PENDING" | "DISCONNECTED";
 
-type ColleagueStatus = "INVITED" | "PENDING" | "CONNECTED" | "REJECTED";
+type ColleagueStatus = "INVITED" | "PENDING" | "CONFIRMED" | "REJECTED";
 
 export interface Colleague {
     peciaID: string;
@@ -40,13 +40,17 @@ export interface DataPacket {
 
 type MessageType = "INFO" | "WARNING" | "ERROR";
 type MessageActionType = "APPROVE_NEW" | "APPROVE_CHANGE" | "NONE";
+type MessageRejectionType = "REJECT_NEW" | "REJECT_CHANGE" | "NONE";
 
 export interface UserMessage {
     type: MessageType;
     message: string;
+    summary: string;
     id: string;
     timestamp: number;
     action: MessageActionType;
+    rejection: MessageRejectionType;
+    peciaID: string;
 }
 
 export interface PeerState {
@@ -209,9 +213,12 @@ export const newColleagueRequest = {
         state.colleagueRequests.push(action.payload);
         const message: UserMessage = {
             id: crypto.randomUUID(),
+            peciaID: action.payload.peciaID,
             type: "INFO",
             action: "APPROVE_NEW",
+            rejection: "REJECT_NEW",
             timestamp: Date.now(),
+            summary: `New Colleague request from ${action.payload.username}`,
             message: `Colleague request from:
             Username: ${action.payload.username},
             Passcode: ${action.payload.passcode},
@@ -239,6 +246,25 @@ export const colleagueDetailsChanged = {
         state: PeerState,
         action: PayloadAction<ColleagueChangedPayload>,
     ) => {
+        const oldDetails = state.colleagues.find(
+            (colleague) => colleague.peciaID === action.payload.peciaID,
+        );
+        const message: UserMessage = {
+            id: crypto.randomUUID(),
+            peciaID: action.payload.peciaID,
+            timestamp: Date.now(),
+            summary: `${oldDetails.username} has changed their details`,
+            message: `Colleague details changed:
+            Old Username: ${oldDetails.username}
+            New Username: ${action.payload.username}
+            
+            Old Passcode: ${oldDetails.passcode}
+            New Passcode: ${action.payload.passcode}`,
+            type: "WARNING",
+            action: "APPROVE_CHANGE",
+            rejection: "REJECT_CHANGE",
+        };
+        state.messages.push(message);
         state.colleagues = state.colleagues.map((colleague) => {
             if (!(colleague.peciaID === action.payload.peciaID))
                 return colleague;
@@ -250,23 +276,6 @@ export const colleagueDetailsChanged = {
                     passcode: action.payload.passcode,
                 };
         });
-
-        const oldDetails = state.colleagues.find(
-            (colleague) => colleague.peciaID === action.payload.peciaID,
-        );
-        const message: UserMessage = {
-            id: crypto.randomUUID(),
-            timestamp: Date.now(),
-            message: `Colleague details changed:
-            Old Username: ${oldDetails.username}
-            New Username: ${action.payload.username}
-            
-            Old Passcode: ${oldDetails.passcode}
-            New Passcode: ${action.payload.passcode}`,
-            type: "WARNING",
-            action: "APPROVE_CHANGE",
-        };
-        state.messages.push(message);
     },
     prepare: (peciaID: string, username: string, passcode: string) => {
         return {
@@ -413,14 +422,20 @@ export const addMessage = {
     },
     prepare: (
         message: string,
+        summary: string,
         type: MessageType,
         action: MessageActionType,
+        rejection: MessageRejectionType,
+        peciaID: string,
     ) => {
         return {
             payload: {
                 message,
+                summary,
                 type,
                 action,
+                rejection,
+                peciaID,
                 id: crypto.randomUUID(),
                 timestamp: Date.now(),
             },
@@ -448,4 +463,85 @@ export const clearMessages = (state: PeerState) => {
     state.showWarning = false;
     state.showError = false;
     state.showMessages = false;
+};
+
+export interface MessageResolutionPayload {
+    resolution: MessageActionType | MessageRejectionType;
+    message: UserMessage;
+}
+export const resolveMessage = {
+    reducer: (
+        state: PeerState,
+        action: PayloadAction<MessageResolutionPayload>,
+    ) => {
+        let matchedColleague;
+        const colleagueID = action.payload.message.peciaID;
+        const messageID = action.payload.message.id;
+        switch (action.payload.resolution) {
+            case "APPROVE_NEW":
+                matchedColleague = state.colleagueRequests.find(
+                    (colleague) => colleague.peciaID === colleagueID,
+                );
+                state.colleagues.push({
+                    ...matchedColleague,
+                    status: "CONFIRMED",
+                });
+                state.colleagueRequests = state.colleagueRequests.filter(
+                    (colleague) => colleague.peciaID !== colleagueID,
+                );
+                state.messages = state.messages.filter(
+                    (message) => message.id !== messageID,
+                );
+                break;
+            case "REJECT_NEW":
+                matchedColleague = state.colleagueRequests.find(
+                    (colleague) => colleague.peciaID === colleagueID,
+                );
+                // not sure if we want to track rejected colleagues or not.
+                // state.colleagues.push({
+                //     ...matchedColleague,
+                //     status: "REJECTED",
+                // });
+                state.colleagueRequests = state.colleagueRequests.filter(
+                    (colleague) => colleague.peciaID !== colleagueID,
+                );
+                state.messages = state.messages.filter(
+                    (message) => message.id !== messageID,
+                );
+                break;
+            case "APPROVE_CHANGE":
+                state.colleagues = state.colleagues.map((colleague) =>
+                    colleague.peciaID === colleagueID
+                        ? { ...colleague, status: "CONFIRMED" }
+                        : colleague,
+                );
+                state.messages = state.messages.filter(
+                    (message) => message.id !== messageID,
+                );
+
+                break;
+            case "REJECT_CHANGE":
+                state.colleagues = state.colleagues.map((colleague) =>
+                    colleague.peciaID === colleagueID
+                        ? { ...colleague, status: "REJECTED" }
+                        : colleague,
+                );
+                state.messages = state.messages.filter(
+                    (message) => message.id !== messageID,
+                );
+                break;
+            case "NONE":
+                break;
+            default:
+                break;
+        }
+    },
+    prepare: (
+        resolution: MessageActionType | MessageRejectionType,
+        message: UserMessage,
+    ) => {
+        return {
+            payload: { resolution, message },
+        };
+    },
 };
