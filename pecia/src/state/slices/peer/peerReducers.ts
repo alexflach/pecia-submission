@@ -89,7 +89,7 @@ export const addColleague = {
             peciaID,
             peerID: "",
             docs: [],
-            status: "PENDING",
+            status: "CONFIRMED",
             connectionStatus: "DISCONNECTED",
         };
         return {
@@ -357,18 +357,26 @@ export const dataReceived = {
     },
 };
 
-export const connectionOpen = (
-    state: PeerState,
-    action: PayloadAction<string>,
-) => {
-    state.colleagues = state.colleagues.map((colleague) =>
-        colleague.peerID === action.payload
-            ? {
-                  ...colleague,
-                  connectionStatus: "CONNECTED",
-              }
-            : colleague,
-    );
+export const connectionOpen = {
+    reducer: (
+        state: PeerState,
+        action: PayloadAction<{ peerID: string; colleagueID: string }>,
+    ) => {
+        state.colleagues = state.colleagues.map((colleague) =>
+            colleague.peciaID === action.payload.colleagueID
+                ? {
+                      ...colleague,
+                      connectionStatus: "CONNECTED",
+                      peerID: action.payload.peerID,
+                  }
+                : colleague,
+        );
+    },
+    prepare: (peerID: string, colleagueID: string) => {
+        return {
+            payload: { peerID, colleagueID },
+        };
+    },
 };
 export const connectionClosed = (
     state: PeerState,
@@ -601,9 +609,9 @@ export const resolveMessage = {
                 break;
             case "REJECT_DOC":
             case "APPROVE_DOC":
-                state.requestedDocs = state.requestedDocs.filter(
-                    (doc) => doc.versionID !== action.payload.message.versionID,
-                );
+                // state.requestedDocs = state.requestedDocs.filter(
+                //     (doc) => doc.versionID !== action.payload.message.versionID,
+                // );
                 break;
             case "NONE":
                 break;

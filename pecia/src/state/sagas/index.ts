@@ -113,6 +113,7 @@ function* connectionRequested(action: {
 }
 
 function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
+    console.log("handling incoming data");
     const { packet, sender } = action.payload;
     const state: RootState = yield select();
     const docs = state.docs.docs;
@@ -122,6 +123,7 @@ function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
     let retrievedVersions, newVersions: Replica[];
     let alreadyKnown;
     let foundColleague;
+    console.log({ packet, sender });
     switch (packet.type) {
         case "APPROVED":
             yield apply(actions, actions.addMessage, [
@@ -144,31 +146,39 @@ function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
             ]);
             break;
         case "VERSION":
+            console.log("handling version...");
             //if the sender is not an approved colleague, we ignore.
             foundColleague = yield apply(
                 state.peer.colleagues,
                 state.peer.colleagues.find,
                 [(c) => c.peciaID === sender && c.status === "CONFIRMED"],
             );
-            if (!foundColleague) return;
+            if (!foundColleague) {
+                console.log("failed to find colleague");
+                return;
+            }
 
             //check if we know the document.
             version = yield apply(JSON, JSON.parse, [packet.message]);
+            console.log(version);
             docID = version.docID;
             matchedDoc = yield apply(docs, docs.find, [
                 (doc) => doc.id === docID,
             ]);
             //if we don't know the doc handle a new doc flow
             if (!matchedDoc) {
-                const newDocAction = apply(
-                    actions,
-                    actions.newDocumentRequest,
-                    [sender, version],
-                );
-                yield put(newDocAction);
+                console.log("no matched doc...");
+                // const newDocAction = apply(
+                //     actions,
+                //     actions.newDocumentRequest,
+                //     [sender, version],
+                // );
+                yield put(actions.newDocumentRequest(sender, version));
+                return;
             }
             //if we do know it check if we have the version already if we do ignore
             else {
+                console.log("we know the doc");
                 //check if the doc is the currently active doc, if so memory is master
                 if (docID === state.editor.currentDocID) {
                     knownVersionIDs = yield apply(
@@ -239,7 +249,6 @@ function* manageDocApproval(action: {
     type: string;
     payload: MessageResolutionPayload;
 }) {
-    let docsAction;
     let candidateVersions: Replica[];
     let matchedVersion: Replica;
     const message = action.payload.message;
@@ -250,17 +259,24 @@ function* manageDocApproval(action: {
             candidateVersions = yield select(
                 (state: RootState) => state.peer.requestedDocs,
             );
+
             matchedVersion = yield apply(
                 candidateVersions,
                 candidateVersions.find,
                 [(v) => v.versionID === message.versionID],
             );
-            if (!matchedVersion) return;
-            docsAction = yield apply(docsActions, docsActions.addDoc, [
-                matchedVersion.docID,
-                matchedVersion.title,
-            ]);
-            yield put(docsAction);
+            if (!matchedVersion) {
+                return;
+            }
+            // docsAction = yield apply(docsActions, docsActions.addDoc, [
+            //     matchedVersion.docID,
+            //     matchedVersion.title,
+            // ]);
+            yield put(
+                docsActions.addDoc(matchedVersion.docID, matchedVersion.title),
+            );
+            //TODO: Remove candidate version async
+
             versionString = yield apply(JSON, JSON.stringify, [
                 [matchedVersion],
             ]);

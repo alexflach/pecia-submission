@@ -6,7 +6,6 @@ import "./ColleagueMessage.css";
 
 const ColleagueMessage = ({ message }: { message: UserMessage }) => {
     const dispatch = useDispatch();
-    console.log(message);
     const timeString = new Date(message.timestamp).toLocaleString();
     return (
         <div className="colleague-message">
@@ -22,10 +21,12 @@ const ColleagueMessage = ({ message }: { message: UserMessage }) => {
                             {message.summary}
                         </AlertDialog.Title>
                         <AlertDialog.Description className="alert-dialog-description">
-                            <p>{message.message}</p>
-                            <p className="timestamp">{timeString}</p>
+                            {message.message}
                         </AlertDialog.Description>
 
+                        <div className="timestamp">
+                            <p className="timestamp">{timeString}</p>
+                        </div>
                         <div className="message-handlers">
                             <AlertDialog.Cancel asChild>
                                 <button className="button">Cancel</button>

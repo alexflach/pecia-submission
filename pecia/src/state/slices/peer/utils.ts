@@ -36,7 +36,7 @@ export const bootstrapConnection = (
         dispatch(peerActions.connectionClosed(connection.peer));
     });
     connection.on("open", () => {
-        dispatch(peerActions.connectionOpen(connection.peer));
+        dispatch(peerActions.connectionOpen(connection.peer, colleagueID));
     });
 };
 
