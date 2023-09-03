@@ -1,6 +1,6 @@
-import { EditorView } from 'prosemirror-view';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../../state/store';
+import { EditorView } from "prosemirror-view";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../state/store";
 import {
     toggle,
     setBlock,
@@ -12,11 +12,10 @@ import {
     wrapInListCommand,
     setHeadingLevel,
     deleteDoc,
-    shareDoc,
-} from './commands';
+} from "./commands";
 
-import * as Toolbar from '@radix-ui/react-toolbar';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as Toolbar from "@radix-ui/react-toolbar";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
     ArrowLeftIcon,
     ArrowRightIcon,
@@ -28,31 +27,29 @@ import {
     PilcrowIcon,
     QuoteIcon,
     ListBulletIcon,
-    Share1Icon,
-} from '@radix-ui/react-icons';
+} from "@radix-ui/react-icons";
 
-import { faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFloppyDisk } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './Toolbar.css';
-import { useNavigate } from 'react-router-dom';
-import DeleteButton from './DeleteButton';
+import "./Toolbar.css";
+import { useNavigate } from "react-router-dom";
+import DeleteButton from "./DeleteButton";
 
 interface toolbarProps {
     editorView: React.MutableRefObject<EditorView>;
 }
 
 const ICON_PROPS = {
-    viewBox: '0 0 15 15',
+    viewBox: "0 0 15 15",
     width: 20,
     height: 20,
 };
 
 const EditorToolbar = ({ editorView }: toolbarProps) => {
     const { currentDocID, versions, title } = useSelector(
-        (state: RootState) => state.editor
+        (state: RootState) => state.editor,
     );
-    const { peerID } = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const deleteHandler = () => {
@@ -84,7 +81,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                             currentDocID,
                             dispatch,
                             versions,
-                            title
+                            title,
                         )
                     }
                 >
@@ -124,7 +121,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         value="bold"
                         aria-label="bold"
                         onClick={() => {
-                            toggle(editorView.current, 'bold');
+                            toggle(editorView.current, "bold");
                         }}
                     >
                         <FontBoldIcon
@@ -137,7 +134,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         className="toolbar-toggle-item"
                         value="italic"
                         aria-label="italic"
-                        onClick={() => toggle(editorView.current, 'italic')}
+                        onClick={() => toggle(editorView.current, "italic")}
                     >
                         <FontItalicIcon
                             viewBox={ICON_PROPS.viewBox}
@@ -149,7 +146,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         className="toolbar-toggle-item"
                         value="underline"
                         aria-label="underline"
-                        onClick={() => toggle(editorView.current, 'underline')}
+                        onClick={() => toggle(editorView.current, "underline")}
                     >
                         <UnderlineIcon
                             viewBox={ICON_PROPS.viewBox}
@@ -163,7 +160,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         value="strikethrough"
                         aria-label="strikethrough"
                         onClick={() =>
-                            toggle(editorView.current, 'strikethrough')
+                            toggle(editorView.current, "strikethrough")
                         }
                     >
                         <StrikethroughIcon
@@ -179,7 +176,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 />
                 <Toolbar.Button
                     className="toolbar-button"
-                    onClick={() => setBlock(editorView.current, 'para')}
+                    onClick={() => setBlock(editorView.current, "para")}
                 >
                     <PilcrowIcon
                         viewBox={ICON_PROPS.viewBox}
@@ -238,16 +235,6 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         </DropdownMenu.Item>
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>
-                <Toolbar.Button
-                    className="toolbar-button"
-                    onClick={() => shareDoc(currentDocID, peerID, dispatch)}
-                >
-                    <Share1Icon
-                        viewBox={ICON_PROPS.viewBox}
-                        width={ICON_PROPS.width}
-                        height={ICON_PROPS.width}
-                    />
-                </Toolbar.Button>
             </Toolbar.Root>
         </div>
     );

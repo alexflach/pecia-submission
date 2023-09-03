@@ -1,29 +1,39 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 import {
     PeerState,
-    addConnection,
-    removeConnection,
-    updateConnectionPasscode,
-    updateConnectionStatus,
-    updateConnectionUsername,
     connect,
-    connectionRequested,
     connectionErrorReported,
     peerErrorReported,
     dataReceived,
+    connectionRequested,
+    connectionClosed,
+    connectionOpen,
     addColleague,
     updateColleague,
     deleteColleague,
-    updateColleagueDocs
-} from './peerReducers';
+    updateColleagueDocs,
+    newColleagueRequest,
+    colleagueDetailsChanged,
+    setColleagueConnectionStatus,
+    toggleMessages,
+    showMessages,
+    hideMessages,
+    addMessage,
+    removeMessage,
+    clearMessages,
+} from "./peerReducers";
 
 let initialColleagues = [];
 
 try {
-    const retrievedColleagues = localStorage.getItem('pecia-colleagues')
+    const retrievedColleagues = localStorage.getItem("pecia-colleagues");
     if (retrievedColleagues) {
         const parsedColleagues = JSON.parse(retrievedColleagues);
-        initialColleagues = parsedColleagues.map(colleague => ({...colleague, connectionStatus: 'DISCONNECTED', peerID: ''}))
+        initialColleagues = parsedColleagues.map((colleague) => ({
+            ...colleague,
+            connectionStatus: "DISCONNECTED",
+            peerID: "",
+        }));
     }
 } catch (error) {
     console.error(error);
@@ -35,26 +45,37 @@ const initialState: PeerState = {
     peerErrors: [],
     connectionErrors: [],
     messages: [],
+    showMessages: false,
+    showError: false,
+    showWarning: false,
+    packets: [],
     colleagues: initialColleagues,
+    colleagueRequests: [],
 };
 const peerSlice = createSlice({
-    name: 'peer',
+    name: "peer",
     initialState,
     reducers: {
-        addConnection,
         addColleague,
         updateColleague,
         updateColleagueDocs,
         deleteColleague,
-        removeConnection,
-        updateConnectionPasscode,
-        updateConnectionStatus,
-        updateConnectionUsername,
         connect,
         connectionRequested,
+        connectionClosed,
+        connectionOpen,
         connectionErrorReported,
         peerErrorReported,
         dataReceived,
+        newColleagueRequest,
+        colleagueDetailsChanged,
+        setColleagueConnectionStatus,
+        toggleMessages,
+        hideMessages,
+        showMessages,
+        addMessage,
+        removeMessage,
+        clearMessages,
     },
 });
 

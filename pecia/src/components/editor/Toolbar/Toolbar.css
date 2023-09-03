@@ -2,12 +2,14 @@
     display: flex;
     flex-flow: row wrap;
     gap: 1rem;
-    padding: 1rem;
+    padding: 0;
     border-radius: 0.25rem;
     margin: 0 auto;
     width: 80%;
     max-width: 900px;
     max-height: 80px;
+    justify-content: center;
+    align-items: center;
 }
 .toolbar-separator {
     border-left: 1px solid white;

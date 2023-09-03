@@ -3,8 +3,10 @@ import { actions } from '../../../state/slices/user';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../state/store';
 import * as Switch from '@radix-ui/react-switch';
+import CopyButton from "../CopyButton";
 
 const { setUsername, setPasscode, toggleOnline } = actions;
+
 
 import './UserMenu.css';
 type UserMenuPropTypes = {
@@ -13,7 +15,7 @@ type UserMenuPropTypes = {
 
 const UserMenu = ({ show }: UserMenuPropTypes) => {
     const selector = (state: RootState) => state.user;
-    const { username, passcode, online } = useSelector(selector);
+    const { username, passcode, online, peciaID, peerID } = useSelector(selector);
     const dispatch = useDispatch();
     const handleUNChange = (e) => {
         dispatch(setUsername(e.target.value));
@@ -36,6 +38,23 @@ const UserMenu = ({ show }: UserMenuPropTypes) => {
                 value={passcode}
                 onChange={handlePCChange}
             ></input>
+            <div className="pecia-id-wrapper">
+                <p>Your Pecia ID:</p>
+                <div className="pecia-id-text">
+                    <p className="pecia-id">{peciaID}</p>
+                    <CopyButton textToCopy={peciaID} />
+                </div>
+            </div>
+            {online && (
+                <div className="peer-id-wrapper">
+                   <p>Your Connection ID:</p>
+                   <div className="peer-id-text">
+                       <p className="peer-id">{peerID}</p>
+                       <CopyButton textToCopy={peerID} />
+                   </div>
+                </div>
+            )}
+
             <label htmlFor="work-online">Work Online?</label>
             <Switch.Root
                 className="switch-root"

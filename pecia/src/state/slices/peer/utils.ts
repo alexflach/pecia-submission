@@ -1,78 +1,76 @@
-import { Dispatch } from '@reduxjs/toolkit';
-import Peer, { DataConnection } from 'peerjs';
-import { actions as userActions } from '../user';
-import { actions as toastActions } from '../toast';
-import { actions as peerActions } from '../peer';
-import { DataPacket } from './peerReducers';
+import { Dispatch } from "@reduxjs/toolkit";
+import Peer, { DataConnection } from "peerjs";
+import { actions as userActions } from "../user";
+import { actions as toastActions } from "../toast";
+import { actions as peerActions } from "../peer";
+import { DataPacket } from "./peerReducers";
+
+export interface ConnectionMetadata {
+    toPeciaID: string;
+    toUsername: string;
+    toPasscode: string;
+    fromUsername: string;
+    fromPasscode: string;
+    fromPeciaID: string;
+}
 
 export const bootstrapConnection = (
     connection: DataConnection,
-    dispatch: Dispatch
+    dispatch: Dispatch,
 ) => {
-    connection.on('data', (data: DataPacket) => {
+    connection.on("data", (data: DataPacket) => {
         dispatch(peerActions.dataReceived(data));
     });
-    connection.on('error', (error) => {
+    connection.on("error", (error) => {
         dispatch(
             peerActions.connectionErrorReported({
                 //@ts-expect-error peer errors have a type property
                 type: error.type,
                 message: error.message,
-            })
+            }),
         );
         console.error(error.message);
     });
-    connection.on('close', () => {
-        dispatch(peerActions.removeConnection(connection.peer));
+    connection.on("close", () => {
+        dispatch(peerActions.connectionClosed(connection.peer));
     });
-    connection.on('open', () => {
-        dispatch(
-            peerActions.addConnection(connection.peer, connection.metadata.doc)
-        );
+    connection.on("open", () => {
+        dispatch(peerActions.connectionOpen(connection.peer));
     });
-    connection.on('iceStateChanged', () => console.log('iceStateChanged ?'));
+    connection.on("iceStateChanged", () => console.log("iceStateChanged ?"));
 };
 
 export const bootstrapPeer = (
     peer: Peer,
     dispatch: Dispatch,
-    connectionsRef: React.MutableRefObject<DataConnection[]>
+    connectionsRef: React.MutableRefObject<DataConnection[]>,
 ) => {
-    peer.on('open', (id) => {
+    peer.on("open", (id) => {
         dispatch(userActions.setPeerID(id));
-        dispatch(userActions.setNetworkState('open'));
+        dispatch(userActions.setNetworkState("open"));
         dispatch(
             toastActions.addToast(
-                'connected! You can now share documents',
-                'info'
-            )
+                "connected! You can now share documents",
+                "info",
+            ),
         );
     });
     // Someone is trying to connection
-    peer.on('connection', (dataConnection: DataConnection) => {
+    peer.on("connection", (dataConnection: DataConnection) => {
         connectionsRef.current.push(dataConnection);
         bootstrapConnection(dataConnection, dispatch);
-        const { username, passcode, doc } = dataConnection.metadata;
         dispatch(
             peerActions.connectionRequested(
-                dataConnection.peer,
-                passcode,
-                username,
-                doc
-            )
-        );
-        dispatch(
-            toastActions.addToast(
-                `connection from ${dataConnection.metadata.username} 
-                            with passcode ${dataConnection.metadata.passcode}
-                            for document ${dataConnection.metadata.doc}`,
-                'info'
-            )
+                peer,
+                dataConnection,
+                dispatch,
+                connectionsRef.current,
+            ),
         );
     });
-    peer.on('disconnected', () => {
+    peer.on("disconnected", () => {
         if (peer.destroyed) return;
-        dispatch(userActions.setNetworkState('disconnected'));
+        dispatch(userActions.setNetworkState("disconnected"));
         // dispatch(
         //     toastActions.addToast(
         //         'disconnected from the peer network, trying to reconnect, you may have to reset your connection',
@@ -81,13 +79,13 @@ export const bootstrapPeer = (
         // );
         peer.reconnect();
     });
-    peer.on('error', (err) => {
+    peer.on("error", (err) => {
         dispatch(
             peerActions.peerErrorReported({
                 //@ts-expect-error peer errors have a type
                 type: err.type,
                 message: err.message,
-            })
+            }),
         );
         dispatch(
             toastActions.addToast(
@@ -95,17 +93,17 @@ export const bootstrapPeer = (
                 `error in the peer network: ${err.type}
                             
                             ${err.message}`,
-                'error'
-            )
+                "error",
+            ),
         );
     });
-    peer.on('close', () => {
-        dispatch(userActions.setNetworkState('closed'));
+    peer.on("close", () => {
+        dispatch(userActions.setNetworkState("closed"));
         dispatch(
             toastActions.addToast(
                 `connection to peer network closed`,
-                'warning'
-            )
+                "warning",
+            ),
         );
     });
 };

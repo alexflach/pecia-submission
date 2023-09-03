@@ -1,6 +1,6 @@
-import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-type ToastType = 'warning' | 'info' | 'error';
+type ToastType = "warning" | "info" | "error";
 type Toast = {
     id: string;
     message: string;
@@ -17,16 +17,26 @@ type ToastState = {
 
 const addToast = {
     reducer: (state: ToastState, action: PayloadAction<Toast>) => {
-        state.toasts.push(action.payload);
-        switch (action.payload.type) {
-            case 'warning':
-                state.showWarning = true;
-                break;
-            case 'error':
-                state.showError = true;
-                break;
-            default:
-                break;
+        if (
+            !state.toasts.find((toast) => {
+                return (
+                    toast.message === action.payload.message &&
+                    toast.type === action.payload.type &&
+                    toast.timestamp === action.payload.timestamp
+                );
+            })
+        ) {
+            state.toasts.push(action.payload);
+            switch (action.payload.type) {
+                case "warning":
+                    state.showWarning = true;
+                    break;
+                case "error":
+                    state.showError = true;
+                    break;
+                default:
+                    break;
+            }
         }
     },
     prepare: (message: string, type: ToastType) => {
@@ -43,14 +53,14 @@ const addToast = {
 
 const removeToast = (state: ToastState, action: PayloadAction<string>) => {
     const newToasts = state.toasts.filter(
-        (toast) => toast.id !== action.payload
+        (toast) => toast.id !== action.payload,
     );
     state.toasts = newToasts;
     if (!newToasts.length) state.showToasts = false;
-    if (!newToasts.find((toast) => toast.type === 'warning')) {
+    if (!newToasts.find((toast) => toast.type === "warning")) {
         state.showWarning = false;
     }
-    if (!newToasts.find((toast) => toast.type === 'warning')) {
+    if (!newToasts.find((toast) => toast.type === "error")) {
         state.showError = false;
     }
 };
@@ -89,7 +99,7 @@ const initialState: ToastState = {
 };
 
 const toastSlice = createSlice({
-    name: 'toasts',
+    name: "toasts",
     initialState,
     reducers: {
         addToast,

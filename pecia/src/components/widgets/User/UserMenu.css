@@ -58,6 +58,17 @@ div.user-menu button.switch-root[data-state='checked'] {
     background-color: var(--light-blue);
 }
 
+div.pecia-id-text, div.peer-id-text {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 0.2rem;
+    align-items: center;
+    justify-content: space-between;
+}
+p.pecia-id, p.peer-id {
+    font-size: 0.7rem;
+}
+
 .switch-thumb {
     display: block;
     width: 20px;

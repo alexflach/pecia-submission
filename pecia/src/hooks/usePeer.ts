@@ -17,6 +17,7 @@ const usePeer = (online: boolean, dispatch: Dispatch) => {
                 connectionsRef.current.forEach((connection) => {
                     connection.close();
                 });
+                connectionsRef.current = [];
             }
             if (peerRef.current) {
                 peerRef.current.destroy();
@@ -43,6 +44,11 @@ const usePeer = (online: boolean, dispatch: Dispatch) => {
         return () => {
             if (peerRef.current?.destroy) {
                 peerRef.current.destroy();
+            }
+            if (connectionsRef.current.length) {
+                connectionsRef.current.forEach((connection) => {
+                    connection.close();
+                })
             }
         };
     }, [online, dispatch]);

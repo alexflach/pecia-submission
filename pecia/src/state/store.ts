@@ -10,7 +10,7 @@ import {
     actions as toastActions,
 } from './slices/toast';
 import { reducer as peerReducer } from './slices/peer';
-import rootSaga from './sagas/peerSagas';
+import rootSaga from './sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
