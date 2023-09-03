@@ -1,10 +1,17 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faShareFromSquare } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faShareFromSquare } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { usePeerContext } from "../../../../hooks/usePeer.ts";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../state/store.ts";
 
 // import './ShareVersionButton.css';
 
 const ShareVersionButton = ({ shareVersion, versionID }) => {
+    const { connections } = usePeerContext();
+    const versions = useSelector((state: RootState) => state.editor.versions);
+    const matchedVersion = versions.find((v) => v.versionID === versionID);
+
     return (
         <AlertDialog.Root>
             <AlertDialog.Trigger className="alert-trigger">
@@ -22,9 +29,9 @@ const ShareVersionButton = ({ shareVersion, versionID }) => {
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>
@@ -33,7 +40,10 @@ const ShareVersionButton = ({ shareVersion, versionID }) => {
                     <AlertDialog.Action asChild>
                         <button
                             onClick={() => {
-                                shareVersion(versionID);
+                                shareVersion(
+                                    matchedVersion,
+                                    connections.current,
+                                );
                             }}
                             className="button green"
                         >

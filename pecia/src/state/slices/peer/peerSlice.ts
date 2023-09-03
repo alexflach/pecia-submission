@@ -23,6 +23,7 @@ import {
     resolveMessage,
     clearMessages,
     newDocumentRequest,
+    shareVersion,
 } from "./peerReducers";
 
 let initialColleagues = [];
@@ -81,6 +82,7 @@ const peerSlice = createSlice({
         resolveMessage,
         clearMessages,
         newDocumentRequest,
+        shareVersion,
     },
 });
 

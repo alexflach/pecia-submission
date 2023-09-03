@@ -60,6 +60,7 @@ export interface UserMessage {
     action: MessageActionType;
     rejection: MessageRejectionType;
     peciaID: string;
+    versionID?: string;
 }
 
 export interface PeerState {
@@ -264,6 +265,7 @@ export const newDocumentRequest = {
             id: crypto.randomUUID(),
             timestamp: Date.now(),
             peciaID: sender.peciaID,
+            versionID: document.versionID,
             summary: `New Document from ${sender.username}`,
             message: `A new document called ${document.title}`,
             action: "APPROVE_DOC",
@@ -273,11 +275,11 @@ export const newDocumentRequest = {
 
         state.messages.push(message);
     },
-    prepare: (sender: string, version: Replica) => {
+    prepare: (sender: string, document: Replica) => {
         return {
             payload: {
                 sender,
-                version,
+                document,
             },
         };
     },
@@ -454,6 +456,13 @@ export const connect = {
     },
 };
 
+export const shareVersion = (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    state: PeerState,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    action: PayloadAction<{ version: Replica; connections: DataConnection[] }>,
+) => {};
+
 export const toggleMessages = (state: PeerState) => {
     state.showMessages = !state.showMessages;
 };
@@ -588,6 +597,12 @@ export const resolveMessage = {
                 );
                 state.messages = state.messages.filter(
                     (message) => message.id !== messageID,
+                );
+                break;
+            case "REJECT_DOC":
+            case "APPROVE_DOC":
+                state.requestedDocs = state.requestedDocs.filter(
+                    (doc) => doc.versionID !== action.payload.message.versionID,
                 );
                 break;
             case "NONE":

@@ -4,13 +4,17 @@ import {
     ConnectionRequestedPayload,
     Colleague,
     DataReceivedPayload,
+    MessageResolutionPayload,
+    DataPacket,
 } from "../slices/peer/peerReducers.ts";
 import { bootstrapConnection, ConnectionMetadata } from "../slices/peer/utils";
 import { RootState } from "../store.ts";
 import { actions } from "../slices/peer";
 import { actions as editorActions } from "../slices/editor";
+import { actions as docsActions } from "../slices/docs";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Replica } from "../../lib/crdt/replica.ts";
+import { DataConnection } from "peerjs";
 
 function* connectToPeer(action: {
     type: string;
@@ -231,6 +235,85 @@ function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
     }
 }
 
+function* manageDocApproval(action: {
+    type: string;
+    payload: MessageResolutionPayload;
+}) {
+    let docsAction;
+    let candidateVersions: Replica[];
+    let matchedVersion: Replica;
+    const message = action.payload.message;
+    let versionString: string;
+    switch (action.payload.resolution) {
+        case "APPROVE_DOC":
+            //add doc to list of docs
+            candidateVersions = yield select(
+                (state: RootState) => state.peer.requestedDocs,
+            );
+            matchedVersion = yield apply(
+                candidateVersions,
+                candidateVersions.find,
+                [(v) => v.versionID === message.versionID],
+            );
+            if (!matchedVersion) return;
+            docsAction = yield apply(docsActions, docsActions.addDoc, [
+                matchedVersion.docID,
+                matchedVersion.title,
+            ]);
+            yield put(docsAction);
+            versionString = yield apply(JSON, JSON.stringify, [
+                [matchedVersion],
+            ]);
+            //save version
+            yield apply(localStorage, localStorage.setItem, [
+                `pecia-versions-${matchedVersion.docID}`,
+                versionString,
+            ]);
+            break;
+        default:
+            break;
+    }
+}
+
+//loops through colleagues that we are sharing the doc with, and sends them the shared version.
+function* shareVersion(action: {
+    type: string;
+    payload: { version: Replica; connections: DataConnection[] };
+}) {
+    const docID = action.payload.version.docID;
+    const colleagues: Colleague[] = yield select(
+        (state: RootState) => state.peer.colleagues,
+    );
+
+    const user = yield select((state: RootState) => state.user);
+    const versionString = yield apply(JSON, JSON.stringify, [
+        action.payload.version,
+    ]);
+    const data: DataPacket = {
+        type: "VERSION",
+        time: Date.now(),
+        sender: user.peciaID,
+        message: versionString,
+    };
+
+    const matchedColleagues: Colleague[] = yield apply(
+        colleagues,
+        colleagues.filter,
+        [(colleague) => colleague.docs.find((doc) => doc === docID)],
+    );
+
+    for (const colleague of matchedColleagues) {
+        const connection: DataConnection = yield apply(
+            action.payload.connections,
+            action.payload.connections.find,
+            [(c) => c.peer === colleague.peerID],
+        );
+        if (!connection) continue;
+
+        yield apply(connection, connection.send, [data]);
+    }
+}
+
 function* restoreVersion(action) {
     yield put({ type: "editor/restoreVersionByID", payload: action.payload });
     yield put({ type: "editor/initEditor", payload: { owner: "", title: "" } });
@@ -240,4 +323,6 @@ export default function* rootSaga() {
     yield takeEvery("editor/restoreVersionPrep", restoreVersion);
     yield takeEvery("peer/connectionRequested", connectionRequested);
     yield takeEvery("peer/dataReceived", manageDataReceipt);
+    yield takeEvery("peer/resolveMessage", manageDocApproval);
+    yield takeEvery("peer/shareVersion", shareVersion);
 }
