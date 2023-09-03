@@ -1,41 +1,53 @@
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../../state/store';
-import { actions } from '../../../state/slices/toast';
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../state/store";
+import { actions as toastActions } from "../../../state/slices/toast";
+import { actions as peerActions } from "../../../state/slices/peer";
 import {
     PersonIcon,
     CheckCircledIcon,
     ExclamationTriangleIcon,
     ValueIcon,
     InfoCircledIcon,
-} from '@radix-ui/react-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUserGroup } from '@fortawesome/free-solid-svg-icons';
+} from "@radix-ui/react-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUserGroup } from "@fortawesome/free-solid-svg-icons";
 
-import UserMenu from './UserMenu';
-import './User.css';
+import UserMenu from "./UserMenu";
+import "./User.css";
 
 const onlineSelector = (state: RootState) => state.user.online;
 const toastsSelector = (state: RootState) => state.toast;
+const peerSelector = (state: RootState) => state.peer;
 
 const setInfoStatus = (
     showError: boolean,
     showWarning: boolean,
-    toasts: number
+    toasts: number,
 ) => {
-    if (showError) return 'error';
-    else if (showWarning) return 'warning';
-    else return toasts ? 'info' : null;
+    if (showError) return "error";
+    else if (showWarning) return "warning";
+    else return toasts ? "info" : null;
 };
 
 const User = () => {
     const online = useSelector(onlineSelector);
     const { showWarning, showError, toasts } = useSelector(toastsSelector);
+    const {
+        showWarning: showPeerWarning,
+        showError: showPeerError,
+        messages,
+    } = useSelector(peerSelector);
     const dispatch = useDispatch();
 
     const [showMenu, setShowMenu] = useState(false);
 
     const infoStatus = setInfoStatus(showError, showWarning, toasts.length);
+    const peerInfoStatus = setInfoStatus(
+        showPeerError,
+        showPeerWarning,
+        messages.length,
+    );
 
     return (
         <div className="user-panel">
@@ -43,7 +55,7 @@ const User = () => {
                 <button
                     id="colleagues-button"
                     onClick={() => {
-                        dispatch(actions.toggleToasts());
+                        dispatch(peerActions.toggleMessages());
                     }}
                 >
                     <FontAwesomeIcon
@@ -51,23 +63,23 @@ const User = () => {
                         size="xl"
                     ></FontAwesomeIcon>
 
-                    {infoStatus && (
+                    {peerInfoStatus && (
                         <div className="info-dot">
-                            {infoStatus === 'error' && (
+                            {peerInfoStatus === "error" && (
                                 <ExclamationTriangleIcon
                                     color="red"
                                     width="15"
                                     height="15"
                                 />
                             )}
-                            {infoStatus === 'warning' && (
+                            {peerInfoStatus === "warning" && (
                                 <ExclamationTriangleIcon
                                     color="orange"
                                     width="15"
                                     height="15"
                                 />
                             )}
-                            {infoStatus === 'info' && (
+                            {peerInfoStatus === "info" && (
                                 <InfoCircledIcon
                                     color="grey"
                                     width="15"
@@ -83,7 +95,7 @@ const User = () => {
                 <button
                     id="info-button"
                     onClick={() => {
-                        dispatch(actions.toggleToasts());
+                        dispatch(toastActions.toggleToasts());
                     }}
                 >
                     {online ? (
@@ -97,21 +109,21 @@ const User = () => {
                     )}
                     {infoStatus && (
                         <div className="info-dot">
-                            {infoStatus === 'error' && (
+                            {infoStatus === "error" && (
                                 <ExclamationTriangleIcon
                                     color="red"
                                     width="15"
                                     height="15"
                                 />
                             )}
-                            {infoStatus === 'warning' && (
+                            {infoStatus === "warning" && (
                                 <ExclamationTriangleIcon
                                     color="orange"
                                     width="15"
                                     height="15"
                                 />
                             )}
-                            {infoStatus === 'info' && (
+                            {infoStatus === "info" && (
                                 <InfoCircledIcon
                                     color="grey"
                                     width="15"

@@ -1,0 +1,80 @@
+@keyframes slideInFromLeft {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+div.messages-container,
+div.messages-header {
+    display: none;
+}
+div.messages-container[data-state='active'] div.messages-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding: 1rem;
+    align-items: flex-end;
+}
+div.messages-header h5 {
+    margin-bottom: 0;
+}
+div.messages-header button {
+    border-radius: 0.2rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: inherit;
+    z-index: 10;
+    position: relative;
+    border: none;
+}
+
+div.messages-header button:focus,
+div.messages-header button:hover {
+    cursor: pointer;
+    outline: solid 1px var(--dark-grey);
+}
+
+div.messages-container[data-state='active'] {
+    position: absolute;
+    left: 0;
+    bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    height: 50vh;
+    max-height: 30vh;
+    width: 100vw;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 2rem;
+    overflow-y: hidden;
+    animation-name: slideInFromLeft;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    background-color: var(--light-grey);
+    z-index: 20;
+}
+
+@media (min-width: 800px) {
+    div.messages-container[data-state='active'] {
+        max-width: 40vw;
+        max-height: 40vh;
+    }
+}
+
+@media (min-width: 1000px) {
+    div.messages-container[data-state='active'] {
+        max-width: 25vw;
+        max-height: 50vh;
+    }
+}
+
+@media (min-width: 1200px) {
+    div.toasts-container[data-state='active'] {
+        max-width: 20vw;
+    }
+}
