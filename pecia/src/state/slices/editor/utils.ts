@@ -67,6 +67,8 @@ export const generateNodeList = (doc: Node) => {
             const afterPos = pos + node.nodeSize;
             const resolvedAfterPos = doc.resolve(afterPos);
             const subsequentSibling = resolvedAfterPos.nodeAfter;
+            const siblingOffset = resolvedPos.parentOffset;
+            const siblingOrder = resolvedPos.index(resolvedPos.depth);
             const leaf = hasOnlyTextContent(node);
 
             const parentID =
@@ -84,9 +86,12 @@ export const generateNodeList = (doc: Node) => {
                 type: nodeType,
                 attrs: node.attrs,
                 leaf,
+                siblingOffset,
+                siblingOrder,
             });
         }
     });
+    console.log(nodes);
     return nodes;
 };
 
@@ -113,6 +118,7 @@ export const addMissingNodes = (replica: Replica, nodes: PMNode[]) => {
                 missingNodes[i].subsequentSibling,
                 missingNodes[i].child,
                 missingNodes[i].attrs,
+                missingNodes[i].siblingOrder,
             );
             //add the node to list of old nodes and remove from missing one
             seenNodes.push(missingNodes[i].child);
@@ -136,6 +142,7 @@ export const checkDeletedNodes = (replica: Replica, nodes: PMNode[]) => {
         replica.moveNode(node.child, "TRASH");
     }
 };
+
 export const structureTree = (replica: Replica, nodes: PMNode[]) => {
     const movedNodes = nodes.filter((node) => {
         const matchedNode = replica.tree.find((n) => node.child === n.child);
@@ -145,22 +152,26 @@ export const structureTree = (replica: Replica, nodes: PMNode[]) => {
         replica.moveNode(node.child, node.parent);
     }
 };
+
 export const arrangeSiblings = (replica: Replica, nodes: PMNode[]) => {
-    const movedSiblings = nodes.filter((node) => {
-        const matchedNode = replica.tree.find((n) => node.child === n.child);
+    const movedNodes = nodes.filter((node) => {
+        const matchedNode = replica.tree.find((n) => n.child === node.child);
         return !(
             matchedNode.meta.previousSibling === node.previousSibling &&
             matchedNode.meta.subsequentSibling === node.subsequentSibling
         );
     });
-    for (const node of movedSiblings) {
+
+    for (const node of movedNodes) {
         replica.moveSibling(
             node.child,
             node.previousSibling,
             node.subsequentSibling,
+            node.siblingOrder,
         );
     }
 };
+
 export const updateContent = (replica: Replica, nodes: PMNode[]) => {
     const updatedContent = nodes.filter((node) => {
         if (!node.leaf) return false;

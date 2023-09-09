@@ -14,6 +14,7 @@ import {
     deleteVersion,
     mergeVersions,
     addRemoteVersion,
+    setOwner,
 } from "./editorReducers";
 
 import schema from "../../../lib/editor/schema";
@@ -47,6 +48,7 @@ const editorSlice = createSlice({
         deleteVersion,
         mergeVersions,
         addRemoteVersion,
+        setOwner,
     },
 });
 

@@ -120,7 +120,7 @@ export const mergeVersions = {
         const newReplica = new Replica(
             newReplicaState.tree,
             newReplicaState.opLog,
-            newVersionID,
+            state.owner,
             state.currentDocID,
             newVersionID,
             state.title,
@@ -213,7 +213,7 @@ export const initEditor = {
             const currentVersionID = crypto.randomUUID();
             const initVersion = Replica.fromProsemirrorDoc(
                 editorState.doc,
-                null,
+                action.payload.owner,
                 state.currentDocID,
                 currentVersionID,
             );
@@ -248,6 +248,8 @@ export interface PMNode {
     type: string;
     attrs: object;
     leaf: boolean;
+    siblingOffset: number;
+    siblingOrder: number;
 }
 
 type VersionPayload = {
