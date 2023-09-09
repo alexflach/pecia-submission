@@ -1,13 +1,13 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faRepeat } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faRepeat } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './RestoreVersionButton.css';
+import "./RestoreVersionButton.css";
 
 const RestoreVersionButton = ({ restoreVersion, versionID }) => {
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger className="alert-trigger">
+            <AlertDialog.Trigger className="alert-trigger" title="restore">
                 <FontAwesomeIcon icon={faRepeat} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />
@@ -24,9 +24,9 @@ const RestoreVersionButton = ({ restoreVersion, versionID }) => {
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>

@@ -1,13 +1,13 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import * as Toolbar from '@radix-ui/react-toolbar';
-import { TrashIcon } from '@radix-ui/react-icons';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import * as Toolbar from "@radix-ui/react-toolbar";
+import { TrashIcon } from "@radix-ui/react-icons";
 
-import './DeleteButton.css';
+import "./DeleteButton.css";
 
 const DeleteButton = ({ handler, ICON_PROPS }) => {
     return (
         <AlertDialog.Root>
-            <Toolbar.Button asChild className="toolbar-button">
+            <Toolbar.Button title="delete" asChild className="toolbar-button">
                 <AlertDialog.Trigger>
                     <TrashIcon
                         viewBox={ICON_PROPS.viewBox}
@@ -27,9 +27,9 @@ const DeleteButton = ({ handler, ICON_PROPS }) => {
                 </AlertDialog.Description>
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>

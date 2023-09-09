@@ -1,17 +1,16 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faLink } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './Connect.css';
-import {useState} from "react";
+import "./Connect.css";
+import { useState } from "react";
 
 const ConnectButton = ({ handler }) => {
-
-    const [peerID, setPeerID] = useState('')
+    const [peerID, setPeerID] = useState("");
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger className="alert-trigger">
+            <AlertDialog.Trigger title="connect" className="alert-trigger">
                 <FontAwesomeIcon icon={faLink} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />
@@ -24,7 +23,7 @@ const ConnectButton = ({ handler }) => {
                 </AlertDialog.Description>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="peerID">
-                        Connection ID:{' '}
+                        Connection ID:{" "}
                     </label>
                     <input
                         value={peerID}
@@ -36,22 +35,25 @@ const ConnectButton = ({ handler }) => {
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>
-                        <button className="button">Cancel</button>
+                        <button title="cancel" className="button">
+                            Cancel
+                        </button>
                     </AlertDialog.Cancel>
                     <AlertDialog.Action asChild>
                         <button
+                            title="connect"
                             onClick={() => {
                                 handler(peerID);
-                                setPeerID('');
+                                setPeerID("");
                             }}
                             className="button green"
-                            disabled={(!peerID)}
+                            disabled={!peerID}
                         >
                             Connect
                         </button>

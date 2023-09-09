@@ -1,17 +1,17 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './CreateVersion.css';
-import { useState } from 'react';
+import "./CreateVersion.css";
+import { useState } from "react";
 
 const CreateVersionButton = ({ createVersion }) => {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger>
+            <AlertDialog.Trigger title="create version">
                 <FontAwesomeIcon icon={faPlus} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />
@@ -25,7 +25,7 @@ const CreateVersionButton = ({ createVersion }) => {
                 </AlertDialog.Description>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="title">
-                        Version Label:{' '}
+                        Version Label:{" "}
                     </label>
                     <input
                         value={title}
@@ -36,7 +36,7 @@ const CreateVersionButton = ({ createVersion }) => {
                 </div>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="description">
-                        Version Description:{' '}
+                        Version Description:{" "}
                     </label>
                     <input
                         value={description}
@@ -48,9 +48,9 @@ const CreateVersionButton = ({ createVersion }) => {
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>
@@ -60,8 +60,8 @@ const CreateVersionButton = ({ createVersion }) => {
                         <button
                             onClick={() => {
                                 createVersion(title, description);
-                                setTitle('');
-                                setDescription('');
+                                setTitle("");
+                                setDescription("");
                             }}
                             className="button green"
                             disabled={!title || !description}

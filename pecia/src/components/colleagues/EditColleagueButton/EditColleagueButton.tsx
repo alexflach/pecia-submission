@@ -1,9 +1,9 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './EditColleagueButton.css';
-import { useState } from 'react';
+import "./EditColleagueButton.css";
+import { useState } from "react";
 
 const EditColleagueButton = ({ handler, colleague }) => {
     const [username, setUsername] = useState(colleague.username);
@@ -12,7 +12,10 @@ const EditColleagueButton = ({ handler, colleague }) => {
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger className="alert-trigger">
+            <AlertDialog.Trigger
+                title="edit colleague"
+                className="alert-trigger"
+            >
                 <FontAwesomeIcon icon={faPenToSquare} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />
@@ -25,7 +28,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                 </AlertDialog.Description>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="title">
-                        Username:{' '}
+                        Username:{" "}
                     </label>
                     <input
                         value={username}
@@ -36,7 +39,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                 </div>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="description">
-                        Passcode:{' '}
+                        Passcode:{" "}
                     </label>
                     <input
                         value={passcode}
@@ -47,7 +50,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                 </div>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="description">
-                        Pecia ID:{' '}
+                        Pecia ID:{" "}
                     </label>
                     <input
                         value={peciaID}
@@ -59,9 +62,9 @@ const EditColleagueButton = ({ handler, colleague }) => {
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>
@@ -73,7 +76,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                                 handler(username, passcode, peciaID);
                             }}
                             className="button green"
-                            disabled={(!username || !passcode || !peciaID)}
+                            disabled={!username || !passcode || !peciaID}
                         >
                             Update Colleague
                         </button>

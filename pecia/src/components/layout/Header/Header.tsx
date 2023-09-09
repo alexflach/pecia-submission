@@ -28,7 +28,7 @@ const Header = () => {
     return (
         <header>
             <Link to="/">
-                <h3>Pecia</h3>
+                <h3 title="home">Pecia</h3>
             </Link>
             {pathname === "/edit" && (
                 <input

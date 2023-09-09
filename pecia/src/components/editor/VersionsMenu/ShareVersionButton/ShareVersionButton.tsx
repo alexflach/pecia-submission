@@ -21,7 +21,7 @@ const ShareVersionButton = ({ shareVersion, versionID }) => {
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger className="alert-trigger">
+            <AlertDialog.Trigger title="share" className="alert-trigger">
                 <FontAwesomeIcon icon={faShareFromSquare} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />

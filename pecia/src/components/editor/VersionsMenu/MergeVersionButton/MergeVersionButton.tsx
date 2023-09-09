@@ -1,9 +1,9 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faCodeMerge } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faCodeMerge } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './MergeVersionButton.css';
-import { useState } from 'react';
+import "./MergeVersionButton.css";
+import { useState } from "react";
 
 const MergeVersionButton = ({
     handler,
@@ -12,12 +12,15 @@ const MergeVersionButton = ({
     version2Label,
     version2ID,
 }) => {
-    const [label, setLabel] = useState('');
-    const [description, setDescription] = useState('');
+    const [label, setLabel] = useState("");
+    const [description, setDescription] = useState("");
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger className="alert-trigger">
+            <AlertDialog.Trigger
+                title="merge with current version"
+                className="alert-trigger"
+            >
                 <FontAwesomeIcon icon={faCodeMerge} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />
@@ -46,7 +49,7 @@ const MergeVersionButton = ({
                 </AlertDialog.Description>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="title">
-                        Version Label:{' '}
+                        Version Label:{" "}
                     </label>
                     <input
                         value={label}
@@ -57,7 +60,7 @@ const MergeVersionButton = ({
                 </div>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="description">
-                        Version Description:{' '}
+                        Version Description:{" "}
                     </label>
                     <input
                         value={description}
@@ -69,9 +72,9 @@ const MergeVersionButton = ({
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>
@@ -84,10 +87,10 @@ const MergeVersionButton = ({
                                     version1ID,
                                     version2ID,
                                     label,
-                                    description
+                                    description,
                                 );
-                                setLabel('');
-                                setDescription('');
+                                setLabel("");
+                                setDescription("");
                             }}
                             className="button green"
                             disabled={!label || !description}

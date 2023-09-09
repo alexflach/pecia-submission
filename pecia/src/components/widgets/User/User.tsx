@@ -53,6 +53,7 @@ const User = () => {
         <div className="user-panel">
             <div className="info-logo">
                 <button
+                    title="colleague messages"
                     id="colleagues-button"
                     onClick={() => {
                         dispatch(peerActions.toggleMessages());
@@ -93,6 +94,7 @@ const User = () => {
 
             <div className="info-logo">
                 <button
+                    title="system messages"
                     id="info-button"
                     onClick={() => {
                         dispatch(toastActions.toggleToasts());
@@ -135,7 +137,10 @@ const User = () => {
                 </button>
             </div>
             <div className="user-logo">
-                <button onClick={() => setShowMenu((showMenu) => !showMenu)}>
+                <button
+                    title="user details"
+                    onClick={() => setShowMenu((showMenu) => !showMenu)}
+                >
                     <PersonIcon width="25" height="25" />
                 </button>
                 {showMenu && <UserMenu show={showMenu} />}

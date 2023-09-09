@@ -17,8 +17,6 @@ import {
 import * as Toolbar from "@radix-ui/react-toolbar";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
-    ArrowLeftIcon,
-    ArrowRightIcon,
     DownloadIcon,
     FontBoldIcon,
     FontItalicIcon,
@@ -30,6 +28,10 @@ import {
 } from "@radix-ui/react-icons";
 
 import { faFloppyDisk } from "@fortawesome/free-regular-svg-icons";
+import {
+    faArrowRotateLeft,
+    faArrowRotateRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./Toolbar.css";
@@ -64,6 +66,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
             >
                 <DeleteButton handler={deleteHandler} ICON_PROPS={ICON_PROPS} />
                 <Toolbar.Button
+                    title="download"
                     className="toolbar-button"
                     onClick={() => downloadDoc(editorView.current)}
                 >
@@ -75,6 +78,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
+                    title="save"
                     onClick={() =>
                         saveDoc(
                             editorView.current,
@@ -89,23 +93,17 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
+                    title="undo"
                     onClick={() => undoCommand(editorView.current)}
                 >
-                    <ArrowLeftIcon
-                        viewBox={ICON_PROPS.viewBox}
-                        width={ICON_PROPS.width}
-                        height={ICON_PROPS.width}
-                    />
+                    <FontAwesomeIcon icon={faArrowRotateLeft} size="xl" />
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
+                    title="redo"
                     onClick={() => redoCommand(editorView.current)}
                 >
-                    <ArrowRightIcon
-                        viewBox={ICON_PROPS.viewBox}
-                        width={ICON_PROPS.width}
-                        height={ICON_PROPS.width}
-                    />
+                    <FontAwesomeIcon icon={faArrowRotateRight} size="xl" />
                 </Toolbar.Button>
                 <Toolbar.Separator
                     className="toolbar-separator"
@@ -120,6 +118,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         className="toolbar-toggle-item"
                         value="bold"
                         aria-label="bold"
+                        title="bold"
                         onClick={() => {
                             toggle(editorView.current, "bold");
                         }}
@@ -133,6 +132,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     <Toolbar.ToggleItem
                         className="toolbar-toggle-item"
                         value="italic"
+                        title="italic"
                         aria-label="italic"
                         onClick={() => toggle(editorView.current, "italic")}
                     >
@@ -145,6 +145,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                     <Toolbar.ToggleItem
                         className="toolbar-toggle-item"
                         value="underline"
+                        title="underline"
                         aria-label="underline"
                         onClick={() => toggle(editorView.current, "underline")}
                     >
@@ -159,6 +160,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                         className="toolbar-toggle-item"
                         value="strikethrough"
                         aria-label="strikethrough"
+                        title="strikethrough"
                         onClick={() =>
                             toggle(editorView.current, "strikethrough")
                         }
@@ -176,6 +178,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 />
                 <Toolbar.Button
                     className="toolbar-button"
+                    title="paragraph style"
                     onClick={() => setBlock(editorView.current, "para")}
                 >
                     <PilcrowIcon
@@ -186,6 +189,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
+                    title="blockquote"
                     onClick={() => wrapInBlockquote(editorView.current)}
                 >
                     <QuoteIcon
@@ -196,6 +200,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </Toolbar.Button>
                 <Toolbar.Button
                     className="toolbar-button"
+                    title="list"
                     onClick={() => wrapInListCommand(editorView.current)}
                 >
                     <ListBulletIcon
@@ -206,13 +211,14 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                 </Toolbar.Button>
 
                 <DropdownMenu.Root>
-                    <Toolbar.Button asChild>
+                    <Toolbar.Button title="heading level" asChild>
                         <DropdownMenu.Trigger className="h4">
                             Heading
                         </DropdownMenu.Trigger>
                     </Toolbar.Button>
                     <DropdownMenu.Content>
                         <DropdownMenu.Item
+                            className="dropdown-item"
                             onClick={() =>
                                 setHeadingLevel(editorView.current, 1)
                             }
@@ -220,6 +226,7 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                             Heading One
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
+                            className="dropdown-item"
                             onClick={() =>
                                 setHeadingLevel(editorView.current, 2)
                             }
@@ -227,11 +234,28 @@ const EditorToolbar = ({ editorView }: toolbarProps) => {
                             Heading Two
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
+                            className="dropdown-item"
                             onClick={() =>
                                 setHeadingLevel(editorView.current, 3)
                             }
                         >
                             Heading Three
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                            className="dropdown-item"
+                            onClick={() =>
+                                setHeadingLevel(editorView.current, 4)
+                            }
+                        >
+                            Heading Four
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                            className="dropdown-item"
+                            onClick={() =>
+                                setHeadingLevel(editorView.current, 5)
+                            }
+                        >
+                            Heading Five
                         </DropdownMenu.Item>
                     </DropdownMenu.Content>
                 </DropdownMenu.Root>

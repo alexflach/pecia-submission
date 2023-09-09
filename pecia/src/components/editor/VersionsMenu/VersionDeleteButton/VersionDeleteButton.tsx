@@ -1,10 +1,13 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { TrashIcon } from '@radix-ui/react-icons';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { TrashIcon } from "@radix-ui/react-icons";
 
 const VersionDeleteButton = ({ handler, versionID, ICON_PROPS }) => {
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger className="alert-trigger">
+            <AlertDialog.Trigger
+                title="delete version"
+                className="alert-trigger"
+            >
                 <TrashIcon
                     viewBox={ICON_PROPS.viewBox}
                     width={ICON_PROPS.width}
@@ -23,9 +26,9 @@ const VersionDeleteButton = ({ handler, versionID, ICON_PROPS }) => {
                 </AlertDialog.Description>
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>

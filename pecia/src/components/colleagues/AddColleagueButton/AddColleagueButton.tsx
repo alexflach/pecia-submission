@@ -1,18 +1,18 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import './AddColleagueButton.css';
-import { useState } from 'react';
+import "./AddColleagueButton.css";
+import { useState } from "react";
 
 const AddColleagueButton = ({ handler }) => {
-    const [username, setUsername] = useState('');
-    const [passcode, setPasscode] = useState('');
-    const [peciaID, setPeciaID] = useState('');
+    const [username, setUsername] = useState("");
+    const [passcode, setPasscode] = useState("");
+    const [peciaID, setPeciaID] = useState("");
 
     return (
         <AlertDialog.Root>
-            <AlertDialog.Trigger>
+            <AlertDialog.Trigger title="add colleague">
                 <FontAwesomeIcon icon={faPlus} size="xl" />
             </AlertDialog.Trigger>
             <AlertDialog.Overlay className="alert-dialog-overlay" />
@@ -21,11 +21,12 @@ const AddColleagueButton = ({ handler }) => {
                     Add a Colleague
                 </AlertDialog.Title>
                 <AlertDialog.Description className="alert-dialog-description">
-                   Add a colleague to your colleague list. From there you can connect with them and share documents.
+                    Add a colleague to your colleague list. From there you can
+                    connect with them and share documents.
                 </AlertDialog.Description>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="title">
-                        Username:{' '}
+                        Username:{" "}
                     </label>
                     <input
                         value={username}
@@ -36,7 +37,7 @@ const AddColleagueButton = ({ handler }) => {
                 </div>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="description">
-                        Passcode:{' '}
+                        Passcode:{" "}
                     </label>
                     <input
                         value={passcode}
@@ -47,7 +48,7 @@ const AddColleagueButton = ({ handler }) => {
                 </div>
                 <div className="input-container">
                     <label className="alert-dialog-label" htmlFor="description">
-                        Pecia ID:{' '}
+                        Pecia ID:{" "}
                     </label>
                     <input
                         value={peciaID}
@@ -59,9 +60,9 @@ const AddColleagueButton = ({ handler }) => {
 
                 <div
                     style={{
-                        display: 'flex',
+                        display: "flex",
                         gap: 25,
-                        justifyContent: 'flex-end',
+                        justifyContent: "flex-end",
                     }}
                 >
                     <AlertDialog.Cancel asChild>
@@ -71,12 +72,12 @@ const AddColleagueButton = ({ handler }) => {
                         <button
                             onClick={() => {
                                 handler(username, passcode, peciaID);
-                                setUsername('');
-                                setPasscode('');
-                                setPeciaID('');
+                                setUsername("");
+                                setPasscode("");
+                                setPeciaID("");
                             }}
                             className="button green"
-                            disabled={(!username || !passcode || !peciaID)}
+                            disabled={!username || !passcode || !peciaID}
                         >
                             Add Colleague
                         </button>
