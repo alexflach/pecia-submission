@@ -35,6 +35,7 @@ export const hasOnlyTextContent = (node: Node) => {
     });
     return leaf;
 };
+
 export const generateVersionFromReplica = (
     oldVersion: Replica,
     nodes: PMNode[],

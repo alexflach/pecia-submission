@@ -1,7 +1,7 @@
 //This class implements the LSEQ list CRDT from https://hal.science/hal-00921633/document
 //It provides unique position identifiers for siblings in the TreeMoveCRDT
 
-import { randomInt } from './utils.js';
+import { randomInt } from "./utils.js";
 
 //A Position will be a string in the form of (Int:)+ReplicaID
 type PosString = string;
@@ -24,11 +24,11 @@ export class LSEQ {
     }
 
     //currently uses the random allocation method, this is evidenced to be inefficient but is the
-    //simplest method for the prototype
+    //simplest method
     static alloc(
         before: PosString,
         after: PosString,
-        replica: string
+        replica: string,
     ): PosString {
         const p = LSEQ.parse(before);
         const q = LSEQ.parse(after);
@@ -39,13 +39,13 @@ export class LSEQ {
 
             if (qPos - pPos > 1) {
                 const newPos = randomInt(pPos + 1, qPos);
-                const treeString = p.positions.slice(0, -1).join(':');
+                const treeString = p.positions.slice(0, -1).join(":");
                 return `${treeString}${
-                    treeString ? ':' : ''
+                    treeString ? ":" : ""
                 }${newPos}:${replica}`;
             } else {
                 const newPos = randomInt(LSEQ.#regionStart, LSEQ.#regionEnd);
-                const treeString = p.positions.join(':');
+                const treeString = p.positions.join(":");
                 return `${treeString}:${newPos}:${replica}`;
             }
         } else {
@@ -55,20 +55,20 @@ export class LSEQ {
 
             if (LSEQ.#regionEnd - pPos > 1) {
                 const newPos = randomInt(pPos + 1, LSEQ.#regionEnd);
-                const treeString = p.positions.slice(0, -1).join(':');
+                const treeString = p.positions.slice(0, -1).join(":");
                 return `${treeString}${
-                    treeString ? ':' : null
+                    treeString ? ":" : ""
                 }${newPos}:${replica}`;
             } else {
                 const newPos = randomInt(LSEQ.#regionStart, LSEQ.#regionEnd);
-                const treeString = p.positions.join(':');
+                const treeString = p.positions.join(":");
                 return `${treeString}:${newPos}:${replica}`;
             }
         }
     }
 
     static parse(pos: PosString): Position {
-        const split = pos.split(':');
+        const split = pos.split(":");
         const length = split.length;
         const position: Position = {
             replica: split[length - 1],

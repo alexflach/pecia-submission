@@ -265,7 +265,6 @@ export const createVersion = {
 
         const nodes = generateNodeList(state.editorState.doc);
 
-        console.log({ previousReplica, nodes });
         let newVersion;
         if (previousReplica) {
             console.log("generating from replica");
@@ -279,14 +278,12 @@ export const createVersion = {
                 newVersionID,
             );
         }
-        console.log({ newVersionPre: newVersion });
 
         newVersion.owner = action.payload.owner;
         newVersion.label = action.payload.label;
         newVersion.versionID = newVersionID;
         newVersion.title = action.payload.title;
         newVersion.description = action.payload.description;
-        console.log({ newVersionPost: newVersion });
         state.versions.push(newVersion);
 
         state.doc = JSON.stringify(newVersion.toProsemirrorDoc());
@@ -328,5 +325,16 @@ export const restoreVersionPrep = (state, action: PayloadAction<string>) => {
 };
 
 export const addRemoteVersion = (state, action: PayloadAction<Replica>) => {
-    state.versions.push(action.payload);
+    const versionToAdd = new Replica(
+        action.payload.tree,
+        action.payload.opLog,
+        action.payload.id,
+        action.payload.docID,
+        action.payload.versionID,
+        action.payload.title,
+        action.payload.description,
+        action.payload.label,
+        action.payload.owner,
+    );
+    state.versions.push(versionToAdd);
 };

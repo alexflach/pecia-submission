@@ -1,4 +1,7 @@
-import { produce } from 'immer';
+// Contains helper methods using 'immer' to guarantee immutability.
+// Methods have the 'Im' suffix to indicate immutability.
+
+import { produce } from "immer";
 import {
     TreeMoveCRDT,
     Metadata,
@@ -7,15 +10,17 @@ import {
     Move,
     OldState,
     LogMove,
-} from './crdt';
-import Clock from './clock';
+} from "./crdt";
+import Clock from "./clock";
 
-type GetChildAndMetadataState = {
+interface GetChildAndMetadataState {
     tree?: TreeNode[];
     child?: string;
     parent?: string;
     meta?: Metadata;
-};
+}
+
+// given the input child and tree, returns the node metadata and parent if found.
 export const getParentAndMetadataIm = (tree: TreeNode[], child: string) => {
     return produce(
         { tree, child } as GetChildAndMetadataState,
@@ -25,7 +30,7 @@ export const getParentAndMetadataIm = (tree: TreeNode[], child: string) => {
                 draftState.parent = node.parent;
                 draftState.meta = node.meta;
             } else draftState = null;
-        }
+        },
     );
 };
 
@@ -33,6 +38,9 @@ type UpdateLogState = {
     state: ReplicaState;
     move: Move;
 };
+
+// given an input state and a move, returns a new state with the move added to the
+// operation log.
 export const updateLogIm = (state: ReplicaState, move: Move) => {
     return produce({ state, move } as UpdateLogState, (draftState) => {
         const node = TreeMoveCRDT.findNode(state.tree, move.child);
@@ -52,13 +60,14 @@ export const updateLogIm = (state: ReplicaState, move: Move) => {
     });
 };
 
+// Given an input state and a move, safely applies the move if possible
 export const updateTreeIm = (state: ReplicaState, move: Move) => {
     return produce({ state, move } as UpdateLogState, (draftState) => {
         let apply = true;
         // we cannot move the root node or the trash node:
         if (
             draftState.move.parent === null ||
-            draftState.move.child === 'TRASH'
+            draftState.move.child === "TRASH"
         )
             apply = false;
         // if the move's child would be an ancestor of its parent, then we reject the move,
@@ -67,14 +76,14 @@ export const updateTreeIm = (state: ReplicaState, move: Move) => {
             TreeMoveCRDT.ancestor(
                 draftState.state.tree,
                 draftState.move.child,
-                draftState.move.parent
+                draftState.move.parent,
             ) ||
             draftState.move.child === draftState.move.parent
         )
             apply = false;
         if (apply) {
             draftState.state.tree = state.tree.filter(
-                (n) => n.child !== move.child
+                (n) => n.child !== move.child,
             );
             draftState.state.tree.push({
                 parent: move.parent,
@@ -90,6 +99,8 @@ type UndoState = {
     op: LogMove;
 };
 
+// undoes an operation by removing the relevant node from the tree and replacing
+// it with the old state of the tree
 export const undoOpIm = (tree: TreeNode[], op: LogMove) => {
     return produce({ tree, op } as UndoState, (draftState) => {
         draftState.tree = draftState.tree.filter((n) => n.child !== op.child);
@@ -109,6 +120,7 @@ type ApplyState = {
     move: Move;
 };
 
+// implements the apply operation logic from Kleppmann's paper.
 export const applyOpIm = (replicaState: ReplicaState, move: Move) => {
     return produce({ replicaState, move } as ApplyState, (draftState) => {
         // If this is the first operation or the move timestamp is more recent than the oldest log entry, we can just
@@ -121,7 +133,7 @@ export const applyOpIm = (replicaState: ReplicaState, move: Move) => {
         ) {
             draftState.replicaState = TreeMoveCRDT.doOp(
                 draftState.replicaState,
-                move
+                move,
             );
         } else {
             const lastOp =
@@ -129,11 +141,11 @@ export const applyOpIm = (replicaState: ReplicaState, move: Move) => {
                     ? draftState.replicaState.opLog.pop()
                     : null;
             if (!lastOp) {
-                throw new Error('something went wrong with the op log');
+                throw new Error("something went wrong with the op log");
             } else {
                 const newTree = undoOpIm(
                     draftState.replicaState.tree,
-                    lastOp
+                    lastOp,
                 ).tree;
                 draftState.replicaState = TreeMoveCRDT.redoOp(
                     applyOpIm(
@@ -141,15 +153,16 @@ export const applyOpIm = (replicaState: ReplicaState, move: Move) => {
                             opLog: draftState.replicaState.opLog,
                             tree: newTree,
                         } as ReplicaState,
-                        move
+                        move,
                     ).replicaState,
-                    lastOp
+                    lastOp,
                 );
             }
         }
     });
 };
 
+// applies a sequence of operations
 export const applyOpsIm = (replicaState: ReplicaState, opLog: LogMove[]) => {
     return produce({ replicaState, opLog }, (draftState) => {
         for (const op of draftState.opLog) {
@@ -162,12 +175,12 @@ export const applyOpsIm = (replicaState: ReplicaState, opLog: LogMove[]) => {
             };
             if (
                 !draftState.replicaState.opLog.find(
-                    (operation) => operation.id === op.id
+                    (operation) => operation.id === op.id,
                 )
             ) {
                 draftState.replicaState = applyOpIm(
                     draftState.replicaState,
-                    move
+                    move,
                 ).replicaState;
             }
         }
