@@ -48,29 +48,7 @@
 }
 
 
-.button.red {
-    background-color: white;
-    color: var(--dark-red);
-}
-.button.red:hover,
-.button.red:focus {
-    background-color: var(--pale-green);
-    outline: solid 1px var(--bright-green);
-}
 
-.button.green {
-    background-color: white;
-    color: var(--mid-green);
-}
-.button.green:hover,
-.button.green:focus {
-    background-color: var(--green-1);
-    outline: solid 1px var(--dark-green);
-}
-.button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
 
 @keyframes overlayShow {
     from {

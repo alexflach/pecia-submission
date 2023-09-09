@@ -609,6 +609,9 @@ export const resolveMessage = {
                 break;
             case "REJECT_DOC":
             case "APPROVE_DOC":
+                state.messages = state.messages.filter(
+                    (message) => message.id !== messageID,
+                );
                 // state.requestedDocs = state.requestedDocs.filter(
                 //     (doc) => doc.versionID !== action.payload.message.versionID,
                 // );

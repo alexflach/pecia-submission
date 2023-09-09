@@ -114,6 +114,29 @@ a:active {
     line-height: 1;
     font-weight: 500;
     height: 35px;
-    background-color: inherit;
+    background-color: transparent;
     cursor: pointer;
+}
+.button.red {
+    background-color: white;
+    color: var(--dark-red);
+}
+.button.red:hover,
+.button.red:focus {
+    background-color: var(--pale-red);
+    outline: solid 1px var(--bright-red);
+}
+
+.button.green {
+    background-color: white;
+    color: var(--mid-green);
+}
+.button.green:hover,
+.button.green:focus {
+    background-color: var(--green-1);
+    outline: solid 1px var(--dark-green);
+}
+.button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }

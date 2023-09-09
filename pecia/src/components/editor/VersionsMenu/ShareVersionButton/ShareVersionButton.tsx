@@ -5,12 +5,19 @@ import { usePeerContext } from "../../../../hooks/usePeer.ts";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../state/store.ts";
 
-// import './ShareVersionButton.css';
-
 const ShareVersionButton = ({ shareVersion, versionID }) => {
     const { connections } = usePeerContext();
     const versions = useSelector((state: RootState) => state.editor.versions);
+    const colleagues = useSelector((state: RootState) => state.peer.colleagues);
+    const currentDocID = useSelector(
+        (state: RootState) => state.editor.currentDocID,
+    );
     const matchedVersion = versions.find((v) => v.versionID === versionID);
+    const matchedColleagues = colleagues.filter(
+        (colleague) =>
+            colleague.connectionStatus === "CONNECTED" &&
+            colleague.docs.find((doc) => doc === currentDocID),
+    );
 
     return (
         <AlertDialog.Root>
@@ -23,9 +30,18 @@ const ShareVersionButton = ({ shareVersion, versionID }) => {
                     Share a Version
                 </AlertDialog.Title>
                 <AlertDialog.Description className="alert-dialog-description">
-                    This will share the version with all colleagues currently
+                    You will share the version with all colleagues currently
                     connected to this document.
                 </AlertDialog.Description>
+                {matchedColleagues.length ? (
+                    <div className="colleague-list">
+                        {matchedColleagues.map((colleague) => (
+                            <p>- {colleague.username}</p>
+                        ))}
+                    </div>
+                ) : (
+                    <p>Not sharing with any colleagues online</p>
+                )}
 
                 <div
                     style={{

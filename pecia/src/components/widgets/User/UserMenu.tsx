@@ -1,21 +1,21 @@
-import { useDispatch } from 'react-redux';
-import { actions } from '../../../state/slices/user';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../state/store';
-import * as Switch from '@radix-ui/react-switch';
+import { useDispatch } from "react-redux";
+import { actions } from "../../../state/slices/user";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../state/store";
+import * as Switch from "@radix-ui/react-switch";
 import CopyButton from "../CopyButton";
 
 const { setUsername, setPasscode, toggleOnline } = actions;
 
-
-import './UserMenu.css';
+import "./UserMenu.css";
 type UserMenuPropTypes = {
     show: boolean;
 };
 
 const UserMenu = ({ show }: UserMenuPropTypes) => {
     const selector = (state: RootState) => state.user;
-    const { username, passcode, online, peciaID, peerID } = useSelector(selector);
+    const { username, passcode, online, peciaID, peerID } =
+        useSelector(selector);
     const dispatch = useDispatch();
     const handleUNChange = (e) => {
         dispatch(setUsername(e.target.value));
@@ -24,7 +24,7 @@ const UserMenu = ({ show }: UserMenuPropTypes) => {
         dispatch(setPasscode(e.target.value));
     };
     return (
-        <div className={`user-menu ${show ? 'show' : ''}`}>
+        <div className={`user-menu ${show ? "show" : ""}`}>
             <p>Set Your Details</p>
             <label htmlFor="username">Username</label>
             <input
@@ -45,15 +45,19 @@ const UserMenu = ({ show }: UserMenuPropTypes) => {
                     <CopyButton textToCopy={peciaID} />
                 </div>
             </div>
-            {online && (
-                <div className="peer-id-wrapper">
-                   <p>Your Connection ID:</p>
-                   <div className="peer-id-text">
-                       <p className="peer-id">{peerID}</p>
-                       <CopyButton textToCopy={peerID} />
-                   </div>
+            <div className="peer-id-wrapper">
+                <p>Your Connection ID:</p>
+                <div className="peer-id-text">
+                    {online ? (
+                        <div className="peer-id-text">
+                            <p className="peer-id">{peerID}</p>
+                            <CopyButton textToCopy={peerID} />
+                        </div>
+                    ) : (
+                        <p className="peer-id">Not online</p>
+                    )}
                 </div>
-            )}
+            </div>
 
             <label htmlFor="work-online">Work Online?</label>
             <Switch.Root

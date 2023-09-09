@@ -1,7 +1,15 @@
+div.docs-header {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    gap: 1rem;
+    margin-bottom: 5%;
+
+}
 div.your-docs-banner {
     display: flex;
     width: 100%;
-    flex-direction: row wrap;
+    flex-flow: row wrap;
     justify-content: space-evenly;
 }
 h3.docs-title {

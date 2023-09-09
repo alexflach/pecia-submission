@@ -36,16 +36,6 @@
 }
 
 
-.button.red {
-    background-color: white;
-    color: var(--dark-red);
-}
-.button.red:hover,
-.button.red:focus {
-    background-color: var(--pale-red);
-    outline: solid 1px var(--bright-red);
-}
-
 @keyframes overlayShow {
     from {
         opacity: 0;

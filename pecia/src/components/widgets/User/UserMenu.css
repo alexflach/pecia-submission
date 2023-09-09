@@ -24,6 +24,7 @@ div.user-menu {
     z-index: 5;
     background-color: white;
     outline: var(--light-grey);
+    padding: 1rem;
 }
 
 div.user-menu input {
