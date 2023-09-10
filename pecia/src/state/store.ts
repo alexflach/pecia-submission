@@ -1,4 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
+import {
+    combineReducers,
+    configureStore,
+    PreloadedState,
+} from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 
 import { reducer as docsReducer } from "./slices/docs";
@@ -15,15 +19,17 @@ import rootSaga from "./sagas";
 const sagaMiddleware = createSagaMiddleware();
 const middleware = [sagaMiddleware];
 
+const rootReducer = combineReducers({
+    docs: docsReducer,
+    user: userReducer,
+    theme: themeReducer,
+    editor: editorReducer,
+    toast: toastReducer,
+    peer: peerReducer,
+});
+
 const store = configureStore({
-    reducer: {
-        docs: docsReducer,
-        user: userReducer,
-        theme: themeReducer,
-        editor: editorReducer,
-        toast: toastReducer,
-        peer: peerReducer,
-    },
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware({ serializableCheck: false }).concat(
             middleware,
@@ -91,3 +97,14 @@ store.subscribe(persistUser);
 store.subscribe(persistColleagues);
 
 export default store;
+
+// testing utils
+
+export function setupTestStore(preloadedState?: PreloadedState<RootState>) {
+    return configureStore({
+        reducer: rootReducer,
+        preloadedState,
+    });
+}
+
+export type AppTestStore = ReturnType<typeof setupTestStore>;

@@ -68,7 +68,10 @@ const ColleagueCard = ({ colleague }: { colleague: Colleague }) => {
                 <Collapsible.Trigger asChild>
                     <div className="card-header">
                         <span className="label">{colleague.username}</span>
-                        <button className="card-button">
+                        <button
+                            className="card-button"
+                            title={open ? "collapse" : "expand"}
+                        >
                             {
                                 <FontAwesomeIcon
                                     icon={open ? faChevronUp : faChevronDown}

@@ -33,6 +33,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                     <input
                         value={username}
                         name="username"
+                        title="username"
                         onChange={(e) => setUsername(e.target.value)}
                         className="alert-dialog-input"
                     />
@@ -44,6 +45,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                     <input
                         value={passcode}
                         name="passcode"
+                        title="passcode"
                         onChange={(e) => setPasscode(e.target.value)}
                         className="alert-dialog-input"
                     />
@@ -55,6 +57,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                     <input
                         value={peciaID}
                         name="peciaID"
+                        title="pecia ID"
                         onChange={(e) => setPeciaID(e.target.value)}
                         className="alert-dialog-input"
                     />
@@ -68,7 +71,9 @@ const EditColleagueButton = ({ handler, colleague }) => {
                     }}
                 >
                     <AlertDialog.Cancel asChild>
-                        <button className="button">Cancel</button>
+                        <button title="cancel" className="button">
+                            Cancel
+                        </button>
                     </AlertDialog.Cancel>
                     <AlertDialog.Action asChild>
                         <button
@@ -76,6 +81,7 @@ const EditColleagueButton = ({ handler, colleague }) => {
                                 handler(username, passcode, peciaID);
                             }}
                             className="button green"
+                            title="confirm"
                             disabled={!username || !passcode || !peciaID}
                         >
                             Update Colleague

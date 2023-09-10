@@ -31,6 +31,7 @@ const AddColleagueButton = ({ handler }) => {
                     <input
                         value={username}
                         name="username"
+                        title="username"
                         onChange={(e) => setUsername(e.target.value)}
                         className="alert-dialog-input"
                     />
@@ -42,6 +43,7 @@ const AddColleagueButton = ({ handler }) => {
                     <input
                         value={passcode}
                         name="passcode"
+                        title="passcode"
                         onChange={(e) => setPasscode(e.target.value)}
                         className="alert-dialog-input"
                     />
@@ -53,6 +55,7 @@ const AddColleagueButton = ({ handler }) => {
                     <input
                         value={peciaID}
                         name="peciaID"
+                        title="pecia ID"
                         onChange={(e) => setPeciaID(e.target.value)}
                         className="alert-dialog-input"
                     />
@@ -66,7 +69,9 @@ const AddColleagueButton = ({ handler }) => {
                     }}
                 >
                     <AlertDialog.Cancel asChild>
-                        <button className="button">Cancel</button>
+                        <button className="button" title="cancel">
+                            Cancel
+                        </button>
                     </AlertDialog.Cancel>
                     <AlertDialog.Action asChild>
                         <button
@@ -77,6 +82,7 @@ const AddColleagueButton = ({ handler }) => {
                                 setPeciaID("");
                             }}
                             className="button green"
+                            title="confirm"
                             disabled={!username || !passcode || !peciaID}
                         >
                             Add Colleague

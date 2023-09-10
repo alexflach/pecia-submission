@@ -29,10 +29,16 @@ const DeleteColleagueButton = ({ handler }) => {
                     }}
                 >
                     <AlertDialog.Cancel asChild>
-                        <button className="button">Cancel</button>
+                        <button title="cancel" className="button">
+                            Cancel
+                        </button>
                     </AlertDialog.Cancel>
                     <AlertDialog.Action asChild>
-                        <button onClick={handler} className="button red">
+                        <button
+                            onClick={handler}
+                            title="confirm"
+                            className="button red"
+                        >
                             Yes, delete colleague
                         </button>
                     </AlertDialog.Action>
