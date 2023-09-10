@@ -1,11 +1,9 @@
 //This class implements the LSEQ list CRDT from https://hal.science/hal-00921633/document
 //It provides unique position identifiers for siblings in the TreeMoveCRDT
 
-import { randomInt } from "./utils.js";
-
 //A Position will be a string in the form of (Int:)+ReplicaID
 type PosString = string;
-interface Position {
+export interface Position {
     depth: number;
     replica: string;
     positions: number[];
@@ -86,7 +84,7 @@ export class LSEQ {
 
         for (let i = 0; i < aPos.positions.length; i++) {
             //base case, bPos isn't this deep, if we've got here then b is earlier
-            if (!bPos.positions[i]) return 1;
+            if (typeof bPos.positions[i] === "undefined") return 1;
             else if (aPos.positions[i] < bPos.positions[i]) return -1;
             else if (aPos.positions[i] > bPos.positions[i]) return 1;
             else if (aPos.positions[i] === bPos.positions[i]) {
@@ -111,4 +109,13 @@ export class LSEQ {
         const newPos = Array.from(positions);
         return newPos.sort(LSEQ.compare);
     }
+}
+
+// helper function
+// returns a number between [min,max)
+// taken from https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random#getting_a_random_integer_between_two_values
+function randomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
 }

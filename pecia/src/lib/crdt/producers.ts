@@ -90,6 +90,8 @@ export const updateTreeIm = (state: ReplicaState, move: Move) => {
                 meta: move.meta,
                 child: move.child,
             });
+        } else {
+            draftState.state.tree = [...state.tree];
         }
     });
 };
