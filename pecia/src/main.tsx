@@ -8,8 +8,6 @@ import store from "./state/store.ts";
 import App from "./App.tsx";
 import HomePage from "./components/pages/HomePage";
 import ErrorPage from "./components/pages/ErrorPage";
-import DocsPage from "./components/pages/DocsPage";
-import UserPage from "./components/pages/UserPage";
 import EditorPage from "./components/pages/EditorPage";
 import NotFoundPage from "./components/pages/NotFoundPage/NotFoundPage.tsx";
 
@@ -28,14 +26,6 @@ const router = createBrowserRouter([
             {
                 path: "edit",
                 element: <EditorPage />,
-            },
-            {
-                path: "docs",
-                element: <DocsPage />,
-            },
-            {
-                path: "user",
-                element: <UserPage />,
             },
             {
                 path: "*",

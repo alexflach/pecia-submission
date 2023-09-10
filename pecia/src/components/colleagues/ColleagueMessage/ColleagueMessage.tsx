@@ -12,8 +12,10 @@ const ColleagueMessage = ({ message }: { message: UserMessage }) => {
             <div className="message-summary">{message.summary}</div>
             <div className="message-action">
                 <AlertDialog.Root>
-                    <AlertDialog.Trigger className="alert-trigger">
-                        <button className="button">See Details</button>
+                    <AlertDialog.Trigger asChild className="alert-trigger">
+                        <button title="details" className="button">
+                            See Details
+                        </button>
                     </AlertDialog.Trigger>
                     <AlertDialog.Overlay className="alert-dialog-overlay" />
                     <AlertDialog.Content className="alert-dialog-content">
@@ -42,6 +44,7 @@ const ColleagueMessage = ({ message }: { message: UserMessage }) => {
                                         );
                                     }}
                                     className="button red"
+                                    title="reject"
                                 >
                                     Reject
                                 </button>
@@ -57,6 +60,7 @@ const ColleagueMessage = ({ message }: { message: UserMessage }) => {
                                         );
                                     }}
                                     className="button green"
+                                    title="approve"
                                 >
                                     Approve
                                 </button>
