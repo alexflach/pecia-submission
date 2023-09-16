@@ -4,3 +4,4 @@ It was written using Node v. 18.7.0. It is recommended to have that version or h
 
 To install and run simply run `npm install` and then `npm run dev` in the root directory.
 
+A build of the appliation can be found at https://pecia.netlify.app
