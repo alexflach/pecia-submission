@@ -3,6 +3,7 @@
 
 //A Position will be a string in the form of (Int:)+ReplicaID
 type PosString = string;
+
 export interface Position {
     depth: number;
     replica: string;

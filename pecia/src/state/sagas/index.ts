@@ -123,7 +123,6 @@ function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
     let retrievedVersions, newVersions: Replica[];
     let alreadyKnown;
     let foundColleague;
-    console.log({ packet, sender });
     switch (packet.type) {
         case "APPROVED":
             yield apply(actions, actions.addMessage, [
@@ -146,7 +145,6 @@ function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
             ]);
             break;
         case "VERSION":
-            console.log("handling version...");
             //if the sender is not an approved colleague, we ignore.
             foundColleague = yield apply(
                 state.peer.colleagues,
@@ -160,25 +158,17 @@ function* manageDataReceipt(action: PayloadAction<DataReceivedPayload>) {
 
             //check if we know the document.
             version = yield apply(JSON, JSON.parse, [packet.message]);
-            console.log(version);
             docID = version.docID;
             matchedDoc = yield apply(docs, docs.find, [
                 (doc) => doc.id === docID,
             ]);
             //if we don't know the doc handle a new doc flow
             if (!matchedDoc) {
-                console.log("no matched doc...");
-                // const newDocAction = apply(
-                //     actions,
-                //     actions.newDocumentRequest,
-                //     [sender, version],
-                // );
                 yield put(actions.newDocumentRequest(sender, version));
                 return;
             }
             //if we do know it check if we have the version already if we do ignore
             else {
-                console.log("we know the doc");
                 //check if the doc is the currently active doc, if so memory is master
                 if (docID === state.editor.currentDocID) {
                     knownVersionIDs = yield apply(
@@ -268,10 +258,7 @@ function* manageDocApproval(action: {
             if (!matchedVersion) {
                 return;
             }
-            // docsAction = yield apply(docsActions, docsActions.addDoc, [
-            //     matchedVersion.docID,
-            //     matchedVersion.title,
-            // ]);
+
             yield put(
                 docsActions.addDoc(matchedVersion.docID, matchedVersion.title),
             );

@@ -574,11 +574,7 @@ export const resolveMessage = {
                 matchedColleague = state.colleagueRequests.find(
                     (colleague) => colleague.peciaID === colleagueID,
                 );
-                // not sure if we want to track rejected colleagues or not.
-                // state.colleagues.push({
-                //     ...matchedColleague,
-                //     status: "REJECTED",
-                // });
+
                 state.colleagueRequests = state.colleagueRequests.filter(
                     (colleague) => colleague.peciaID !== colleagueID,
                 );

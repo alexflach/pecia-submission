@@ -1,8 +1,5 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { RootState } from '../../../../state/store';
-// import { actions } from '../../../../state/slices/editor';
-// import { actions as toastActions } from '../../../../state/slices/toast';
 import { actions } from "../../../state/slices/peer";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";

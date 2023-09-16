@@ -1,13 +1,13 @@
-import { useSelector, useDispatch } from 'react-redux';
-import * as Tabs from '@radix-ui/react-tabs';
+import { useSelector, useDispatch } from "react-redux";
+import * as Tabs from "@radix-ui/react-tabs";
 
-import './VersionsMenu.css';
-import { RootState } from '../../../state/store';
-import VersionCard from './VersionCard';
-import { actions as toastActions } from '../../../state/slices/toast';
-import { actions as editorActions } from '../../../state/slices/editor';
+import "./VersionsMenu.css";
+import { RootState } from "../../../state/store";
+import VersionCard from "./VersionCard";
+import { actions as toastActions } from "../../../state/slices/toast";
+import { actions as editorActions } from "../../../state/slices/editor";
 
-import CreateVersionButton from './CreateVersionButton';
+import CreateVersionButton from "./CreateVersionButton";
 
 const versionsSelector = (state: RootState) => state.editor.versions;
 const userIDSelector = (state: RootState) => state.user.peciaID;
@@ -28,17 +28,17 @@ const VersionsMenu = () => {
     const docTitleArray = useSelector(docsSelector)
         .filter((doc) => doc.id === currentDocID)
         .map((doc) => doc.title);
-    const docTitle = docTitleArray.length ? docTitleArray[0] : 'Untitled';
+    const docTitle = docTitleArray.length ? docTitleArray[0] : "Untitled";
 
     const myVersions = versions.filter((version) => version.owner === userID);
     const colleagueVersions = versions.filter(
-        (version) => version.owner !== userID
+        (version) => version.owner !== userID,
     );
     const createVersionHandler = (label: string, description: string) => {
         dispatch(
-            editorActions.createVersion(userID, docTitle, label, description)
+            editorActions.createVersion(userID, docTitle, label, description),
         );
-        dispatch(toastActions.addToast(`version ${label} created!`, 'info'));
+        dispatch(toastActions.addToast(`version ${label} created!`, "info"));
     };
 
     return (
@@ -52,10 +52,18 @@ const VersionsMenu = () => {
                     className="tabs-list"
                     aria-label="Browse Your Versions"
                 >
-                    <Tabs.Trigger className="tabs-trigger" value="tab1">
+                    <Tabs.Trigger
+                        title="your versions"
+                        className="tabs-trigger"
+                        value="tab1"
+                    >
                         Your Versions
                     </Tabs.Trigger>
-                    <Tabs.Trigger className="tabs-trigger" value="tab2">
+                    <Tabs.Trigger
+                        title="colleague versions"
+                        className="tabs-trigger"
+                        value="tab2"
+                    >
                         Colleague Versions
                     </Tabs.Trigger>
                 </Tabs.List>

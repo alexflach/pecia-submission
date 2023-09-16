@@ -52,7 +52,7 @@ test("allocation between start and end positions works as expected", () => {
     expect(newPosNumber).toBeLessThan(100);
 });
 
-test("allocation of between nearby positions works as expected", () => {
+test("allocation between nearby positions works as expected", () => {
     const replicaID = "a";
     const beforeNum = 10;
     const afterNum = 15;
